@@ -21,8 +21,9 @@ class SupplyDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COL_NAME + " VARCHAR(100) NOT NULL, " + COL_QUANTITY + " VARCHAR(100) NOT NULL);"
+        val CREATE_TABLE = "CREATE TABLE $TABLE_NAME " +
+                "($COL_NAME VARCHAR(100), " +
+                "$COL_QUANTITY VARCHAR(100));"
         db!!.execSQL(CREATE_TABLE)
     }
 
@@ -42,7 +43,12 @@ class SupplyDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         var result : Long = db?.insert(TABLE_NAME, null, values)
         db.close()
-        return result != -1.toLong()
+        return result > 0
+    }
+
+    fun deleteItem(item : Item) : Boolean {
+        val db : SQLiteDatabase = this.writableDatabase
+        return db.delete(TABLE_NAME, "$COL_NAME = \'" + item.name + "\' AND $COL_QUANTITY = \'" + item.quantity + "\'", null) > 0;
     }
 
     fun getItems() : Cursor {

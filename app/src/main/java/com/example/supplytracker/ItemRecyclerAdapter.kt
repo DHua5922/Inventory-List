@@ -1,15 +1,20 @@
 package com.example.supplytracker;
 
+import android.content.Context
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.LinearLayout
+import android.widget.*
+import android.widget.Toast.LENGTH_SHORT
 
-class ItemRecyclerAdapter(private val itemList: ArrayList<Item>) : RecyclerView.Adapter<ItemRecyclerAdapter.ViewHolder>() {
+class ItemRecyclerAdapter(private val itemList: ArrayList<Item>, context : Context) : RecyclerView.Adapter<ItemRecyclerAdapter.ViewHolder>() {
+
+    val context = context
+    val database = SupplyDatabase(context)
+
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder.
@@ -19,7 +24,7 @@ class ItemRecyclerAdapter(private val itemList: ArrayList<Item>) : RecyclerView.
         var checkBox : CheckBox = itemLayout.findViewById(R.id.checkBox)
         var itemName : EditText = itemLayout.findViewById(R.id.name)
         var itemQuantity : EditText = itemLayout.findViewById(R.id.quantity)
-        var button : Button = itemLayout.findViewById(R.id.btn_delete)
+        var deleteBtn : Button = itemLayout.findViewById(R.id.btn_delete)
     }
 
 
@@ -37,6 +42,17 @@ class ItemRecyclerAdapter(private val itemList: ArrayList<Item>) : RecyclerView.
         // Set item views based on your views and data model
         holder.itemName.setText(itemList.get(position).name)
         holder.itemQuantity.setText(itemList.get(position).quantity)
+        holder.deleteBtn.setOnClickListener(View.OnClickListener {
+            var item = itemList.get(holder.adapterPosition)
+
+            if(database.deleteItem(item)) {
+                itemList.remove(item)
+                notifyItemRemoved(holder.adapterPosition)
+                Toast.makeText(context, "Item successfully deleted!", LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Item could not be deleted!", LENGTH_SHORT).show()
+            }
+        })
     }
 
     // Return the size of your dataset (invoked by the layout manager)
