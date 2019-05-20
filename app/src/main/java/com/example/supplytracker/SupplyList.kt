@@ -21,6 +21,12 @@ class SupplyList : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_supply_list)
 
+        var adapter: ItemRecyclerAdapter = ItemRecyclerAdapter(supplyList, this)
+        var recyclerView: RecyclerView = findViewById(R.id.supply_list)
+        recyclerView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(LinearLayoutManager(this));
+
         var itemName : EditText = findViewById(R.id.itemName)
         var itemQuantity : EditText = findViewById(R.id.itemQuantity)
 
@@ -39,21 +45,11 @@ class SupplyList : AppCompatActivity() {
                 if(db.addItem(item)) {
                     Toast.makeText(this, "Item successfully added!", LENGTH_SHORT).show()
                     supplyList.add(item)
-                    createList()
+                    adapter.notifyItemInserted(supplyList.indexOf(item))
                 } else {
                     Toast.makeText(this, "Item could not be added!", LENGTH_SHORT).show()
                 }
             }
         });
-
-    }
-
-    fun createList() {
-        var adapter: ItemRecyclerAdapter = ItemRecyclerAdapter(supplyList)
-        var recyclerView: RecyclerView = findViewById(R.id.supply_list)
-
-        recyclerView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(LinearLayoutManager(this));
     }
 }
