@@ -1,8 +1,7 @@
 package com.example.supplytracker;
 
 import android.content.Context
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
+import android.database.Cursor
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +9,10 @@ import android.view.ViewGroup
 import android.widget.*
 import android.widget.Toast.LENGTH_SHORT
 
-class ItemRecyclerAdapter(private val itemList: ArrayList<Item>, context : Context) : RecyclerView.Adapter<ItemRecyclerAdapter.ViewHolder>() {
+class ItemRecyclerAdapter(context : Context, cursor : Cursor) : RecyclerView.Adapter<ItemRecyclerAdapter.ViewHolder>() {
 
     val context = context
-    val database = SupplyDatabase(context)
+    var cursor = cursor
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -40,21 +39,34 @@ class ItemRecyclerAdapter(private val itemList: ArrayList<Item>, context : Conte
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         // Set item views based on your views and data model
-        holder.itemName.setText(itemList.get(position).name)
-        holder.itemQuantity.setText(itemList.get(position).quantity)
-        holder.deleteBtn.setOnClickListener(View.OnClickListener {
-            var item = itemList.get(holder.adapterPosition)
 
-            if(database.deleteItem(item)) {
-                itemList.remove(item)
-                notifyItemRemoved(holder.adapterPosition)
-                Toast.makeText(context, "Item successfully deleted!", LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Item could not be deleted!", LENGTH_SHORT).show()
-            }
-        })
+        if(cursor.moveToPosition(position)) {
+            var name : String = cursor.getString(cursor.getColumnIndex("Name"))
+            var quantity : Int = cursor.getInt(cursor.getColumnIndex("Quantity"))
+
+            holder.itemName.setText(name)
+            holder.itemQuantity.setText(quantity.toString())
+
+            holder.deleteBtn.setOnClickListener(View.OnClickListener {
+                var item = Item(name, quantity)
+                val database = SupplyDatabase(context)
+
+                if(database.deleteItem(item)) {
+                    this.swapCursor(database.getAllItems())
+                    Toast.makeText(context, "Item successfully deleted!", LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Item could not be deleted!", LENGTH_SHORT).show()
+                }
+            })
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = itemList.size
+    override fun getItemCount() = cursor.count
+
+    fun swapCursor(newCursor : Cursor) {
+        cursor.close()
+        cursor = newCursor
+        notifyDataSetChanged()
+    }
 }
