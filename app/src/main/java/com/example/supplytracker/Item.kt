@@ -1,14 +1,6 @@
 package com.example.supplytracker
 
-class Item {
-
-    var name : String = ""
-
-    var quantity : String = ""
-
-    constructor(name: String, quantity: String) {
-        this.name = name
-        this.quantity = quantity
-    }
-
+class Item(name: String, quantity: Int) {
+    var name : String = name
+    var quantity : Int = quantity
 }
