@@ -6,7 +6,7 @@
     <string name="hint_item_name">Item Name</string>
     <string name="hint_item_quantity">Quantity</string>
 
-    <string name="btn_sort_numerically">Sort By Numbers</string>
+    <string name="btn_sort_numerically">Sort By Quantity</string>
     <string name="btn_sort_alphabetically">Sort A-Z</string>
     <string name="btn_clear">Clear All</string>
 </resources>
