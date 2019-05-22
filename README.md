@@ -2,7 +2,7 @@
 Android application that keeps track of items and their amount left
 
 ## Development Tools
-* **Programming Language:** Kotlin Java
+* **Programming Language:** Kotlin
 * **Markup Language:** XML
 * **Integrated Development Environment:** Android Studio
 
