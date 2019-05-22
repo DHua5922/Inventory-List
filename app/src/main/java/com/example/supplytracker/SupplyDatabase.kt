@@ -24,14 +24,14 @@ class SupplyDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     override fun onCreate(db: SQLiteDatabase?) {
         val CREATE_TABLE = "CREATE TABLE $TABLE_NAME " +
                 "($COL_NAME VARCHAR(100), " +
-                "$COL_QUANTITY INT);"
+                "$COL_QUANTITY INTEGER);"
         db!!.execSQL(CREATE_TABLE)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         // This database is only a cache for items, so its upgrade policy is
         // to simply to discard the data and start over
-        db!!.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME + ");")
+        db!!.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
         onCreate(db!!)
     }
 
@@ -53,19 +53,19 @@ class SupplyDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun getAllItems() : Cursor {
-        return database.rawQuery("SELECT * FROM " + TABLE_NAME, null)
+        return database.rawQuery("SELECT * FROM $TABLE_NAME", null)
     }
 
     fun getItem(position : Int) : Cursor {
-        return database.rawQuery("SELECT * FROM " + TABLE_NAME, null)
+        return database.rawQuery("SELECT * FROM $TABLE_NAME", null)
     }
 
     fun sortAlphabetically() : Cursor {
-        return database.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY " + COL_NAME + " COLLATE NOCASE ASC",null);
+        return database.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COL_NAME COLLATE NOCASE ASC",null)
     }
 
     fun sortNumerically() : Cursor {
-        return database.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY " + COL_QUANTITY,null);
+        return database.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COL_QUANTITY ASC",null)
     }
 }
 
