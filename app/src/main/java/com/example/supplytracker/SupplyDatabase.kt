@@ -6,7 +6,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-
 class SupplyDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
@@ -16,7 +15,6 @@ class SupplyDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     val TABLE_NAME = "Items"
-    val COL_ID = "ID"
     val COL_NAME = "Name"
     val COL_QUANTITY = "Quantity"
     val database : SQLiteDatabase = this.writableDatabase
@@ -36,12 +34,20 @@ class SupplyDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun addItem(item : Item) : Boolean {
-        var values : ContentValues = ContentValues().apply {
-            put(COL_NAME, item.name)
-            put(COL_QUANTITY, item.quantity)
+        if(getItem(item).getCount() > 0) {
+            throw Exception("Item already exists!")
+        } else {
+            val values : ContentValues = ContentValues().apply {
+                put(COL_NAME, item.name)
+                put(COL_QUANTITY, item.quantity)
+            }
+            val result : Long = database.insert(TABLE_NAME, null, values)
+            return result > 0
         }
-        var result : Long = database.insert(TABLE_NAME, null, values)
-        return result > 0
+    }
+
+    fun getItem(item : Item) : Cursor {
+        return database.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COL_NAME = \'" + item.name + "\'", null)
     }
 
     fun deleteItem(item : Item) : Boolean {
@@ -53,10 +59,6 @@ class SupplyDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun getAllItems() : Cursor {
-        return database.rawQuery("SELECT * FROM $TABLE_NAME", null)
-    }
-
-    fun getItem(position : Int) : Cursor {
         return database.rawQuery("SELECT * FROM $TABLE_NAME", null)
     }
 
