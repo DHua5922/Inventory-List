@@ -34,28 +34,56 @@ class SupplyDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     fun addItem(item : Item) : Boolean {
-        if(getItem(item).getCount() > 0) {
+        if(getItem(item.name).getCount() > 0) {
             throw Exception("Item already exists!")
         } else {
             val values : ContentValues = ContentValues().apply {
                 put(COL_NAME, item.name)
                 put(COL_QUANTITY, item.quantity)
             }
-            val result : Long = database.insert(TABLE_NAME, null, values)
-            return result > 0
+            return database.insert(TABLE_NAME, null, values) > 0
         }
     }
 
-    fun getItem(item : Item) : Cursor {
-        return database.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COL_NAME = \'" + item.name + "\'", null)
+    fun deleteItem(name : String) : Boolean {
+        return database.delete(TABLE_NAME, "$COL_NAME = '$name'", null) > 0
     }
 
-    fun deleteItem(item : Item) : Boolean {
-        return database.delete(TABLE_NAME, "$COL_NAME = \'" + item.name + "\' AND $COL_QUANTITY = " + item.quantity, null) > 0;
+    fun updateName(newText : String, oldText : String) : Boolean {
+
+        if(newText.isEmpty())
+            throw Exception("Name cannot be empty")
+        else if (getItem(newText).count > 0)
+            throw Exception("Item already exists")
+
+        val newValues: ContentValues = ContentValues().apply {
+            put(COL_NAME, newText)
+        }
+
+        return database.update(TABLE_NAME, newValues, "$COL_NAME = '$oldText'", null) > 0
+    }
+
+    fun updateQuantity(itemName : String, newNum : String, oldNum : String) : Boolean {
+        try {
+            val newValues = ContentValues()
+            newValues.put(COL_QUANTITY, newNum.toInt())
+            return database.update(
+                TABLE_NAME,
+                newValues,
+                "$COL_NAME = '$itemName' AND $COL_QUANTITY = ${oldNum.toInt()}",
+                null
+            ) > 0
+        } catch(e : Exception) {
+            return false
+        }
     }
 
     fun clear() {
         database.delete(TABLE_NAME, null, null)
+    }
+
+    fun getItem(name : String) : Cursor {
+        return database.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COL_NAME = '$name'", null)
     }
 
     fun getAllItems() : Cursor {
