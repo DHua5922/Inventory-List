@@ -1,5 +1,6 @@
 package com.example.supplytracker;
 
+import android.app.AlertDialog
 import android.content.Context
 import android.database.Cursor
 import android.support.v7.widget.RecyclerView
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.Toast.LENGTH_SHORT
+import kotlinx.android.synthetic.main.dialog_edit_field.view.*
 
 class ItemRecyclerAdapter(context : Context, cursor : Cursor) : RecyclerView.Adapter<ItemRecyclerAdapter.ViewHolder>() {
 
@@ -21,8 +23,8 @@ class ItemRecyclerAdapter(context : Context, cursor : Cursor) : RecyclerView.Ada
     class ViewHolder(itemLayout: View) : RecyclerView.ViewHolder(itemLayout) {
         var linearLayout : LinearLayout = itemLayout.findViewById(R.id.layoutHolder)
         var checkBox : CheckBox = itemLayout.findViewById(R.id.checkBox)
-        var itemName : EditText = itemLayout.findViewById(R.id.name)
-        var itemQuantity : EditText = itemLayout.findViewById(R.id.quantity)
+        var itemName : TextView = itemLayout.findViewById(R.id.name)
+        var itemQuantity : TextView = itemLayout.findViewById(R.id.quantity)
         var deleteBtn : Button = itemLayout.findViewById(R.id.btn_delete)
     }
 
@@ -41,17 +43,66 @@ class ItemRecyclerAdapter(context : Context, cursor : Cursor) : RecyclerView.Ada
         // Set item views based on your views and data model
 
         if(cursor.moveToPosition(position)) {
-            var name : String = cursor.getString(cursor.getColumnIndex("Name"))
-            var quantity : Int = cursor.getInt(cursor.getColumnIndex("Quantity"))
+            val name : String = cursor.getString(cursor.getColumnIndex("Name"))
+            val quantity : Int = cursor.getInt(cursor.getColumnIndex("Quantity"))
 
             holder.itemName.setText(name)
+            holder.itemName.setOnClickListener(View.OnClickListener {
+                val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_field, null)
+                val builder = AlertDialog.Builder(context).setView(dialogView)
+                val alertDialog = builder.show()
+
+                dialogView.title.text = "Replacing Item Name"
+                dialogView.description.text = "The field above will replace the item name: ${holder.itemName.text}"
+
+                dialogView.btn_dialog_ok.setOnClickListener {
+                    val newName = dialogView.field.text.toString()
+
+                    try {
+                        SupplyDatabase(context).updateName(newName, holder.itemName.text.toString())
+                        holder.itemName.text = newName
+                        alertDialog.dismiss()
+                    } catch(e : Exception) {
+                        Toast.makeText(context, e.message, LENGTH_SHORT).show()
+                    }
+                }
+
+                dialogView.btn_dialog_cancel.setOnClickListener {
+                    alertDialog.dismiss()
+                }
+            })
+
             holder.itemQuantity.setText(quantity.toString())
+            holder.itemQuantity.setOnClickListener {
+                val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_field, null)
+                val builder = AlertDialog.Builder(context).setView(dialogView)
+                val alertDialog = builder.show()
+
+                dialogView.title.text = "Replacing Item Quantity"
+                dialogView.description.text = "The field above will replace ${holder.itemQuantity.text} as the current quantity for ${holder.itemName.text}"
+
+                dialogView.btn_dialog_ok.setOnClickListener {
+                    if(SupplyDatabase(context).updateQuantity(
+                            holder.itemName.text.toString(),
+                            dialogView.field.text.toString(),
+                            holder.itemQuantity.text.toString()
+                        )) {
+                        holder.itemQuantity.text = dialogView.field.text
+                        alertDialog.dismiss()
+                    } else {
+                        Toast.makeText(context, "Quantity must only have numbers", LENGTH_SHORT).show()
+                    }
+                }
+
+                dialogView.btn_dialog_cancel.setOnClickListener {
+                    alertDialog.dismiss()
+                }
+            }
 
             holder.deleteBtn.setOnClickListener(View.OnClickListener {
-                var item = Item(name, quantity)
                 val database = SupplyDatabase(context)
 
-                if(database.deleteItem(item)) {
+                if(database.deleteItem(holder.itemName.text.toString())) {
                     this.swapCursor(database.getAllItems())
                     Toast.makeText(context, "Item successfully deleted!", LENGTH_SHORT).show()
                 } else {
