@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Creates and displays splash screen.
-     * This method is called when this activity is first created.
+     * This method is called when splash screen is first created.
      *
      * @param   savedInstanceState  Bundle containing activity's previously frozen state, if there was one
      */
@@ -21,23 +21,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Create a splash screen.
+        // create splash screen
         val splashScreen = object : Thread() {
-            // Set up behavior for splash screen.
+            // set up behavior for splash screen
             override fun run() {
                 try {
-                    // Try to load this splash screen for 0.5 seconds.
+                    // try to load splash screen for 0.5 seconds
                     sleep(500)
                     val intent = Intent(baseContext, SupplyList::class.java)
                     startActivity(intent)
                     finish()
                 } catch (e: Exception) {
-                    // An error occurs while displaying this splash screen.
+                    // error occurs while displaying splash screen
                     e.printStackTrace()
                 }
             }
         }
-        // Display this splash screen.
+        // display splash screen
         splashScreen.start()
     }
 }
