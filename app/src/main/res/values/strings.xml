@@ -6,8 +6,11 @@
     <string name="hint_item_name">Item Name</string>
     <string name="hint_item_quantity">Quantity</string>
     <string name="hint_dialog_text">New Text</string>
+    <string name="hint_title">Title</string>
+    <string name="hint_item_to_be_replaced">Item To Be Replaced</string>
+    <string name="hint_description">Description of Field Below</string>
 
-    <string name="btn_sort_numerically">Sort Quantity</string>
+    <string name="btn_sort_numerically">Sort Amount</string>
     <string name="btn_sort_alphabetically">Sort A-Z</string>
     <string name="btn_clear">Clear All</string>
 
