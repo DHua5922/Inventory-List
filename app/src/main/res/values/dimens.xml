@@ -4,7 +4,7 @@
     <dimen name="vertical_margin">0dp</dimen>
     <dimen name="text">20sp</dimen>
     <dimen name="item_padding">8dp</dimen>
-    <dimen name="btn_gap">4dp</dimen>
+    <dimen name="gap_btwn_widgets">4dp</dimen>
     <dimen name="dialog_gap">12dp</dimen>
     <dimen name="dialog_gap_description">8dp</dimen>
 </resources>
