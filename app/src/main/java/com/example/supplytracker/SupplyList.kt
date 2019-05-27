@@ -12,71 +12,94 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import java.lang.NumberFormatException
 
-class SupplyList : AppCompatActivity() {
+/**
+ * This class displays a list of items. This list is displayed after the splash screen.
+ */
+class SupplyList : AppCompatActivity(), View.OnClickListener {
+    private lateinit var database : SupplyDatabase
+    private lateinit var listManager : ItemRecyclerAdapter
+    private lateinit var listDisplay: RecyclerView
+    private lateinit var editableName : EditText
+    private lateinit var editableAmount : EditText
 
-
-
+    /**
+     * Creates and displays a list of items.
+     * This method is called when this list is first created.
+     *
+     * @param   savedInstanceState  Bundle containing list's previous data, if there was one
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_supply_list)
 
-        val database = SupplyDatabase(this)
+        // initialize variables
+        database = SupplyDatabase(this)
+        listManager = ItemRecyclerAdapter(this, database.getAllItems())
+        listDisplay = findViewById(R.id.supply_list)
+        editableName = findViewById(R.id.itemName)
+        editableAmount = findViewById(R.id.itemQuantity)
 
-        var adapter: ItemRecyclerAdapter = ItemRecyclerAdapter(this, database.getAllItems())
-        val recyclerView: RecyclerView = findViewById(R.id.supply_list)
-        recyclerView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(LinearLayoutManager(this));
+        // add a horizontal line below each item displayed
+        listDisplay.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+        // load all items in list
+        listDisplay.adapter = listManager
+        // set layout manager for the view displaying items
+        listDisplay.layoutManager = LinearLayoutManager(this)
 
-
-        val itemName : EditText = findViewById(R.id.itemName)
-        val itemQuantity : EditText = findViewById(R.id.itemQuantity)
-
-        val addBtn : Button = findViewById(R.id.btn_add)
-        addBtn.setOnClickListener(View.OnClickListener {
-            try {
-                val name : String = itemName.text.toString().trim()
-                val quantity : String = itemQuantity.text.toString().trim()
-
-                if(name.length == 0)
-                    throw IllegalArgumentException("Name cannot be empty")
-                val item = Item(name, quantity.toInt())
-
-                if(database.addItem(item)) {
-                    adapter.swapCursor(database.getAllItems())
-                    itemName.getText().clear()
-                    itemQuantity.getText().clear()
-                    Toast.makeText(this, "Item successfully added!", LENGTH_SHORT).show()
-                } else {
-                    throw Exception("Item could not be added!")
-                }
-            } catch(e : NumberFormatException) {
-                Toast.makeText(this, "Quantity must only be whole numbers", LENGTH_SHORT).show()
-            } catch (e : Exception) {
-                Toast.makeText(this, e.message, LENGTH_SHORT).show()
-            }
-        })
-
-        val btnClear : Button = findViewById(R.id.btn_clear)
-        btnClear.setOnClickListener(View.OnClickListener {
-            database.clear()
-            adapter = ItemRecyclerAdapter(this, database.getAllItems())
-            recyclerView.setAdapter(adapter)
-            Toast.makeText(this, "List cleared!", LENGTH_SHORT).show()
-        })
-
-        val btnSortByAlphabet : Button = findViewById(R.id.btn_sort_alpha)
-        btnSortByAlphabet.setOnClickListener(View.OnClickListener {
-            adapter = ItemRecyclerAdapter(this, database.sortAlphabetically())
-            recyclerView.setAdapter(adapter)
-        })
-
-        val btnSortByNumber : Button = findViewById(R.id.btn_sort_number)
-        btnSortByNumber.setOnClickListener(View.OnClickListener {
-            adapter = ItemRecyclerAdapter(this, database.sortNumerically())
-            recyclerView.setAdapter(adapter)
-        })
+        // button performs action when clicked
+        findViewById<Button>(R.id.btn_add).setOnClickListener(this)
+        findViewById<Button>(R.id.btn_clear).setOnClickListener(this)
+        findViewById<Button>(R.id.btn_sort_alpha).setOnClickListener(this)
+        findViewById<Button>(R.id.btn_sort_number).setOnClickListener(this)
     }
 
+    /**
+     * Performs respective action for the given button that was clicked.
+     * The given button is identified by its id that was set in the layout
+     * design for this activity.
+     *
+     * @param   view    given view that was clicked
+     */
+    override fun onClick(view : View) {
+        // identify button that was clicked and perform respective action
+        when {
+            // button for adding item
+            view.id == R.id.btn_add -> {
+                // when button is clicked, add item to list
+                try {
+                    val item = Item(editableName.text.toString(), editableAmount.text.toString().trim().toInt())
 
+                    if(database.addItem(item)) {
+                        listManager.swapCursor(database.getAllItems())
+                        editableName.text.clear()
+                        editableAmount.text.clear()
+                    }
+                } catch(e : NumberFormatException) {
+                    Toast.makeText(this, "Quantity must only be whole numbers", LENGTH_SHORT).show()
+                }
+            }
+            // button for deleting all items
+            view.id == R.id.btn_clear -> {
+                // when button is clicked, delete all items from list
+                database.clear()
+                listManager = ItemRecyclerAdapter(this, database.getAllItems())
+                listDisplay.adapter = listManager
+                Toast.makeText(this, "All items removed", LENGTH_SHORT).show()
+            }
+            // button for sorting items in alphabetical order
+            view.id == R.id.btn_sort_alpha -> {
+                // when button is clicked, sort items in alphabetical order
+                listManager = ItemRecyclerAdapter(this, database.sortAlphabetically())
+                listDisplay.adapter = listManager
+                Toast.makeText(this, "List sorted in alphabetical order", LENGTH_SHORT).show()
+            }
+            // button for sorting items from lowest to highest amount
+            view.id == R.id.btn_sort_number -> {
+                // when button is clicked, sort items from lowest to highest amount
+                listManager = ItemRecyclerAdapter(this, database.sortAmount())
+                listDisplay.adapter = listManager
+                Toast.makeText(this, "List sorted from lowest to highest quantity", LENGTH_SHORT).show()
+            }
+        }
+    }
 }
