@@ -13,7 +13,7 @@ import android.widget.Toast.LENGTH_SHORT
 import java.lang.NumberFormatException
 
 /**
- * This class displays a list of items. This list is displayed after the splash screen.
+ * This class displays a list of items after the splash screen is shown.
  */
 class SupplyList : AppCompatActivity(), View.OnClickListener {
     private lateinit var database : SupplyDatabase
@@ -35,9 +35,9 @@ class SupplyList : AppCompatActivity(), View.OnClickListener {
         // initialize variables
         database = SupplyDatabase(this)
         listManager = ItemRecyclerAdapter(this, database.getAllItems())
-        listDisplay = findViewById(R.id.supply_list)
-        editableName = findViewById(R.id.itemName)
-        editableAmount = findViewById(R.id.itemQuantity)
+        listDisplay = findViewById(R.id.list_display)
+        editableName = findViewById(R.id.editableName)
+        editableAmount = findViewById(R.id.editableAmount)
 
         // add a horizontal line below each item displayed
         listDisplay.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
@@ -65,9 +65,9 @@ class SupplyList : AppCompatActivity(), View.OnClickListener {
         when {
             // button for adding item
             view.id == R.id.btn_add -> {
-                // when button is clicked, add item to list
+                // when button is clicked, try to add item to list
                 try {
-                    val item = Item(editableName.text.toString(), editableAmount.text.toString().trim().toInt())
+                    val item = Item("${editableName.text}", "${editableAmount.text}".trim().toInt())
 
                     if(database.addItem(item)) {
                         listManager.swapCursor(database.getAllItems())
@@ -75,7 +75,7 @@ class SupplyList : AppCompatActivity(), View.OnClickListener {
                         editableAmount.text.clear()
                     }
                 } catch(e : NumberFormatException) {
-                    Toast.makeText(this, "Quantity must only be whole numbers", LENGTH_SHORT).show()
+                    Toast.makeText(this, "Amount must only be whole numbers", LENGTH_SHORT).show()
                 }
             }
             // button for deleting all items
@@ -98,7 +98,7 @@ class SupplyList : AppCompatActivity(), View.OnClickListener {
                 // when button is clicked, sort items from lowest to highest amount
                 listManager = ItemRecyclerAdapter(this, database.sortAmount())
                 listDisplay.adapter = listManager
-                Toast.makeText(this, "List sorted from lowest to highest quantity", LENGTH_SHORT).show()
+                Toast.makeText(this, "List sorted from lowest to highest amount", LENGTH_SHORT).show()
             }
         }
     }
