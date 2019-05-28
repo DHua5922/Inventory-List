@@ -1,48 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:padding="@dimen/item_padding">
 
     <TextView
-            android:id="@+id/title" android:textStyle="bold"
+            android:id="@+id/title" android:textStyle="bold" android:hint="@string/hint_title"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:textAlignment="center" android:textSize="@dimen/text"
-            android:layout_marginBottom="@dimen/dialog_gap"/>
-
-    <EditText
-            android:id="@+id/field" android:layout_below="@+id/title"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:hint="@string/hint_dialog_text" android:textSize="@dimen/text"/>
+            android:textAlignment="center" android:textSize="@dimen/text" android:gravity="center"
+            android:layout_marginBottom="@dimen/dialog_gap" android:textColor="@color/black"/>
 
     <TextView
-            android:id="@+id/description"  android:textSize="@dimen/text"
+            android:id="@+id/info_to_be_changed" android:textSize="@dimen/text"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_below="@+id/field"
-            android:layout_marginTop="@dimen/dialog_gap_description" android:layout_marginBottom="@dimen/dialog_gap_description"/>
+            android:layout_below="@+id/title" android:textColor="@color/black"
+            android:layout_marginTop="@dimen/dialog_gap_description"
+            android:layout_marginBottom="@dimen/dialog_gap_description"
+            android:hint="@string/hint_item_to_be_changed" android:gravity="center"/>
+
+    <TextView
+            android:id="@+id/description" android:hint="@string/hint_description"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_below="@+id/info_to_be_changed" android:textColor="@color/black"
+            android:layout_marginTop="@dimen/dialog_gap_description" android:textSize="@dimen/text" />
+
+    <EditText
+            android:id="@+id/field_new_info" android:layout_below="@+id/description"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="@string/hint_dialog_text" android:textSize="@dimen/text" android:background="@color/field"
+            android:layout_marginTop="@dimen/dialog_gap_description" android:layout_marginBottom="@dimen/dialog_gap_description"
+            android:inputType="text"/>
 
     <LinearLayout
             android:id="@+id/buttons" android:orientation="horizontal"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_below="@+id/description">
+            android:layout_below="@+id/field_new_info">
 
         <Button
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:textSize="@dimen/text" android:text="@string/btn_dialog_cancel"
                 android:layout_weight="1" android:id="@+id/btn_dialog_cancel"
                 android:background="@drawable/button_manage" android:textColor="@color/white"
-                android:layout_marginRight="@dimen/btn_gap" android:layout_marginEnd="@dimen/btn_gap"/>
+                android:layout_marginRight="@dimen/gap_btwn_widgets" android:layout_marginEnd="@dimen/gap_btwn_widgets"/>
 
         <Button
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:textSize="@dimen/text" android:text="@string/btn_dialog_ok"
                 android:layout_weight="1" android:id="@+id/btn_dialog_ok"
                 android:background="@drawable/button_manage" android:textColor="@color/white"
-                android:layout_marginLeft="@dimen/btn_gap" android:layout_marginStart="@dimen/btn_gap"/>
+                android:layout_marginLeft="@dimen/gap_btwn_widgets" android:layout_marginStart="@dimen/gap_btwn_widgets"/>
 
     </LinearLayout>
-
-
 
 </RelativeLayout>
