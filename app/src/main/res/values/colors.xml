@@ -9,7 +9,8 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="lightblue">#0E9BE4</color>
-    <color name="editable_field">#D6D6D6</color>
+    <color name="field">#D6D6D6</color>
     <color name="isFull">#B6FFB3</color>
     <color name="isEmpty">#FFA8A8</color>
+    <color name="pressed_info_display">#FFC56C</color>
 </resources>
