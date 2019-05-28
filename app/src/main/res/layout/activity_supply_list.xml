@@ -16,15 +16,21 @@
 
         <EditText
                 android:layout_width="0dp" android:layout_height="match_parent"
-                android:hint="@string/hint_item_name" android:textSize="@dimen/text"
+                android:hint="@string/hint_item_name" android:textSize="@dimen/text" android:gravity="center"
                 android:layout_weight="1" android:scrollHorizontally="true"
-                android:singleLine="true" android:id="@+id/itemName"/>
+                android:singleLine="true" android:id="@+id/editableName"
+                android:textColor="@color/black" android:background="@color/field"
+                android:inputType="text"/>
 
         <EditText
                 android:layout_width="0dp" android:layout_height="match_parent"
-                android:hint="@string/hint_item_quantity" android:textSize="@dimen/text"
+                android:hint="@string/hint_item_amount" android:textSize="@dimen/text" android:gravity="center"
                 android:layout_weight="1" android:scrollHorizontally="true"
-                android:singleLine="true" android:id="@+id/itemQuantity"/>
+                android:singleLine="true" android:id="@+id/editableAmount"
+                android:textColor="@color/black" android:background="@color/field"
+                android:layout_marginStart="@dimen/gap_btwn_widgets" android:layout_marginLeft="@dimen/gap_btwn_widgets"
+                android:layout_marginRight="@dimen/gap_btwn_widgets" android:layout_marginEnd="@dimen/gap_btwn_widgets"
+                android:inputType="number"/>
 
         <Button
                 android:layout_width="wrap_content" android:layout_height="match_parent"
@@ -37,7 +43,7 @@
             android:id="@+id/layout_list_buttons"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/supply_list" app:layout_constraintTop_toBottomOf="@+id/layout_add_item"
+            app:layout_constraintBottom_toTopOf="@+id/list_display" app:layout_constraintTop_toBottomOf="@+id/layout_add_item"
             android:orientation="horizontal" android:padding="@dimen/item_padding">
 
         <Button
@@ -52,8 +58,8 @@
                 android:text="@string/btn_sort_numerically" android:textSize="@dimen/text"
                 android:textColor="@color/white"
                 android:background="@drawable/button_manage"
-                android:layout_marginStart="@dimen/btn_gap" android:layout_marginLeft="@dimen/btn_gap"
-                android:layout_marginRight="@dimen/btn_gap" android:layout_marginEnd="@dimen/btn_gap"
+                android:layout_marginStart="@dimen/gap_btwn_widgets" android:layout_marginLeft="@dimen/gap_btwn_widgets"
+                android:layout_marginRight="@dimen/gap_btwn_widgets" android:layout_marginEnd="@dimen/gap_btwn_widgets"
                 android:id="@+id/btn_sort_number"/>
 
         <Button
@@ -63,9 +69,8 @@
 
     </LinearLayout>
 
-
     <android.support.v7.widget.RecyclerView
-            android:id="@+id/supply_list"
+            android:id="@+id/list_display"
             android:layout_width="match_parent" android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toBottomOf="@+id/layout_list_buttons"/>
