@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/group_sort_names">
+        <item android:id="@+id/option_sort_names_atoz"
+              android:title="@string/sort_names_atoz"/>
+        <item android:id="@+id/option_sort_names_ztoa"
+              android:title="@string/sort_names_ztoa"/>
+        <item android:id="@+id/option_sort_names_empty_atoz"
+              android:title="@string/sort_names_empty_atoz"/>
+        <item android:id="@+id/option_sort_names_empty_ztoa"
+              android:title="@string/sort_names_empty_ztoa"/>
+        <item android:id="@+id/option_sort_names_leftover_atoz"
+              android:title="@string/sort_names_leftover_atoz"/>
+        <item android:id="@+id/option_sort_names_leftover_ztoa"
+              android:title="@string/sort_names_leftover_ztoa"/>
+        <item android:id="@+id/option_sort_names_checked_atoz"
+              android:title="@string/sort_names_checked_atoz"/>
+        <item android:id="@+id/option_sort_names_checked_ztoa"
+              android:title="@string/sort_names_checked_ztoa"/>
+    </group>
+</menu>
