@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.text.SpannableStringBuilder
+import android.view.MenuItem
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import java.lang.NumberFormatException
@@ -29,7 +30,6 @@ import java.lang.NumberFormatException
  */
 class SupplyDatabase(private val context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
-    // initialize variables
     private val database : SQLiteDatabase = this.writableDatabase
     companion object {
         // if database schema is changed, increment database version
@@ -38,6 +38,7 @@ class SupplyDatabase(private val context: Context) : SQLiteOpenHelper(context, D
         private const val TABLE_NAME = "Items"
         const val COL_NAME = "Name"
         const val COL_AMOUNT = "Amount"
+        const val COL_ISFULL = "IsFull"
     }
 
     /**
@@ -46,7 +47,7 @@ class SupplyDatabase(private val context: Context) : SQLiteOpenHelper(context, D
      * @param   db  SQLite database
      */
     override fun onCreate(db: SQLiteDatabase?) {
-        db!!.execSQL("CREATE TABLE $TABLE_NAME ($COL_NAME VARCHAR(100), $COL_AMOUNT INTEGER)")
+        db!!.execSQL("CREATE TABLE $TABLE_NAME ($COL_NAME VARCHAR(100), $COL_AMOUNT INTEGER, $COL_ISFULL INTEGER)")
     }
 
     /**
@@ -84,6 +85,7 @@ class SupplyDatabase(private val context: Context) : SQLiteOpenHelper(context, D
             val values: ContentValues = ContentValues().apply {
                 put(COL_NAME, name)
                 put(COL_AMOUNT, amount)
+                put(COL_ISFULL, 0)
             }
 
             // try to add item to database
@@ -127,7 +129,47 @@ class SupplyDatabase(private val context: Context) : SQLiteOpenHelper(context, D
     }
 
     /**
-     * Updates the current name of the item with the given new name if the item is in the database;
+     * Updates the given item with the given new indication if the item is full or not.
+     *
+     * @param   itemName    name of item
+     * @param   isFull      new indication if item is full or not
+     * @return              true if item has been updated with new indication, or false
+     */
+    fun updateCheckmark(itemName : String, isFull : Boolean) : Boolean {
+        val name = itemName.trim()
+        lateinit var styledText : SpannableStringBuilder
+
+        if(name.isEmpty()) {
+            Toast.makeText(context, "Name cannot be empty", LENGTH_SHORT).show()
+        } else if (getItem(name).count < 1) {
+            styledText = TextStyle.bold(name, "$name is not in this list")
+            Toast.makeText(context, styledText, LENGTH_SHORT).show()
+        } else {
+            // prepare to update item with indication
+            val newValues: ContentValues = ContentValues().apply {
+                if(isFull)
+                    put(COL_ISFULL, 1)
+                else
+                    put(COL_ISFULL, 0)
+            }
+
+            // try to update item with indication
+            if (database.update(TABLE_NAME, newValues, "$COL_NAME = '$name'", null) > 0) {
+                styledText = TextStyle.bold(name, "Updated $name with new indication if it is full or not")
+                Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                return true
+            // otherwise, show error message
+            } else {
+                styledText = TextStyle.bold(name, "Could not update $name with new indication if it is full or not")
+                Toast.makeText(context, styledText, LENGTH_SHORT).show()
+            }
+        }
+
+        return false
+    }
+
+    /**
+     * Updates the item with the given new name if the item is in the database;
      * otherwise, print the appropriate error that occurred during this operation.
      *
      * @param   newName     new name for item
@@ -149,14 +191,14 @@ class SupplyDatabase(private val context: Context) : SQLiteOpenHelper(context, D
                 put(COL_NAME, itemName)
             }
 
-            // if item is in database, update item with new name
+            // try to update item with new name
             if (database.update(TABLE_NAME, newValues, "$COL_NAME = '$oldName'", null) > 0) {
-                styledText = TextStyle.bold(arrayOf(oldName, itemName), "$oldName replaced with $itemName")
+                styledText = TextStyle.bold(arrayOf(oldName, itemName), "$oldName changed to $itemName")
                 Toast.makeText(context, styledText, LENGTH_SHORT).show()
                 return true
             // otherwise, show error message
             } else {
-                styledText = TextStyle.bold(arrayOf(oldName, itemName), "Could not replace $oldName with $itemName")
+                styledText = TextStyle.bold(arrayOf(oldName, itemName), "Could not change $oldName to $itemName")
                 Toast.makeText(context, styledText, LENGTH_SHORT).show()
             }
         }
@@ -165,54 +207,57 @@ class SupplyDatabase(private val context: Context) : SQLiteOpenHelper(context, D
     }
 
     /**
-     * Updates the current amount of the item with the given new amount if the item is in the database;
-     * otherwise, print the appropriate error that occurred during this operation. The name is needed
-     * to search for the specific item in the database, since there can be duplicates of item amount.
+     * Updates the given item with the given new amount if the item is in the database; otherwise,
+     * print the appropriate error that occurred during this operation. The name is needed to search
+     * for the specific item in the database, since there can be duplicates of item amount. Throws an
+     * exception if the given new amount is not an integer.
      *
-     * @param   itemName    name of item
-     * @param   newAmount   new amount for item
-     * @param   oldAmount   current amount of item
-     * @return              true if item has been updated with new amount, or false
+     * @param       itemName    name of item
+     * @param       newAmount   new amount for item
+     * @param       oldAmount   current amount of item
+     * @exception   Exception   if new amount is not integer
+     * @return                  true if item has been updated with new amount, or false
      */
     fun updateAmount(itemName : String, newAmount : String, oldAmount : String) : Boolean {
         // try to update item with new amount; otherwise, show error message
         try {
-            // initialize variables
             val name = itemName.trim()
             val newNum = newAmount.trim().toInt()
             val oldNum = oldAmount.trim().toInt()
 
-            // prepare to update item with new amount
-            val newValues = ContentValues().apply {
-                put(COL_AMOUNT, newNum)
-            }
-
             lateinit var styledText : SpannableStringBuilder
-            // if item is in database, update item with new amount
-            if(database.update(TABLE_NAME, newValues,
-                    "$COL_NAME = '$name' AND $COL_AMOUNT = $oldNum",
-                    null) > 0) {
-                styledText = TextStyle.bold(arrayOf(name, "$oldNum", "$newNum"), "Amount for $name changed from $oldNum to $newNum")
+            if (getItem(name).count < 1) {
+                styledText = TextStyle.bold(name, "$name is not in this list")
                 Toast.makeText(context, styledText, LENGTH_SHORT).show()
-                return true
-            // otherwise, show error message
+            } else if (newNum == oldNum) {
+                styledText = TextStyle.bold(name, "$name already has that amount")
+                Toast.makeText(context, styledText, LENGTH_SHORT).show()
             } else {
-                styledText = TextStyle.bold(arrayOf(name, "$oldNum", "$newNum"), "Could not change amount for $name from $oldNum to $newNum")
-                Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                // prepare to update item with new amount
+                val newValues = ContentValues().apply {
+                    put(COL_AMOUNT, newNum)
+                }
+
+                // try to update item with new amount
+                if(database.update(TABLE_NAME, newValues,
+                        "$COL_NAME = '$name' AND $COL_AMOUNT = $oldNum",
+                        null) > 0) {
+                    styledText = TextStyle.bold(
+                        arrayOf(name, "$oldNum", "$newNum"),
+                        "Amount for $name changed from $oldNum to $newNum")
+                    Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                    return true
+                // otherwise, show error message
+                } else {
+                    styledText = TextStyle.bold(arrayOf(name, "$oldNum", "$newNum"), "Could not change amount for $name from $oldNum to $newNum")
+                    Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                }
             }
-        // if item amount is not whole numbers, show error message
         } catch(e : NumberFormatException) {
             Toast.makeText(context, "Amount must only be whole numbers", LENGTH_SHORT).show()
         }
 
         return false
-    }
-
-    /**
-     * Deletes all the items from the database.
-     */
-    fun clear() {
-        database.delete(TABLE_NAME, null, null)
     }
 
     /**
@@ -257,21 +302,166 @@ class SupplyDatabase(private val context: Context) : SQLiteOpenHelper(context, D
     }
 
     /**
-     * Sorts and gets all the items in alphabetical order in the database.
+     * Deletes all or certain items from the database based on the chosen removal method.
      *
-     * @return          all items sorted in alphabetical order in database
+     * @param   removalMethod   chosen removal method
+     * @return                  integer > 0 if removal method is successful, or 0
      */
-    fun sortAlphabetically() : Cursor {
-        return database.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COL_NAME COLLATE NOCASE ASC",null)
+    fun clear(removalMethod : MenuItem) : Int {
+        var result = 0
+        var message = "Invalid method for removing items"
+
+        // different methods to remove items
+        when (removalMethod.itemId) {
+            R.id.option_remove_all -> {
+                result = database.delete(TABLE_NAME, null, null)
+                message = "Removed all items"
+            }
+            R.id.option_remove_empty -> {
+                result = database.delete(TABLE_NAME, "$COL_AMOUNT <= 0", null)
+                message = "Removed all empty items"
+            }
+            R.id.option_remove_leftover -> {
+                result = database.delete(TABLE_NAME, "$COL_AMOUNT > 0 AND $COL_ISFULL = 0", null)
+                message = "Removed all leftover items"
+            }
+            R.id.option_remove_checked -> {
+                result = database.delete(TABLE_NAME, "$COL_ISFULL = 1", null)
+                message = "Removed all full (checked) items"
+            }
+        }
+
+        Toast.makeText(context, message, LENGTH_SHORT).show()
+        return result
     }
 
     /**
-     * Sorts and gets all the items from lowest to highest amount in the database.
+     * Sorts all or certain items by their names based on chosen sort method.
+     * Throws an exception if the chosen method for sorting names is invalid.
      *
-     * @return          all items sorted from lowest to highest amount in database
+     * @param       sortMethod  chosen sort method
+     * @exception   Exception   if chosen method for sorting names is invalid
+     * @return                  items in database sorted by names based on chosen sort method
      */
-    fun sortAmount() : Cursor {
-        return database.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COL_AMOUNT ASC",null)
+    fun sortNames(sortMethod : MenuItem) : Cursor {
+        lateinit var cursor : Cursor
+        var message = "Invalid method for sorting names"
+
+        // different methods to sort items by names
+        when (sortMethod.itemId) {
+            R.id.option_sort_names_atoz -> {
+                cursor = database.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COL_NAME COLLATE NOCASE ASC", null)
+                message = "List sorted A - Z"
+            }
+            R.id.option_sort_names_ztoa -> {
+                cursor = database.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COL_NAME COLLATE NOCASE DESC", null)
+                message = "List sorted Z - A"
+            }
+            R.id.option_sort_names_empty_atoz -> {
+                cursor = database.rawQuery(
+                    "SELECT * FROM $TABLE_NAME WHERE $COL_AMOUNT <= 0 ORDER BY $COL_NAME COLLATE NOCASE ASC",
+                    null
+                )
+                message = "Empty items sorted A - Z"
+            }
+            R.id.option_sort_names_empty_ztoa -> {
+                cursor = database.rawQuery(
+                    "SELECT * FROM $TABLE_NAME WHERE $COL_AMOUNT <= 0 ORDER BY $COL_NAME COLLATE NOCASE DESC",
+                    null
+                )
+                message = "Empty items sorted Z - A"
+            }
+            R.id.option_sort_names_leftover_atoz -> {
+                cursor = database.rawQuery(
+                    "SELECT * FROM $TABLE_NAME WHERE $COL_AMOUNT > 0 AND $COL_ISFULL = 0 ORDER BY $COL_NAME COLLATE NOCASE ASC",
+                    null
+                )
+                message = "Leftover items sorted A - Z"
+            }
+            R.id.option_sort_names_leftover_ztoa -> {
+                cursor = database.rawQuery(
+                    "SELECT * FROM $TABLE_NAME WHERE $COL_AMOUNT > 0 AND $COL_ISFULL = 0 ORDER BY $COL_NAME COLLATE NOCASE DESC",
+                    null
+                )
+                message = "Leftover items sorted Z - A"
+            }
+            R.id.option_sort_names_checked_atoz -> {
+                cursor = database.rawQuery(
+                    "SELECT * FROM $TABLE_NAME WHERE $COL_ISFULL = 1 ORDER BY $COL_NAME COLLATE NOCASE ASC",
+                    null
+                )
+                message = "Full (checked) items sorted A - Z"
+            }
+            R.id.option_sort_names_checked_ztoa -> {
+                cursor = database.rawQuery(
+                    "SELECT * FROM $TABLE_NAME WHERE $COL_ISFULL = 1 ORDER BY $COL_NAME COLLATE NOCASE DESC",
+                    null
+                )
+                message = "Full (checked) items sorted Z - A"
+            }
+            else -> {
+                Toast.makeText(context, message, LENGTH_SHORT).show()
+                throw Exception("Invalid method for sorting names")
+            }
+        }
+
+        Toast.makeText(context, message, LENGTH_SHORT).show()
+        return cursor
+    }
+
+    /**
+     * Sorts all or certain items by their amount based on chosen sort method.
+     * Throws an exception if the chosen method for sorting amount is invalid.
+     *
+     * @exception   Exception   if chosen method for sorting amount is invalid
+     * @return                  items in database sorted by amount based on chosen sort method
+     */
+    fun sortAmount(sortMethod : MenuItem) : Cursor {
+        lateinit var cursor : Cursor
+        var message = "Invalid method for sorting amount"
+
+        // different methods to sort items by amount
+        when (sortMethod.itemId) {
+            R.id.option_sort_amount_increase -> {
+                cursor = database.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COL_AMOUNT ASC",null)
+                message = "List sorted from lowest to highest amount"
+            }
+            R.id.option_sort_amount_decrease -> {
+                cursor = database.rawQuery("SELECT * FROM $TABLE_NAME ORDER BY $COL_AMOUNT DESC",null)
+                message = "List sorted from highest to lowest amount"
+            }
+            R.id.option_sort_amount_empty_increase -> {
+                cursor = database.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COL_AMOUNT <= 0 ORDER BY $COL_AMOUNT ASC",null)
+                message = "Empty items sorted from lowest to highest amount"
+            }
+            R.id.option_sort_amount_empty_decrease -> {
+                cursor = database.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COL_AMOUNT <= 0 ORDER BY $COL_AMOUNT DESC",null)
+                message = "Empty items sorted from highest to lowest amount"
+            }
+            R.id.option_amount_leftover_increase -> {
+                cursor = database.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COL_AMOUNT > 0 AND $COL_ISFULL = 0 ORDER BY $COL_AMOUNT ASC",null)
+                message = "Leftover items sorted from lowest to highest amount"
+            }
+            R.id.option_sort_amount_leftover_decrease -> {
+                cursor = database.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COL_AMOUNT > 0 AND $COL_ISFULL = 0 ORDER BY $COL_AMOUNT DESC",null)
+                message = "Leftover items sorted from highest to lowest amount"
+            }
+            R.id.option_sort_amount_full_increase -> {
+                cursor = database.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COL_ISFULL = 1 ORDER BY $COL_AMOUNT ASC",null)
+                message = "Full (checked) items sorted from lowest to highest amount"
+            }
+            R.id.option_sort_amount_full_decrease -> {
+                cursor = database.rawQuery("SELECT * FROM $TABLE_NAME WHERE $COL_ISFULL = 1 ORDER BY $COL_AMOUNT DESC",null)
+                message = "Full (checked) items sorted from highest to lowest amount"
+            }
+            else -> {
+                Toast.makeText(context, message, LENGTH_SHORT).show()
+                throw Exception("Invalid method for sorting amount")
+            }
+        }
+
+        Toast.makeText(context, message, LENGTH_SHORT).show()
+        return cursor
     }
 }
 
