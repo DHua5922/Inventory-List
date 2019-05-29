@@ -8,12 +8,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.LinearLayout
-import android.widget.TextView
 import kotlinx.android.synthetic.main.dialog_edit_field.view.*
 import android.text.InputType
+import android.widget.*
+import android.widget.Toast.LENGTH_SHORT
 
 /**
  * This class manipulates the list display, using the context of the page that is displaying the list
@@ -63,10 +61,10 @@ class ItemRecyclerAdapter(private val context: Context, private var cursor: Curs
             val database = SupplyDatabase(context)
 
             // bind events to views in view holder
-            onBindCheckbox(holder, database)
             onBindName(holder.nameDisplay, database)
             onBindAmount(holder, database)
             onBindDeleteBtn(holder, database)
+            onBindCheckbox(holder, database)
         }
     }
 
@@ -99,16 +97,33 @@ class ItemRecyclerAdapter(private val context: Context, private var cursor: Curs
     private fun onBindCheckbox(itemDisplay : ViewHolder, database : SupplyDatabase) {
         val checkbox = itemDisplay.checkBox
         val displayLayout = itemDisplay.linearLayout
+        val itemName = "${itemDisplay.nameDisplay.text}".trim()
 
         // when checkbox is clicked
         checkbox.setOnClickListener {
             when {
                 // if item is full, layout of item display is colored green
-                checkbox.isChecked -> displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
+                checkbox.isChecked -> {
+                    //database.updateCheckmark(itemName, true)
+                    //swapCursor(database.getAllItems())
+                    displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
+                    val styledText = TextStyle.bold(itemName, "Now, $itemName is full")
+                    Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                }
                 // if item is empty, layout of item display is colored red
-                database.getAmount("${itemDisplay.nameDisplay.text}") == 0 -> displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
+                database.getAmount("${itemDisplay.nameDisplay.text}") == 0 -> {
+                    //database.updateCheckmark(itemName, false)
+                    //swapCursor(database.getAllItems())
+                    displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
+                    val styledText = TextStyle.bold(itemName, "Now, $itemName is empty")
+                    Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                }
                 // otherwise, item still has some amount so layout of item display is colored white
-                else -> displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                else -> {
+                    //database.updateCheckmark(itemName, false)
+                    //swapCursor(database.getAllItems())
+                    displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                }
             }
         }
     }
@@ -184,12 +199,13 @@ class ItemRecyclerAdapter(private val context: Context, private var cursor: Curs
         val displayLayout = itemDisplay.linearLayout
 
         // when item is being displayed for first time, check if item is empty or not
-        if(database.getAmount("$name") == 0)
+        if(database.getAmount("$name") <= 0) {
             // item is empty so layout is colored red
             displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
-        else
+        } else {
             // item is not empty so layout is colored white
             displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+        }
 
         // when display for item amount is clicked
         amountDisplay.setOnClickListener {
@@ -228,12 +244,16 @@ class ItemRecyclerAdapter(private val context: Context, private var cursor: Curs
                     alertDialog.dismiss()
 
                     // when item is being updated with new amount, check if item is empty or not
-                    if(database.getAmount("$name") == 0)
+                    if(database.getAmount("$name") <= 0) {
+                        // notify user that item is empty
+                        val styledText = TextStyle.bold("$name", "Now, $name is empty")
+                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
                         // item is empty so layout is colored red
                         displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
-                    else
+                    } else {
                         // item is not empty so layout is colored white
                         displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                    }
                 }
             }
 
