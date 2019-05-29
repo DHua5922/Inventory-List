@@ -1,10 +1,38 @@
 <resources>
     <string name="app_name">Supply List</string>
     <string name="description_splash_screen">Splash Screen Image</string>
-    <string name="text_add">Add</string>
-    <string name="text_delete">Delete</string>
+
     <string name="hint_item_name">Item Name</string>
     <string name="hint_item_amount">Amount</string>
+    <string name="text_add">Add</string>
+    <string name="btn_sort_alphabetically">Sort Names</string>
+    <string name="btn_sort_numerically">Sort Amount</string>
+    <string name="btn_clear">Remove Items</string>
+    <string name="btn_search">Search Item</string>
+    <string name="text_delete">Delete</string>
+
+    <string name="sort_names_atoz">A - Z</string>
+    <string name="sort_names_ztoa">Z - A</string>
+    <string name="sort_names_empty_atoz">Empty A - Z (Red)</string>
+    <string name="sort_names_empty_ztoa">Empty Z - A (Red)</string>
+    <string name="sort_names_leftover_atoz">Leftover A - Z (White)</string>
+    <string name="sort_names_leftover_ztoa">Leftover Z - A (White)</string>
+    <string name="sort_names_checked_atoz">Full A - Z (Checked)</string>
+    <string name="sort_names_checked_ztoa">Full Z - A (Checked)</string>
+
+    <string name="sort_amount_increase">Amount Increasing</string>
+    <string name="sort_amount_decrease">Amount Decreasing</string>
+    <string name="sort_amount_empty_increase">Empty Increasing (Red)</string>
+    <string name="sort_amount_empty_decrease">Empty Decreasing (Red)</string>
+    <string name="sort_amount_leftover_increase">Leftover Increasing (White)</string>
+    <string name="sort_amount_leftover_decrease">Leftover Decreasing (White)</string>
+    <string name="sort_amount_full_increase">Full Increasing (Checked)</string>
+    <string name="sort_amount_full_decrease">Full Decreasing (Checked)</string>
+
+    <string name="remove_all">Delete All</string>
+    <string name="remove_empty">Delete Empty</string>
+    <string name="remove_leftover">Delete Leftover</string>
+    <string name="remove_checked">Delete Checked</string>
 
     <string name="hint_dialog_text">New Text</string>
     <string name="hint_title">Title</string>
@@ -16,12 +44,6 @@
     <string name="hint_description">Description of Field Below</string>
     <string name="name_change_description">Current item name above will be replaced by the new name below.</string>
     <string name="amount_change_description">"Current amount above for %s will be replaced by the new amount below"</string>
-
-    <string name="btn_sort_numerically">Sort Amount</string>
-    <string name="btn_sort_alphabetically">Sort A-Z</string>
-    <string name="btn_clear">Clear All</string>
-
-    <string name="btn_dialog_ok">OK</string>
     <string name="btn_dialog_cancel">Cancel</string>
-    <string name="btn_dialog_label">Enter new item name</string>
+    <string name="btn_dialog_ok">OK</string>
 </resources>
