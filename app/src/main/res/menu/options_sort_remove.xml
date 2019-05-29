@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/group_sort_amount">
+        <item android:id="@+id/option_remove_all"
+              android:title="@string/remove_all"/>
+        <item android:id="@+id/option_remove_empty"
+              android:title="@string/remove_empty"/>
+        <item android:id="@+id/option_remove_leftover"
+              android:title="@string/remove_leftover"/>
+        <item android:id="@+id/option_remove_checked"
+              android:title="@string/remove_checked"/>
+    </group>
+</menu>
