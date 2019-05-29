@@ -2,12 +2,15 @@ package com.example.supplytracker
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Message
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.DividerItemDecoration
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.PopupMenu
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import java.lang.NumberFormatException
@@ -15,7 +18,7 @@ import java.lang.NumberFormatException
 /**
  * This class displays a list of items after the splash screen is shown.
  */
-class SupplyList : AppCompatActivity(), View.OnClickListener {
+class SupplyList : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuItemClickListener {
     private lateinit var database : SupplyDatabase
     private lateinit var listManager : ItemRecyclerAdapter
     private lateinit var listDisplay: RecyclerView
@@ -32,7 +35,6 @@ class SupplyList : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_supply_list)
 
-        // initialize variables
         database = SupplyDatabase(this)
         listManager = ItemRecyclerAdapter(this, database.getAllItems())
         listDisplay = findViewById(R.id.list_display)
@@ -46,11 +48,11 @@ class SupplyList : AppCompatActivity(), View.OnClickListener {
         // set layout manager for the view displaying items
         listDisplay.layoutManager = LinearLayoutManager(this)
 
-        // button performs action when clicked
+        // button displays options when clicked
         findViewById<Button>(R.id.btn_add).setOnClickListener(this)
         findViewById<Button>(R.id.btn_clear).setOnClickListener(this)
-        findViewById<Button>(R.id.btn_sort_alpha).setOnClickListener(this)
-        findViewById<Button>(R.id.btn_sort_number).setOnClickListener(this)
+        findViewById<Button>(R.id.btn_sort_names).setOnClickListener(this)
+        findViewById<Button>(R.id.btn_sort_amount).setOnClickListener(this)
     }
 
     /**
@@ -78,28 +80,51 @@ class SupplyList : AppCompatActivity(), View.OnClickListener {
                     Toast.makeText(this, "Amount must only be whole numbers", LENGTH_SHORT).show()
                 }
             }
-            // button for deleting all items
+            // button for removing items
             view.id == R.id.btn_clear -> {
-                // when button is clicked, delete all items from list
-                database.clear()
-                listManager = ItemRecyclerAdapter(this, database.getAllItems())
-                listDisplay.adapter = listManager
-                Toast.makeText(this, "All items removed", LENGTH_SHORT).show()
+                showMenu(view, R.menu.options_sort_remove)
             }
-            // button for sorting items in alphabetical order
-            view.id == R.id.btn_sort_alpha -> {
-                // when button is clicked, sort items in alphabetical order
-                listManager = ItemRecyclerAdapter(this, database.sortAlphabetically())
-                listDisplay.adapter = listManager
-                Toast.makeText(this, "List sorted in alphabetical order", LENGTH_SHORT).show()
+            // button for sorting items by names
+            view.id == R.id.btn_sort_names -> {
+                showMenu(view, R.menu.options_sort_names)
             }
-            // button for sorting items from lowest to highest amount
-            view.id == R.id.btn_sort_number -> {
-                // when button is clicked, sort items from lowest to highest amount
-                listManager = ItemRecyclerAdapter(this, database.sortAmount())
-                listDisplay.adapter = listManager
-                Toast.makeText(this, "List sorted from lowest to highest amount", LENGTH_SHORT).show()
+            // button for sorting items by amount
+            view.id == R.id.btn_sort_amount -> {
+                showMenu(view, R.menu.options_sort_amount)
             }
         }
+    }
+
+    fun showMenu(view: View, popupXML : Int) {
+        PopupMenu(this, view).apply {
+            // SupplyList implements OnMenuItemClickListener
+            setOnMenuItemClickListener(this@SupplyList)
+            inflate(popupXML)
+            show()
+        }
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        if(item.itemId == R.id.option_remove_all ||
+                item.itemId == R.id.option_remove_empty ||
+                item.itemId == R.id.option_remove_leftover ||
+                item.itemId == R.id.option_remove_checked) {
+            database.clear(item)
+            listManager = ItemRecyclerAdapter(this, database.getAllItems())
+        } else if(item.itemId == R.id.option_sort_names_atoz ||
+            item.itemId == R.id.option_sort_names_ztoa ||
+            item.itemId == R.id.option_sort_names_empty_atoz ||
+            item.itemId == R.id.option_sort_names_empty_ztoa ||
+            item.itemId == R.id.option_sort_names_leftover_atoz ||
+            item.itemId == R.id.option_sort_names_leftover_ztoa ||
+            item.itemId == R.id.option_sort_names_checked_atoz ||
+            item.itemId == R.id.option_sort_names_checked_ztoa) {
+            listManager = ItemRecyclerAdapter(this, database.sortNames(item))
+        } else {
+            listManager = ItemRecyclerAdapter(this, database.sortAmount(item))
+        }
+
+        listDisplay.adapter = listManager
+        return true
     }
 }
