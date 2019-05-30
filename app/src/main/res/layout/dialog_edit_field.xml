@@ -5,49 +5,54 @@
         android:padding="@dimen/item_padding">
 
     <TextView
-            android:id="@+id/title" android:textStyle="bold" android:hint="@string/hint_title"
+            android:id="@+id/title"
+            android:hint="@string/hint_title" android:gravity="center"
+            android:textStyle="bold"  android:textColor="@color/black"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:textAlignment="center" android:textSize="@dimen/text" android:gravity="center"
-            android:layout_marginBottom="@dimen/dialog_gap" android:textColor="@color/black"/>
+            android:textSize="@dimen/text" android:layout_marginBottom="@dimen/dialog_gap" />
 
     <TextView
-            android:id="@+id/info_to_be_changed" android:textSize="@dimen/text"
+            android:id="@+id/info_to_be_changed"
+            android:hint="@string/hint_item_to_be_changed"
+            android:textSize="@dimen/text" android:gravity="center"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_below="@+id/title" android:textColor="@color/black"
-            android:layout_marginTop="@dimen/dialog_gap_description"
-            android:layout_marginBottom="@dimen/dialog_gap_description"
-            android:hint="@string/hint_item_to_be_changed" android:gravity="center"/>
+            android:layout_marginTop="@dimen/dialog_gap_description" android:layout_marginBottom="@dimen/dialog_gap_description"/>
 
     <TextView
-            android:id="@+id/description" android:hint="@string/hint_description"
+            android:id="@+id/description"
+            android:hint="@string/hint_description"
+            android:textColor="@color/black" android:textSize="@dimen/text"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_below="@+id/info_to_be_changed" android:textColor="@color/black"
-            android:layout_marginTop="@dimen/dialog_gap_description" android:textSize="@dimen/text" />
+            android:layout_below="@+id/info_to_be_changed"
+            android:layout_marginTop="@dimen/dialog_gap_description"/>
 
     <EditText
-            android:id="@+id/field_new_info" android:layout_below="@+id/description"
+            android:id="@+id/field_new_info"
+            android:hint="@string/hint_dialog_new_text"
+            android:textSize="@dimen/text" android:background="@color/field"
+            android:layout_below="@+id/description" android:inputType="text"
             android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:hint="@string/hint_dialog_text" android:textSize="@dimen/text" android:background="@color/field"
             android:layout_marginTop="@dimen/dialog_gap_description" android:layout_marginBottom="@dimen/dialog_gap_description"
-            android:inputType="text"/>
+            android:imeOptions="flagNoExtractUi"/>
 
     <LinearLayout
-            android:id="@+id/buttons" android:orientation="horizontal"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:layout_below="@+id/field_new_info">
+        android:id="@+id/buttons"
+        android:orientation="horizontal" android:layout_below="@+id/field_new_info"
+        android:layout_width="match_parent" android:layout_height="wrap_content">
 
         <Button
+                android:id="@+id/btn_dialog_cancel"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textSize="@dimen/text" android:text="@string/btn_dialog_cancel"
-                android:layout_weight="1" android:id="@+id/btn_dialog_cancel"
-                android:background="@drawable/button_manage" android:textColor="@color/white"
+                android:textSize="@dimen/text" android:text="@string/btn_dialog_cancel" android:textColor="@color/white"
+                android:background="@drawable/button_manage" android:layout_weight="1"
                 android:layout_marginRight="@dimen/gap_btwn_widgets" android:layout_marginEnd="@dimen/gap_btwn_widgets"/>
 
         <Button
+                android:id="@+id/btn_dialog_ok"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textSize="@dimen/text" android:text="@string/btn_dialog_ok"
-                android:layout_weight="1" android:id="@+id/btn_dialog_ok"
-                android:background="@drawable/button_manage" android:textColor="@color/white"
+                android:textSize="@dimen/text" android:text="@string/btn_dialog_ok" android:textColor="@color/white"
+                android:background="@drawable/button_manage" android:layout_weight="1"
                 android:layout_marginLeft="@dimen/gap_btwn_widgets" android:layout_marginStart="@dimen/gap_btwn_widgets"/>
 
     </LinearLayout>
