@@ -10,7 +10,8 @@
     <color name="black">#000000</color>
     <color name="lightblue">#0E9BE4</color>
     <color name="field">#D6D6D6</color>
-    <color name="isFull">#B6FFB3</color>
+    <color name="isFull">#86FF8A</color>
     <color name="isEmpty">#FFA8A8</color>
     <color name="pressed_info_display">#FFC56C</color>
+    <color name="background_page">#C912E5</color>
 </resources>
