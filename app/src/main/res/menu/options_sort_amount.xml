@@ -5,10 +5,8 @@
               android:title="@string/sort_amount_increase"/>
         <item android:id="@+id/option_sort_amount_decrease"
               android:title="@string/sort_amount_decrease"/>
-        <item android:id="@+id/option_sort_amount_empty_increase"
-              android:title="@string/sort_amount_empty_increase"/>
-        <item android:id="@+id/option_sort_amount_empty_decrease"
-              android:title="@string/sort_amount_empty_decrease"/>
+        <item android:id="@+id/option_sort_amount_empty"
+              android:title="@string/sort_amount_empty"/>
         <item android:id="@+id/option_amount_leftover_increase"
               android:title="@string/sort_amount_leftover_increase"/>
         <item android:id="@+id/option_sort_amount_leftover_decrease"
