@@ -8,7 +8,7 @@
     <string name="btn_sort_alphabetically">Sort Names</string>
     <string name="btn_sort_numerically">Sort Amount</string>
     <string name="btn_clear">Remove Items</string>
-    <string name="btn_search">Search Item</string>
+    <string name="btn_search">Search Items</string>
     <string name="text_delete">Delete</string>
 
     <string name="sort_names_atoz">A - Z</string>
@@ -22,8 +22,7 @@
 
     <string name="sort_amount_increase">Amount Increasing</string>
     <string name="sort_amount_decrease">Amount Decreasing</string>
-    <string name="sort_amount_empty_increase">Empty Increasing (Red)</string>
-    <string name="sort_amount_empty_decrease">Empty Decreasing (Red)</string>
+    <string name="sort_amount_empty">Empty Increasing (Red)</string>
     <string name="sort_amount_leftover_increase">Leftover Increasing (White)</string>
     <string name="sort_amount_leftover_decrease">Leftover Decreasing (White)</string>
     <string name="sort_amount_full_increase">Full Increasing (Checked)</string>
@@ -34,7 +33,16 @@
     <string name="remove_leftover">Delete Leftover</string>
     <string name="remove_checked">Delete Checked</string>
 
-    <string name="hint_dialog_text">New Text</string>
+    <string name="search_name">By Name</string>
+    <string name="search_amount">By Amount</string>
+    <string name="search_keyword">By Keyword</string>
+    <string name="search_empty">Empty</string>
+    <string name="search_leftover">Leftover</string>
+    <string name="search_full">Full (Checked)</string>
+    <string name="search_all">All</string>
+
+    <string name="hint_dialog_new_text">New Name</string>
+    <string name="hint_dialog_new_amount">New Amount</string>
     <string name="hint_title">Title</string>
     <string name="title_name_change">Replacing Item Name</string>
     <string name="name_to_be_changed">Name: %s</string>
@@ -46,4 +54,20 @@
     <string name="amount_change_description">"Current amount above for %s will be replaced by the new amount below"</string>
     <string name="btn_dialog_cancel">Cancel</string>
     <string name="btn_dialog_ok">OK</string>
+
+    <string name="title_search_name">Searching For Item By Name</string>
+    <string name="search_name_description">Enter the item\'s name below to search for that item</string>
+    <string name="title_search_amount">Searching For Item By Amount</string>
+    <string name="search_amount_description">Enter the amount and choose the type of comparison below to search for all the items with that amount</string>
+    <string name="title_search_keyword">Searching For Item By Keyword</string>
+    <string name="search_keyword_description">Enter the keyword below to search for all the items with that keyword</string>
+    <string name="hint_dialog_keyword">Enter keyword</string>
+    <string-array name="array_comparisons">
+        <item>Equal to</item>
+        <item>Does not equal to</item>
+        <item>Less than</item>
+        <item>Less than or equal to</item>
+        <item>Greater than</item>
+        <item>Greater than or equal to</item>
+    </string-array>
 </resources>
