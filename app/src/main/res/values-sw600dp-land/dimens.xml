@@ -7,4 +7,6 @@
     <dimen name="gap_btwn_widgets">4dp</dimen>
     <dimen name="dialog_gap">28dp</dimen>
     <dimen name="dialog_gap_description">16dp</dimen>
+    <dimen name="btn_padding">2dp</dimen>
+    <dimen name="gap_list_display">8dp</dimen>
 </resources>
