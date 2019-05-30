@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/group_search_items">
+        <item android:id="@+id/option_search_name"
+              android:title="@string/search_name"/>
+        <item android:id="@+id/option_search_amount"
+              android:title="@string/search_amount"/>
+        <item android:id="@+id/option_search_keyword"
+              android:title="@string/search_keyword"/>
+        <item android:id="@+id/option_search_empty"
+              android:title="@string/search_empty"/>
+        <item android:id="@+id/option_search_leftover"
+              android:title="@string/search_leftover"/>
+        <item android:id="@+id/option_search_full"
+              android:title="@string/search_full"/>
+        <item android:id="@+id/option_search_all"
+              android:title="@string/search_all"/>
+    </group>
+</menu>
