@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources>
     <dimen name="horizontal_margin">40dp</dimen>
     <dimen name="vertical_margin">0dp</dimen>
     <dimen name="text">20sp</dimen>
@@ -7,4 +7,6 @@
     <dimen name="gap_btwn_widgets">4dp</dimen>
     <dimen name="dialog_gap">12dp</dimen>
     <dimen name="dialog_gap_description">8dp</dimen>
+    <dimen name="btn_padding">2dp</dimen>
+    <dimen name="gap_list_display">8dp</dimen>
 </resources>
