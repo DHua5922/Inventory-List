@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:padding="@dimen/item_padding">
+
+    <TextView
+            android:id="@+id/title"
+            android:hint="@string/hint_title" android:gravity="center"
+            android:textStyle="bold"  android:textColor="@color/black"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textSize="@dimen/text" android:layout_marginBottom="@dimen/dialog_gap" />
+
+    <TextView
+            android:id="@+id/description"
+            android:hint="@string/hint_description"
+            android:textColor="@color/black" android:textSize="@dimen/text"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_below="@+id/title"
+            android:layout_marginTop="@dimen/dialog_gap_description"/>
+
+    <EditText
+            android:id="@+id/field_search_word"
+            android:hint="@string/hint_dialog_new_text" android:imeOptions="flagNoExtractUi"
+            android:textSize="@dimen/text" android:background="@color/field"
+            android:layout_below="@+id/description" android:inputType="text"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dialog_gap_description"
+            android:layout_marginBottom="@dimen/dialog_gap_description"/>
+
+    <LinearLayout
+            android:id="@+id/buttons"
+            android:orientation="horizontal" android:layout_below="@+id/field_search_word"
+            android:layout_width="match_parent" android:layout_height="wrap_content">
+
+        <Button
+                android:id="@+id/btn_dialog_cancel"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textSize="@dimen/text" android:text="@string/btn_dialog_cancel" android:textColor="@color/white"
+                android:background="@drawable/button_manage" android:layout_weight="1"
+                android:layout_marginRight="@dimen/gap_btwn_widgets" android:layout_marginEnd="@dimen/gap_btwn_widgets"/>
+
+        <Button
+                android:id="@+id/btn_dialog_ok"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textSize="@dimen/text" android:text="@string/btn_dialog_ok" android:textColor="@color/white"
+                android:background="@drawable/button_manage" android:layout_weight="1"
+                android:layout_marginLeft="@dimen/gap_btwn_widgets" android:layout_marginStart="@dimen/gap_btwn_widgets"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
