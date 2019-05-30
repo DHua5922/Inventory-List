@@ -10,12 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.dialog_edit_field.view.*
 import android.text.InputType
+import android.text.SpannableStringBuilder
+import android.util.Log
 import android.widget.*
 import android.widget.Toast.LENGTH_SHORT
+import java.lang.IndexOutOfBoundsException
 
 /**
- * This class manipulates the list display, using the context of the page that is displaying the list
- * and the database iterator.
+ * This class sets and changes the list display by manipulating each item display,
+ * using the context of the page that is displaying the list and the database iterator.
  */
 class ItemRecyclerAdapter(private val context: Context, private var cursor: Cursor) : RecyclerView.Adapter<ItemRecyclerAdapter.ViewHolder>() {
 
@@ -99,32 +102,44 @@ class ItemRecyclerAdapter(private val context: Context, private var cursor: Curs
         val displayLayout = itemDisplay.linearLayout
         val itemName = "${itemDisplay.nameDisplay.text}".trim()
 
+        // every time list is updated, check if item is still full
+        try {
+            // if item is still full, indicate it by checking box and coloring display green
+            if (cursor.getInt(cursor.getColumnIndex(SupplyDatabase.COL_ISFULL)) == 1) {
+                checkbox.isChecked = true
+                displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
+            }
+        } catch(e : IndexOutOfBoundsException) {
+            Log.d("Item check failed", "Column for checking if item is full has not been created yet")
+        }
+
         // when checkbox is clicked
         checkbox.setOnClickListener {
+            lateinit var styledText : SpannableStringBuilder
             when {
                 // if item is full, layout of item display is colored green
                 checkbox.isChecked -> {
-                    //database.updateCheckmark(itemName, true)
-                    //swapCursor(database.getAllItems())
+                    database.updateCheckmark(itemName, true)
+                    checkbox.isChecked = true
                     displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
-                    val styledText = TextStyle.bold(itemName, "Now, $itemName is full")
-                    Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                    styledText = TextStyle.bold(itemName, "Now, $itemName is full")
                 }
                 // if item is empty, layout of item display is colored red
-                database.getAmount("${itemDisplay.nameDisplay.text}") == 0 -> {
-                    //database.updateCheckmark(itemName, false)
-                    //swapCursor(database.getAllItems())
+                database.getAmount("${itemDisplay.nameDisplay.text}") <= 0.0 -> {
+                    database.updateCheckmark(itemName, false)
+                    checkbox.isChecked = false
                     displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
-                    val styledText = TextStyle.bold(itemName, "Now, $itemName is empty")
-                    Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                    styledText = TextStyle.bold(itemName, "Now, $itemName is empty")
                 }
                 // otherwise, item still has some amount so layout of item display is colored white
                 else -> {
-                    //database.updateCheckmark(itemName, false)
-                    //swapCursor(database.getAllItems())
+                    database.updateCheckmark(itemName, false)
+                    checkbox.isChecked = false
                     displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                    styledText = TextStyle.bold(itemName, "Now, $itemName is not full")
                 }
             }
+            Toast.makeText(context, styledText, LENGTH_SHORT).show()
         }
     }
 
@@ -193,7 +208,7 @@ class ItemRecyclerAdapter(private val context: Context, private var cursor: Curs
         val amountDisplay = itemDisplay.amountDisplay
 
         // display item amount
-        amountDisplay.text = "${cursor.getInt(cursor.getColumnIndex(SupplyDatabase.COL_AMOUNT))}"
+        amountDisplay.text = "${cursor.getDouble(cursor.getColumnIndex(SupplyDatabase.COL_AMOUNT))}"
 
         val name = itemDisplay.nameDisplay.text
         val displayLayout = itemDisplay.linearLayout
@@ -228,8 +243,10 @@ class ItemRecyclerAdapter(private val context: Context, private var cursor: Curs
             dialogView.info_to_be_changed.text = TextStyle.bold("$currentAmount", context.getString(R.string.amount_to_be_changed, name, currentAmount))
             // describe dialog purpose
             dialogView.description.text = TextStyle.bold("$name", context.getString(R.string.amount_change_description, name))
-            // set number as input type for editable amount
-            dialogView.field_new_info.inputType = InputType.TYPE_CLASS_NUMBER
+            // notify user that field is for entering decimal numbers
+            dialogView.field_new_info.hint = context.getString(R.string.hint_dialog_new_amount)
+            // set decimal as input type for editable amount
+            dialogView.field_new_info.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
 
             // when ok button in dialog is clicked
             dialogView.btn_dialog_ok.setOnClickListener {
