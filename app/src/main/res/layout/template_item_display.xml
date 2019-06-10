@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/gap_list_display">
+
+        <LinearLayout
+                android:id="@+id/display_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/item_padding">
+
+            <CheckBox
+                    android:id="@+id/checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"/>
+
+            <TextView
+                    android:id="@+id/display_name"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:textSize="@dimen/text"
+                    android:textColor="@color/black"
+                    android:maxLines="1"
+                    android:hint="@string/hint_item_name"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:background="@drawable/display"/>
+
+            <TextView
+                    android:id="@+id/display_amount"
+                    android:hint="@string/hint_item_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:textSize="@dimen/text"
+                    android:textColor="@color/black"
+                    android:layout_weight="1"
+                    android:maxLines="1"
+                    android:gravity="center"
+                    android:background="@drawable/display"
+                    android:layout_marginLeft="@dimen/gap_btwn_widgets"
+                    android:layout_marginStart="@dimen/gap_btwn_widgets"
+                    android:layout_marginRight="@dimen/gap_btwn_widgets"
+                    android:layout_marginEnd="@dimen/gap_btwn_widgets"/>
+
+            <Button
+                    android:id="@+id/btn_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/text_delete"
+                    android:textSize="@dimen/text"
+                    android:background="@drawable/button_remove"
+                    android:textColor="@color/white"/>
+
+        </LinearLayout>
+
+
+</android.support.v7.widget.CardView>

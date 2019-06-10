@@ -3,17 +3,18 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent" android:layout_height="match_parent"
-        android:background="@color/background_page"  tools:context=".SupplyList">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_page"
+        android:padding="@dimen/item_padding"
+        tools:context=".ItemListDisplay">
 
     <LinearLayout
             android:id="@+id/layout_add_item"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/layout_list_buttons" app:layout_constraintTop_toTopOf="parent"
-            android:orientation="horizontal" android:layout_marginTop="@dimen/gap_list_display"
-            android:layout_marginRight="@dimen/gap_list_display" android:layout_marginEnd="@dimen/gap_list_display"
-            android:layout_marginLeft="@dimen/gap_list_display" android:layout_marginStart="@dimen/gap_list_display">
+            android:orientation="horizontal">
 
         <EditText
                 android:id="@+id/editableName"
@@ -51,7 +52,8 @@
             app:layout_constraintStart_toStartOf="@dimen/gap_list_display"
             app:layout_constraintBottom_toTopOf="@+id/list_display"
             app:layout_constraintTop_toBottomOf="@+id/layout_add_item"
-            android:layout_margin="@dimen/gap_list_display" android:orientation="horizontal">
+            android:layout_marginTop="@dimen/gap_list_display"
+            android:orientation="horizontal">
 
         <Button
                 android:id="@+id/btn_sort_names"
@@ -90,12 +92,12 @@
 
     <android.support.v7.widget.RecyclerView
             android:id="@+id/list_display"
-            android:layout_width="0dp" android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_list_buttons"
-            android:layout_marginLeft="@dimen/gap_list_display" android:layout_marginStart="@dimen/gap_list_display"
-            android:layout_marginRight="@dimen/gap_list_display" android:layout_marginEnd="@dimen/gap_list_display"
-            android:layout_marginBottom="@dimen/gap_list_display"/>
+            tools:listitem="@layout/template_item_display"/>
 
 </android.support.constraint.ConstraintLayout>

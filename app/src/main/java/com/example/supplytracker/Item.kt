@@ -1,7 +1,18 @@
 package com.example.supplytracker
 
+import android.arch.persistence.room.ColumnInfo
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
+
 /**
- * This item has a name and an amount that can be accessed or changed.
- * This class gets and sets the given name and the given amount for this item.
+ * This class represents a table of items in the SQLite database.
+ * Each item has a name, amount, and an
+ * indication of whether the item is full or not. Each item
+ * property represents a column in the database.
  */
-class Item(var name: String, var amount: Double)
+@Entity(tableName = "table_item")
+data class Item(
+    @PrimaryKey @ColumnInfo(name = "column_name") var name: String,
+    @ColumnInfo(name = "column_amount") var amount: Double,
+    @ColumnInfo(name = "column_isFull") var isFull: Int = 0
+)

@@ -1,62 +1,72 @@
 package com.example.supplytracker
 
 import android.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v7.widget.RecyclerView
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.DividerItemDecoration
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.widget.*
-import android.widget.Toast.LENGTH_SHORT
-import kotlinx.android.synthetic.main.dialog_edit_field.view.btn_dialog_cancel
-import kotlinx.android.synthetic.main.dialog_edit_field.view.btn_dialog_ok
-import kotlinx.android.synthetic.main.dialog_edit_field.view.description
-import kotlinx.android.synthetic.main.dialog_edit_field.view.title
+import java.util.*
+import android.view.*
+import kotlinx.android.synthetic.main.dialog_search_item_amount.*
 import kotlinx.android.synthetic.main.dialog_search_item_amount.view.*
+import kotlinx.android.synthetic.main.dialog_search_item_amount.view.btn_dialog_cancel
+import kotlinx.android.synthetic.main.dialog_search_item_amount.view.btn_dialog_ok
+import kotlinx.android.synthetic.main.dialog_search_item_amount.view.description
+import kotlinx.android.synthetic.main.dialog_search_item_amount.view.title
 import kotlinx.android.synthetic.main.dialog_search_item_word.view.*
+import kotlinx.android.synthetic.main.list_display.*
 
-/**
- * This class displays a list of items after the splash screen is shown.
- */
-class SupplyList : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuItemClickListener, AdapterView.OnItemSelectedListener {
-    private lateinit var database : SupplyDatabase
-    private lateinit var listManager : ItemRecyclerAdapter
-    private lateinit var listDisplay: RecyclerView
-    private lateinit var editableName : EditText
-    private lateinit var editableAmount : EditText
 
-    /**
-     * Creates and displays a list of items.
-     * This method is called when this list is first created.
-     *
-     * @param   savedInstanceState  Bundle containing list's previous data, if there was one
-     */
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_supply_list)
+class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuItemClickListener, AdapterView.OnItemSelectedListener {
 
-        database = SupplyDatabase(this)
-        listManager = ItemRecyclerAdapter(this, database.getAllItems())
-        listDisplay = findViewById(R.id.list_display)
-        editableName = findViewById(R.id.editableName)
-        editableAmount = findViewById(R.id.editableAmount)
+    private lateinit var itemViewModel : ItemViewModel
+    private lateinit var listManager : ItemAdapter
 
-        // add a horizontal line below each item displayed
-        listDisplay.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
-        // load all items in list
-        listDisplay.adapter = listManager
-        // set layout manager for the view displaying items
-        listDisplay.layoutManager = LinearLayoutManager(this)
+    override fun onCreate(savedState : Bundle?) {
+        super.onCreate(savedState)
+        setContentView(R.layout.list_display)
+
+        itemViewModel = ViewModelProviders.of(this).get(ItemViewModel(application)::class.java)
+        listManager = ItemAdapter(this, itemViewModel)
+        listManager.setItems(itemViewModel.getAllItems())
+        list_display.adapter = listManager
+        list_display.layoutManager = LinearLayoutManager(this)
+
+        val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
+            override fun onMove(recyclerView : RecyclerView, dragged : RecyclerView.ViewHolder, target : RecyclerView.ViewHolder): Boolean {
+                val fromPosition : Int = dragged.adapterPosition
+                val toPosition : Int = target.adapterPosition
+
+                Collections.swap(listManager.getItems(), fromPosition, toPosition)
+                listManager.notifyItemMoved(fromPosition, toPosition)
+                return true
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+
+                val repository = ItemRepository(application)
+                for(item in listManager.getItems()) {
+                    repository.delete(item)
+                    repository.insert(item)
+                }
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+            }
+        }
+        ItemTouchHelper(simpleItemTouchCallback).attachToRecyclerView(list_display)
 
         // button displays options when clicked
-        findViewById<Button>(R.id.btn_add).setOnClickListener(this)
-        findViewById<Button>(R.id.btn_clear).setOnClickListener(this)
-        findViewById<Button>(R.id.btn_sort_names).setOnClickListener(this)
-        findViewById<Button>(R.id.btn_sort_amount).setOnClickListener(this)
-        findViewById<Button>(R.id.btn_search).setOnClickListener(this)
+        btn_add.setOnClickListener(this)
+        btn_clear.setOnClickListener(this)
+        btn_sort_names.setOnClickListener(this)
+        btn_sort_amount.setOnClickListener(this)
+        btn_search.setOnClickListener(this)
     }
 
     /**
@@ -68,36 +78,37 @@ class SupplyList : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuIt
      */
     override fun onClick(view : View) {
         // identify button that was clicked and perform respective action
-        when {
+        when (view.id) {
             // button for adding item
-            view.id == R.id.btn_add -> {
+            R.id.btn_add -> {
                 // when button is clicked, try to add item to list
                 try {
                     val item = Item("${editableName.text}", "${editableAmount.text}".trim().toDouble())
 
-                    if(database.addItem(item)) {
-                        listManager.swapCursor(database.getAllItems())
+                    if(itemViewModel.add(item)) {
                         editableName.text.clear()
                         editableAmount.text.clear()
+                        listManager.addItem(item)
+                        //listManager.setItems(itemViewModel.getAllItems())
                     }
                 } catch(e : NumberFormatException) {
-                    Toast.makeText(this, "Amount must only be a number", LENGTH_SHORT).show()
+                    Toast.makeText(this, "Amount must only be a number", Toast.LENGTH_SHORT).show()
                 }
             }
             // button for removing items
-            view.id == R.id.btn_clear -> {
+            R.id.btn_clear -> {
                 showMenu(view, R.menu.options_sort_remove)
             }
             // button for sorting items by names
-            view.id == R.id.btn_sort_names -> {
+            R.id.btn_sort_names -> {
                 showMenu(view, R.menu.options_sort_names)
             }
             // button for sorting items by amount
-            view.id == R.id.btn_sort_amount -> {
+            R.id.btn_sort_amount -> {
                 showMenu(view, R.menu.options_sort_amount)
             }
             // button for searching items
-            view.id == R.id.btn_search -> {
+            R.id.btn_search -> {
                 showMenu(view, R.menu.options_search_items)
             }
         }
@@ -113,7 +124,7 @@ class SupplyList : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuIt
     private fun showMenu(view: View, popupXML : Int) {
         PopupMenu(this, view).apply {
             // SupplyList implements OnMenuItemClickListener
-            setOnMenuItemClickListener(this@SupplyList)
+            setOnMenuItemClickListener(this@ItemListDisplay)
             inflate(popupXML)
             show()
         }
@@ -131,13 +142,11 @@ class SupplyList : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuIt
                 method.itemId == R.id.option_remove_empty ||
                 method.itemId == R.id.option_remove_leftover ||
                 method.itemId == R.id.option_remove_checked) {
-            database.clear(method)
-            listManager = ItemRecyclerAdapter(this, database.getAllItems())
-
+            itemViewModel.remove(method)
         }
         // if searching items by name or keyword
         else if(method.itemId == R.id.option_search_name ||
-                method.itemId == R.id.option_search_keyword) {
+                    method.itemId == R.id.option_search_keyword) {
             openDialog(method)
         }
         // if searching items by amount
@@ -147,9 +156,8 @@ class SupplyList : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuIt
             val alertDialog : AlertDialog = AlertDialog.Builder(this).setView(dialogView).show()
 
             // show comparisons to amount
-            val comparisonArray : Spinner = dialogView.findViewById(R.id.array_comparisons)
             // bind event to clicked list of comparison option
-            comparisonArray.onItemSelectedListener = this
+            array_comparisons.onItemSelectedListener = this
             // Create an ArrayAdapter using the string array and a default spinner layout
             ArrayAdapter.createFromResource(
                 this, R.array.array_comparisons, R.layout.comparison_options
@@ -157,21 +165,17 @@ class SupplyList : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuIt
                 // Specify the layout to use when the list of choices appears
                 adapter.setDropDownViewResource(R.layout.comparison_options)
                 // Apply the adapter to the spinner
-                comparisonArray.adapter = adapter
+                array_comparisons.adapter = adapter
             }
 
             // when ok button in dialog is clicked
             dialogView.btn_dialog_ok.setOnClickListener {
                 val amount = "${dialogView.field_search_amount.text}".trim()
                 if(amount.isEmpty()) {
-                    Toast.makeText(this, "Amount must only be a number", LENGTH_SHORT).show()
+                    Toast.makeText(this, "Amount must only be a number", Toast.LENGTH_SHORT).show()
                 } else {
                     // search items by amount
-                    listManager.swapCursor(
-                        database.search(method,
-                        amount = amount.toDouble(),
-                        comparison = comparisonArray.selectedItemPosition)
-                    )
+                    listManager.setItems(itemViewModel.search(method, amount = amount.toDouble(), comparison = array_comparisons.selectedItemPosition))
                     // exit dialog
                     alertDialog.dismiss()
                 }
@@ -184,19 +188,47 @@ class SupplyList : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuIt
         }
         // if searching empty, leftover, full, or all items
         else if(method.itemId == R.id.option_search_empty ||
-                method.itemId == R.id.option_search_leftover ||
-                method.itemId == R.id.option_search_full ||
-                method.itemId == R.id.option_search_all) {
-            listManager.swapCursor(database.search(method))
-        }
-        // otherwise, a sorting method is clicked
-        else {
-            listManager = ItemRecyclerAdapter(this, database.sort(method))
+                    method.itemId == R.id.option_search_leftover ||
+                    method.itemId == R.id.option_search_full ||
+                    method.itemId == R.id.option_search_all) {
+            listManager.setItems(itemViewModel.search(method))
         }
 
-        // update list
-        listDisplay.adapter = listManager
+        // otherwise, a sorting method is clicked
+        else {
+            //itemViewModel.sort(method).observe(this,
+                //Observer {item -> listManager.setItems(item!!)})
+            listManager.setItems(itemViewModel.sort(method))
+        }
+
+        list_display.adapter = listManager
         return true
+    }
+
+    override fun onCreateOptionsMenu(menu : Menu) : Boolean {
+        menuInflater.inflate(R.menu.options_list, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item : MenuItem) : Boolean {
+        return when (item.itemId) {
+            R.id.option_save_list -> {
+                true
+            }
+            R.id.option_save_list_as -> {
+                true
+            }
+            R.id.option_open_list -> {
+                true
+            }
+            R.id.option_delete_list -> {
+                true
+            }
+            R.id.option_delete_this_list -> {
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     /**
@@ -219,7 +251,7 @@ class SupplyList : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuIt
             dialogView.description.text = this.getString(R.string.search_name_description)
             // notify user that field is for searching specific item by name
             dialogView.field_search_word.hint = this.getString(R.string.hint_item_name)
-        // if searching items by keyword
+            // if searching items by keyword
         } else if (searchOption.itemId == R.id.option_search_keyword) {
             // show dialog
             alertDialog = AlertDialog.Builder(this).setView(dialogView).show()
@@ -236,12 +268,12 @@ class SupplyList : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuIt
             // try to search items by name or keyword
             try {
                 // search items
-                listManager.swapCursor(database.search(searchOption, "${dialogView.field_search_word.text}"))
+                listManager.setItems(itemViewModel.search(searchOption, "${dialogView.field_search_word.text}"))
                 // exit dialog
                 alertDialog.dismiss()
-            // otherwise, search method is invalid
+                // otherwise, search method is invalid
             } catch (e : Exception) {
-                Toast.makeText(this, e.message, LENGTH_SHORT).show()
+                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -251,12 +283,11 @@ class SupplyList : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuIt
         }
     }
 
-    override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
-        // An item was selected. You can retrieve the selected item using
-        // parent.getItemAtPosition(pos)
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+
     }
 
-    override fun onNothingSelected(parent: AdapterView<*>) {
-        // Another interface callback
+    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+
     }
 }

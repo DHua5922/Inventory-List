@@ -22,7 +22,9 @@
 
     <string name="sort_amount_increase">Amount Increasing</string>
     <string name="sort_amount_decrease">Amount Decreasing</string>
-    <string name="sort_amount_empty">Empty Increasing (Red)</string>
+
+    <string name="sort_amount_empty">Empty (Red)</string>
+
     <string name="sort_amount_leftover_increase">Leftover Increasing (White)</string>
     <string name="sort_amount_leftover_decrease">Leftover Decreasing (White)</string>
     <string name="sort_amount_full_increase">Full Increasing (Checked)</string>
@@ -58,9 +60,11 @@
     <string name="title_search_name">Searching For Item By Name</string>
     <string name="search_name_description">Enter the item\'s name below to search for that item</string>
     <string name="title_search_amount">Searching For Item By Amount</string>
-    <string name="search_amount_description">Enter the amount and choose the type of comparison below to search for all the items with that amount</string>
+
     <string name="title_search_keyword">Searching For Item By Keyword</string>
+    <string name="search_amount_description">Enter the amount and choose the type of comparison below to search for all the items with that amount</string>
     <string name="search_keyword_description">Enter the keyword below to search for all the items with that keyword</string>
+
     <string name="hint_dialog_keyword">Enter keyword</string>
     <string-array name="array_comparisons">
         <item>Equal to</item>
@@ -70,4 +74,12 @@
         <item>Greater than</item>
         <item>Greater than or equal to</item>
     </string-array>
+
+    <string name="save_list">Save This List</string>
+    <string name="save_list_as">Save List As</string>
+    <string name="open_list">Open List</string>
+    <string name="delete_this_list">Delete This List</string>
+    <string name="delete_list">Delete List</string>
+=======
+>>>>>>> 8973e8614081652d3590143854a003dbc1c53b57
 </resources>

@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     // try to load splash screen for 0.5 seconds
                     sleep(500)
-                    val intent = Intent(baseContext, SupplyList::class.java)
+                    val intent = Intent(baseContext, ItemListDisplay::class.java)
                     startActivity(intent)
                     finish()
                 } catch (e: Exception) {
