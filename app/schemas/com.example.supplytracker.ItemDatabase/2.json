@@ -1,0 +1,51 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "11483bc8d0ec717826f085ca530bcb36",
+    "entities": [
+      {
+        "tableName": "table_item",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`column_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `column_name` TEXT NOT NULL, `column_amount` REAL NOT NULL, `column_isFull` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "column_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "column_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "amount",
+            "columnName": "column_amount",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isFull",
+            "columnName": "column_isFull",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "column_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"11483bc8d0ec717826f085ca530bcb36\")"
+    ]
+  }
+}
