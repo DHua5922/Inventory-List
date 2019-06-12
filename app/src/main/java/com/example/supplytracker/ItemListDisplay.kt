@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.dialog_search_item_word.view.*
 import kotlinx.android.synthetic.main.list_display.*
 
 
-class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuItemClickListener, AdapterView.OnItemSelectedListener {
+class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
     private lateinit var itemViewModel : ItemViewModel
     private lateinit var listManager : ItemAdapter
@@ -83,7 +83,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             R.id.btn_add -> {
                 // when button is clicked, try to add item to list
                 try {
-                    val item = Item("${editableName.text}", "${editableAmount.text}".trim().toDouble())
+                    val item = Item(name = "${editableName.text}", amount = "${editableAmount.text}".trim().toDouble())
 
                     if(itemViewModel.add(item)) {
                         editableName.text.clear()
@@ -143,6 +143,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 method.itemId == R.id.option_remove_leftover ||
                 method.itemId == R.id.option_remove_checked) {
             itemViewModel.remove(method)
+            listManager.setItems(itemViewModel.getAllItems())
         }
         // if searching items by name or keyword
         else if(method.itemId == R.id.option_search_name ||
@@ -154,10 +155,18 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_search_item_amount, null)
             val alertDialog : AlertDialog = AlertDialog.Builder(this).setView(dialogView).show()
+            val spinner = alertDialog.array_comparisons
 
-            // show comparisons to amount
             // bind event to clicked list of comparison option
-            array_comparisons.onItemSelectedListener = this
+            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+
+                }
+            }
             // Create an ArrayAdapter using the string array and a default spinner layout
             ArrayAdapter.createFromResource(
                 this, R.array.array_comparisons, R.layout.comparison_options
@@ -165,7 +174,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 // Specify the layout to use when the list of choices appears
                 adapter.setDropDownViewResource(R.layout.comparison_options)
                 // Apply the adapter to the spinner
-                array_comparisons.adapter = adapter
+                spinner.adapter = adapter
             }
 
             // when ok button in dialog is clicked
@@ -175,7 +184,13 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                     Toast.makeText(this, "Amount must only be a number", Toast.LENGTH_SHORT).show()
                 } else {
                     // search items by amount
-                    listManager.setItems(itemViewModel.search(method, amount = amount.toDouble(), comparison = array_comparisons.selectedItemPosition))
+                    listManager.setItems(
+                        itemViewModel.search(
+                            method,
+                            amount = amount.toDouble(),
+                            comparison = spinner.selectedItemPosition
+                        )
+                    )
                     // exit dialog
                     alertDialog.dismiss()
                 }
@@ -281,13 +296,5 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
         dialogView.btn_dialog_cancel.setOnClickListener {
             alertDialog.dismiss()
         }
-    }
-
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-
-    }
-
-    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-
     }
 }
