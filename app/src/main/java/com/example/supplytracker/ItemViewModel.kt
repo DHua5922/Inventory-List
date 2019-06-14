@@ -19,63 +19,37 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
     private val app: Application = application
     private val repository: ItemRepository = ItemRepository(app)
 
-    fun add(item : Item) : Boolean {
+    fun add(item : Item) : Long {
         val name = item.name.trim()
         val context = app
         lateinit var styledText : SpannableStringBuilder
 
         when {
             name.isEmpty() -> Toast.makeText(context, "Name cannot be empty", LENGTH_SHORT).show()
-            repository.getItemCount(name) > 0 -> {
+            /*repository.getItemCount(name) > 0 -> {
                 styledText = TextStyle.bold(name, "$name already exists in this list!")
                 Toast.makeText(context, styledText, LENGTH_SHORT).show()
-            }
+            }*/
             else -> {
-                repository.insert(item)
-
-                val amount = item.amount
-                styledText = TextStyle.bold(arrayOf(name, "$amount"), "$name (amount: $amount) added to list")
-                Toast.makeText(context, styledText, LENGTH_SHORT).show()
-                return true
+                val result = repository.insert(item)
+                if(result > 0) {
+                    val amount = item.amount
+                    styledText = TextStyle.bold(arrayOf(name, "$amount"), "$name (amount: $amount) added to list")
+                    Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                    return result
+                }
             }
         }
 
-        return false
+        return -1
     }
 
     fun update(item : Item) : Boolean {
         return repository.update(item) > 0
     }
 
-    fun updateName(oldItemName : String, newItemName : String) : Boolean {
-        val oldName = oldItemName.trim()
-        val newName = newItemName.trim()
-        val context = app
-        lateinit var styledText : SpannableStringBuilder
-
-        if(newName.isEmpty()) {
-            Toast.makeText(context, "Name cannot be empty", LENGTH_SHORT).show()
-        }
-        else if (repository.getItemCount(newName) > 0) {
-            styledText = TextStyle.bold(newName, "$newName already exists in this list")
-            Toast.makeText(context, styledText, LENGTH_SHORT).show()
-        }
-        else {
-            // try to update item with new name
-            if (repository.updateName(oldName, newName) > 0) {
-                styledText = TextStyle.bold(arrayOf(oldName, newName), "$oldName changed to $newName")
-                Toast.makeText(context, styledText, LENGTH_SHORT).show()
-                return true
-
-            }
-            // otherwise, show error message
-            else {
-                styledText = TextStyle.bold(arrayOf(oldName, newName), "Could not change $oldName to $newName")
-                Toast.makeText(context, styledText, LENGTH_SHORT).show()
-            }
-        }
-
-        return false
+    fun update(items : List<Item>) : Boolean {
+        return repository.update(items) > 0
     }
 
     /**
@@ -174,7 +148,7 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
      * @exception   Exception       if remove method is invalid
      * @return                      integer > 0 if removal method is successful, or 0
      */
-    fun remove(removalMethod : MenuItem) : Int {
+    fun delete(removalMethod : MenuItem) : Int {
         val result: Int
         var message = "Invalid method for removing items"
 
@@ -205,18 +179,18 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
         return result
     }
 
-    fun delete(item : Item) : Boolean {
+    fun delete(item : Item) : Int {
         lateinit var styledText : SpannableStringBuilder
         val name = item.name.trim()
-        return if( repository.delete(item) > 0) {
+        val result = repository.delete(item)
+        if(result > 0) {
             styledText = TextStyle.bold(name, "$name has been deleted")
             Toast.makeText(app, styledText, LENGTH_SHORT).show()
-            true
         } else {
             styledText = TextStyle.bold(name, "$name could not be deleted")
             Toast.makeText(app, styledText, LENGTH_SHORT).show()
-            false
         }
+        return result
     }
 
     /**
@@ -273,8 +247,8 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
         return itemList
     }
 
-    fun getItem(name : String) : Item {
-        return repository.getItem(name.trim())
+    fun getItem(id : Long) : Item {
+        return repository.getItem(id)
     }
 
     fun getAllItems(): List<Item> {
