@@ -79,14 +79,21 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
     }
 
     internal fun removeItem(position : Int) {
-        val item : Item = this.items[position]
-        this.items.remove(item)
-        notifyItemRemoved(position)
-        itemViewModel.delete(item)
+        if(itemViewModel.delete(this.items[position]) > 0) {
+            this.items.removeAt(position)
+            notifyItemRemoved(position)
+        }
     }
 
     internal fun getItems() : List<Item> {
         return this.items
+    }
+
+    internal fun getMaxOrder() : Int {
+        return (
+            if (itemCount == 0) 0
+            else this.items[itemCount - 1].order
+        )
     }
 
     /**
@@ -102,13 +109,17 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         val displayLayout = itemDisplay.linearLayout
 
         // every time list is updated, check if item is still full
-        if (itemViewModel.getItem("${itemDisplay.nameDisplay.text}").isFull == 1) {
-            // item is still full so indicate it by checking box and coloring display green
-            checkbox.isChecked = true
-            displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
-        } else {
-            // item is not full anymore so indicate it by unchecking box
-            checkbox.isChecked = false
+        try {
+            if (itemViewModel.getItem(/*"${itemDisplay.nameDisplay.text}"*/items[position].id).isFull == 1) {
+                // item is still full so indicate it by checking box and coloring display green
+                checkbox.isChecked = true
+                displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
+            } else {
+                // item is not full anymore so indicate it by unchecking box
+                checkbox.isChecked = false
+            }
+        } catch(e : Exception) {
+
         }
 
         // when checkbox is clicked
@@ -178,11 +189,11 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
 
             // when ok button in dialog is clicked
             dialogView.btn_dialog_ok.setOnClickListener {
-                val newName = "${dialogView.field_new_info.text}"
+                items[position].name = "${dialogView.field_new_info.text}"
                 // try to update item with new name and exit dialog
-                if(itemViewModel.updateName("$currentName", newName)) {
+                if(itemViewModel.update(items[position])) {
                     // update list with new name
-                    items[position].name = newName
+                    //items[position].name = newName
                     setItems(this.items)
                     // exit dialog
                     alertDialog.dismiss()
@@ -290,7 +301,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         // when delete button of item display is clicked
         itemDisplay.deleteBtn.setOnClickListener{
             // delete item and update list
-            removeItem(position)
+            removeItem(itemDisplay.adapterPosition)
         }
     }
 }
