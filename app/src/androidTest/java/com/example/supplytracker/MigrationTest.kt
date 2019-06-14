@@ -50,9 +50,41 @@ class MigrationTest {
         // Check that the correct data is in the database.
         val cursor = db.query("SELECT * FROM table_item WHERE column_id = ?", arrayOf(insertNum))
         assertEquals(cursor.moveToFirst(), true)
+        assertEquals(cursor.getInt(cursor.getColumnIndex("column_id")), 1)
         assertEquals(cursor.getString(cursor.getColumnIndex("column_name")), "Test Item 1")
         assertEquals(cursor.getDouble(cursor.getColumnIndex("column_amount")), 1.0)
         assertEquals(cursor.getInt(cursor.getColumnIndex("column_isFull")), 0)
+    }
+
+    @Test
+    fun migrate2To3() {
+        // Create the database with the initial version 2 schema and
+        // insert an item. You cannot use DAO classes because they
+        // expect the latest schema.
+        db = helper.createDatabase(TEST_DB, 2)
+        val values = ContentValues().apply {
+            put("column_name", "Test Item 1")
+            put("column_amount", 1.0)
+            put("column_isFull", 0)
+        }
+        val insertNum = db.insert("table_item", SQLiteDatabase.CONFLICT_REPLACE, values)
+        // Prepare for the next version.
+        db.close()
+
+        // Re-open the database with version 3 and provide
+        // MIGRATION_2_3 as the migration process.
+        db = helper.runMigrationsAndValidate(TEST_DB, 3, true, ItemDatabase.MIGRATION_2_3)
+
+        // MigrationTestHelper automatically verifies the schema changes,
+        // but you need to validate that the data was migrated properly.
+        // Get the latest, migrated, version of the database.
+        // Check that the correct data is in the database.
+        val cursor = db.query("SELECT * FROM table_item WHERE column_id = ?", arrayOf(insertNum))
+        assertEquals(cursor.moveToFirst(), true)
         assertEquals(cursor.getInt(cursor.getColumnIndex("column_id")), 1)
+        assertEquals(cursor.getInt(cursor.getColumnIndex("column_order")), 0)
+        assertEquals(cursor.getString(cursor.getColumnIndex("column_name")), "Test Item 1")
+        assertEquals(cursor.getDouble(cursor.getColumnIndex("column_amount")), 1.0)
+        assertEquals(cursor.getInt(cursor.getColumnIndex("column_isFull")), 0)
     }
 }
