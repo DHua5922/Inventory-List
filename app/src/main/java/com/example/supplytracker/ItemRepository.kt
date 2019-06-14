@@ -1,7 +1,6 @@
 package com.example.supplytracker
 
 import android.app.Application
-import android.arch.lifecycle.LiveData
 import android.os.AsyncTask
 
 /**
@@ -20,8 +19,8 @@ class ItemRepository(application: Application) {
      *
      * @param   item    item
      */
-    fun insert(item : Item) {
-        AsyncTaskInsertItem(itemDao).execute(item)
+    fun insert(item : Item) : Long {
+        return AsyncTaskInsertItem(itemDao).execute(item).get()
     }
 
     /**
@@ -31,6 +30,15 @@ class ItemRepository(application: Application) {
      */
     fun update(item : Item) : Int {
         return AsyncTaskUpdateItem(itemDao).execute(item).get()
+    }
+
+    /**
+     * Updates the given list of items from the database.
+     *
+     * @param   item    item
+     */
+    fun update(items : List<Item>) : Int {
+        return AsyncTaskUpdateList(itemDao).execute(items).get()
     }
 
 
@@ -195,8 +203,8 @@ class ItemRepository(application: Application) {
     }
 
     // function for getting items
-    fun getItem(name: String?) : Item {
-        return AsyncTaskGetItem(itemDao).execute(name).get()
+    fun getItem(id: Long?) : Item {
+        return AsyncTaskGetItem(itemDao).execute(id).get()
     }
 
     fun getItemCount(name: String?) : Int {
@@ -328,10 +336,9 @@ class ItemRepository(application: Application) {
          * Adds an item to the database in the background thread, using
          * the given Data Access Object.
          */
-        private class AsyncTaskInsertItem(private var itemDao: ItemDao) : AsyncTask<Item, Void, Void>() {
-            override fun doInBackground(vararg items : Item?): Void? {
-                itemDao.insert(items[0])
-                return null
+        private class AsyncTaskInsertItem(private var itemDao: ItemDao) : AsyncTask<Item, Void, Long>() {
+            override fun doInBackground(vararg items : Item?): Long? {
+                return itemDao.insert(items[0])
             }
         }
 
@@ -341,6 +348,16 @@ class ItemRepository(application: Application) {
          */
         private class AsyncTaskUpdateItem(private var itemDao: ItemDao) : AsyncTask<Item, Void, Int>() {
             override fun doInBackground(vararg items : Item?): Int {
+                return itemDao.update(items[0])
+            }
+        }
+
+        /**
+         * Updates an item from the database in the background thread, using
+         * the given Data Access Object.
+         */
+        private class AsyncTaskUpdateList(private var itemDao: ItemDao) : AsyncTask<List<Item>, Void, Int>() {
+            override fun doInBackground(vararg items : List<Item>?): Int {
                 return itemDao.update(items[0])
             }
         }
@@ -514,8 +531,8 @@ class ItemRepository(application: Application) {
          * using the given Data Access Object.
          */
         private class AsyncTaskDeleteItem(private var itemDao: ItemDao) : AsyncTask<Item, Void, Int>() {
-            override fun doInBackground(vararg items : Item?): Int {
-                return itemDao.delete(items[0])
+            override fun doInBackground(vararg item : Item?): Int {
+                return itemDao.delete(item[0])
             }
         }
 
@@ -560,9 +577,9 @@ class ItemRepository(application: Application) {
         }
 
         // async tasks for getting items
-        private class AsyncTaskGetItem(private var itemDao: ItemDao) : AsyncTask<String, Void, Item>() {
-            override fun doInBackground(vararg name : String?): Item {
-                return itemDao.getItem(name[0])
+        private class AsyncTaskGetItem(private var itemDao: ItemDao) : AsyncTask<Long, Void, Item>() {
+            override fun doInBackground(vararg id : Long?): Item {
+                return itemDao.getItem(id[0])
             }
         }
 
