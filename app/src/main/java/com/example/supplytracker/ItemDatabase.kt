@@ -7,6 +7,8 @@ import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 import android.os.AsyncTask
 import android.arch.persistence.room.migration.Migration
+import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 
 /**
  * This class represents a Room database that is a database
@@ -20,7 +22,7 @@ import android.arch.persistence.room.migration.Migration
  * the version number and migrating the old database to the
  * latest version.
  */
-@Database(entities = [Item::class], version = 2, exportSchema = true)
+@Database(entities = [Item::class], version = 3, exportSchema = true)
 abstract class ItemDatabase : RoomDatabase() {
 
     abstract fun itemDao() : ItemDao
@@ -59,6 +61,24 @@ abstract class ItemDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3: Migration = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Create the new table
+                database.execSQL("ALTER TABLE table_item ADD COLUMN column_order INTEGER NOT NULL DEFAULT 0")
+
+                val cursor = database.query("SELECT * FROM table_item")
+                var i = 0
+                while(cursor.moveToNext()) {
+                    val id = cursor.getInt(cursor.getColumnIndex("column_id"))
+                    val cv = ContentValues().apply {
+                        put("column_order", i)
+                    }
+                    i++
+                    database.update("table_item", CONFLICT_REPLACE, cv, "column_id = $id", null)
+                }
+            }
+        }
+
         /**
          * Gets a database instance. Room's database builder creates
          * a RoomDatabase object in the application context from the
@@ -74,7 +94,7 @@ abstract class ItemDatabase : RoomDatabase() {
                         context,
                         ItemDatabase::class.java,
                         "item_database.db"
-                    ).addMigrations(MIGRATION_1_2)
+                    ).addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                         .build()
                 }
             }
