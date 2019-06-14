@@ -12,7 +12,8 @@ import android.arch.persistence.room.PrimaryKey
  */
 @Entity(tableName = "table_item")
 data class Item(
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "column_id") val id: Long = 0,
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "column_id") var id: Long = 0,
+    @ColumnInfo(name = "column_order") var order: Int,
     @ColumnInfo(name = "column_name") var name: String,
     @ColumnInfo(name = "column_amount") var amount: Double,
     @ColumnInfo(name = "column_isFull") var isFull: Int = 0
