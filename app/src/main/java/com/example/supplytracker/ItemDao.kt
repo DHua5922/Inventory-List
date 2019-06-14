@@ -1,10 +1,7 @@
 package com.example.supplytracker
 
-import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
 import android.arch.persistence.room.Update
-
-
 
 /**
  * This class represents a DAO (data access object) that validates
@@ -19,6 +16,9 @@ interface ItemDao {
 
     @Update
     fun update(item : Item?) : Int
+
+    @Update
+    fun update(items: List<Item>?) : Int
 
     @Query("UPDATE table_item SET column_name = :newName WHERE column_name = :oldName")
     fun updateName(oldName : String?, newName : String?) : Int
@@ -87,45 +87,45 @@ interface ItemDao {
     fun deleteAllItems() : Int
 
     // operations for getting items
-    @Query("SELECT * FROM table_item WHERE column_name = :name")
-    fun getItem(name : String?) : Item
+    @Query("SELECT * FROM table_item WHERE column_id = :id")
+    fun getItem(id : Long?) : Item
 
     @Query("SELECT COUNT(column_name) FROM table_item WHERE column_name = :name")
     fun getItemCount(name : String?) : Int
 
-    @Query("SELECT * FROM table_item WHERE column_name = :name")
+    @Query("SELECT * FROM table_item WHERE column_name = :name ORDER BY column_order ASC")
     fun getItemByName(name: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_name LIKE '%' || :keyword || '%'")
+    @Query("SELECT * FROM table_item WHERE column_name LIKE '%' || :keyword || '%' ORDER BY column_order ASC")
     fun getItemsWithKeyword(keyword: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount = :amount")
+    @Query("SELECT * FROM table_item WHERE column_amount = :amount ORDER BY column_order ASC")
     fun getItemsEqualTo(amount: Double?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount != :amount")
+    @Query("SELECT * FROM table_item WHERE column_amount != :amount ORDER BY column_order ASC")
     fun getItemsNotEqualTo(amount: Double?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount < :amount")
+    @Query("SELECT * FROM table_item WHERE column_amount < :amount ORDER BY column_order ASC")
     fun getItemsLessThan(amount: Double?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount <= :amount")
+    @Query("SELECT * FROM table_item WHERE column_amount <= :amount ORDER BY column_order ASC")
     fun getItemsLessThanOrEqualTo(amount: Double?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount > :amount")
+    @Query("SELECT * FROM table_item WHERE column_amount > :amount ORDER BY column_order ASC")
     fun getItemsGreaterThan(amount: Double?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount >= :amount")
+    @Query("SELECT * FROM table_item WHERE column_amount >= :amount ORDER BY column_order ASC")
     fun getItemsGreaterThanOrEqualTo(amount: Double?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount <= 0.0")
+    @Query("SELECT * FROM table_item WHERE column_amount <= 0.0 ORDER BY column_order ASC")
     fun getEmptyItems() : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount > 0.0 AND column_isFull = 0")
+    @Query("SELECT * FROM table_item WHERE column_amount > 0.0 AND column_isFull = 0 ORDER BY column_order ASC")
     fun getLeftoverItems() : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_isFull = 1")
+    @Query("SELECT * FROM table_item WHERE column_isFull = 1 ORDER BY column_order ASC")
     fun getFullItems() : List<Item>
 
-    @Query("SELECT * FROM table_item")
+    @Query("SELECT * FROM table_item ORDER BY column_order ASC")
     fun getAllItems() : List<Item>
 }
