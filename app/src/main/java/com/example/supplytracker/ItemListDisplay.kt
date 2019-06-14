@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.widget.*
-import java.util.*
 import android.view.*
 import kotlinx.android.synthetic.main.dialog_search_item_amount.*
 import kotlinx.android.synthetic.main.dialog_search_item_amount.view.*
@@ -18,7 +17,7 @@ import kotlinx.android.synthetic.main.dialog_search_item_amount.view.description
 import kotlinx.android.synthetic.main.dialog_search_item_amount.view.title
 import kotlinx.android.synthetic.main.dialog_search_item_word.view.*
 import kotlinx.android.synthetic.main.list_display.*
-
+import java.util.Collections.swap
 
 class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
@@ -39,20 +38,36 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             override fun onMove(recyclerView : RecyclerView, dragged : RecyclerView.ViewHolder, target : RecyclerView.ViewHolder): Boolean {
                 val fromPosition : Int = dragged.adapterPosition
                 val toPosition : Int = target.adapterPosition
+                val list = listManager.getItems()
 
-                Collections.swap(listManager.getItems(), fromPosition, toPosition)
+                if (fromPosition < toPosition) {
+                    for (i in fromPosition until toPosition) {
+                        swap(list, i, i + 1)
+
+                        val order1 = list[i].order
+                        val order2 = list[i + 1].order
+                        list[i].order = order2
+                        list[i + 1].order = order1
+                    }
+                } else {
+                    for (i in fromPosition downTo toPosition + 1) {
+                        swap(list, i, i - 1)
+
+                        val order1 = list[i].order
+                        val order2 = list[i - 1].order
+                        list[i].order = order2
+                        list[i - 1].order = order1
+                    }
+                }
+
+                //Collections.swap(listManager.getItems(), fromPosition, toPosition)
                 listManager.notifyItemMoved(fromPosition, toPosition)
                 return true
             }
 
             override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
                 super.clearView(recyclerView, viewHolder)
-
-                val repository = ItemRepository(application)
-                for(item in listManager.getItems()) {
-                    repository.delete(item)
-                    repository.insert(item)
-                }
+                itemViewModel.update(listManager.getItems())
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -83,13 +98,19 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             R.id.btn_add -> {
                 // when button is clicked, try to add item to list
                 try {
-                    val item = Item(name = "${editableName.text}", amount = "${editableAmount.text}".trim().toDouble())
+                    val item = Item(
+                        order = listManager.getMaxOrder() + 1,
+                        name = "${editableName.text}",
+                        amount = "${editableAmount.text}".trim().toDouble()
+                    )
 
-                    if(itemViewModel.add(item)) {
+                    val result = itemViewModel.add(item)
+                    if(result > -1) {
                         editableName.text.clear()
                         editableAmount.text.clear()
+                        item.id = result
+                        itemViewModel.update(item)
                         listManager.addItem(item)
-                        //listManager.setItems(itemViewModel.getAllItems())
                     }
                 } catch(e : NumberFormatException) {
                     Toast.makeText(this, "Amount must only be a number", Toast.LENGTH_SHORT).show()
@@ -142,7 +163,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 method.itemId == R.id.option_remove_empty ||
                 method.itemId == R.id.option_remove_leftover ||
                 method.itemId == R.id.option_remove_checked) {
-            itemViewModel.remove(method)
+            itemViewModel.delete(method)
             listManager.setItems(itemViewModel.getAllItems())
         }
         // if searching items by name or keyword
