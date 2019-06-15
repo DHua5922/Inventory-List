@@ -65,6 +65,7 @@ abstract class ItemDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 // Create the new table
                 database.execSQL("ALTER TABLE table_item ADD COLUMN column_order INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("ALTER TABLE table_item ADD COLUMN column_listName TEXT NOT NULL DEFAULT 'Unsaved'")
 
                 val cursor = database.query("SELECT * FROM table_item")
                 var i = 0
@@ -72,6 +73,7 @@ abstract class ItemDatabase : RoomDatabase() {
                     val id = cursor.getInt(cursor.getColumnIndex("column_id"))
                     val cv = ContentValues().apply {
                         put("column_order", i)
+                        put("column_listName", "Unsaved")
                     }
                     i++
                     database.update("table_item", CONFLICT_REPLACE, cv, "column_id = $id", null)
