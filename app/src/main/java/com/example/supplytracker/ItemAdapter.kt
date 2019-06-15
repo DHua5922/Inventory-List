@@ -57,7 +57,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
     override fun onBindViewHolder(holder: ItemHolder, position: Int) {
         onBindName(holder.nameDisplay, position)
         onBindAmount(holder, position)
-        onBindDeleteBtn(holder, position)
+        onBindDeleteBtn(holder)
         onBindCheckbox(holder, position)
     }
 
@@ -109,17 +109,13 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         val displayLayout = itemDisplay.linearLayout
 
         // every time list is updated, check if item is still full
-        try {
-            if (itemViewModel.getItem(/*"${itemDisplay.nameDisplay.text}"*/items[position].id).isFull == 1) {
-                // item is still full so indicate it by checking box and coloring display green
-                checkbox.isChecked = true
-                displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
-            } else {
-                // item is not full anymore so indicate it by unchecking box
-                checkbox.isChecked = false
-            }
-        } catch(e : Exception) {
-
+        if (itemViewModel.getItem(/*"${itemDisplay.nameDisplay.text}"*/items[position].id).isFull == 1) {
+            // item is still full so indicate it by checking box and coloring display green
+            checkbox.isChecked = true
+            displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
+        } else {
+            // item is not full anymore so indicate it by unchecking box
+            checkbox.isChecked = false
         }
 
         // when checkbox is clicked
@@ -297,7 +293,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      * @param   itemDisplay     item display
      * @param   database        database
      */
-    private fun onBindDeleteBtn(itemDisplay : ItemHolder, position : Int) {
+    private fun onBindDeleteBtn(itemDisplay : ItemHolder) {
         // when delete button of item display is clicked
         itemDisplay.deleteBtn.setOnClickListener{
             // delete item and update list
