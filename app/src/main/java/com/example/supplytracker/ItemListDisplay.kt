@@ -23,6 +23,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
 
     private lateinit var itemViewModel : ItemViewModel
     private lateinit var listManager : ItemAdapter
+    private var listName : String = "Unsaved"
 
     override fun onCreate(savedState : Bundle?) {
         super.onCreate(savedState)
@@ -60,7 +61,6 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                     }
                 }
 
-                //Collections.swap(listManager.getItems(), fromPosition, toPosition)
                 listManager.notifyItemMoved(fromPosition, toPosition)
                 return true
             }
@@ -257,10 +257,10 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             R.id.option_open_list -> {
                 true
             }
-            R.id.option_delete_list -> {
+            R.id.option_delete_this_list -> {
                 true
             }
-            R.id.option_delete_this_list -> {
+            R.id.option_delete_list -> {
                 true
             }
             else -> super.onOptionsItemSelected(item)
