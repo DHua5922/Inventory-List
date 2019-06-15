@@ -83,6 +83,7 @@ class MigrationTest {
         assertEquals(cursor.moveToFirst(), true)
         assertEquals(cursor.getInt(cursor.getColumnIndex("column_id")), 1)
         assertEquals(cursor.getInt(cursor.getColumnIndex("column_order")), 0)
+        assertEquals(cursor.getString(cursor.getColumnIndex("column_listName")), "Unsaved")
         assertEquals(cursor.getString(cursor.getColumnIndex("column_name")), "Test Item 1")
         assertEquals(cursor.getDouble(cursor.getColumnIndex("column_amount")), 1.0)
         assertEquals(cursor.getInt(cursor.getColumnIndex("column_isFull")), 0)
