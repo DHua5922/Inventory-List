@@ -26,10 +26,6 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
 
         when {
             name.isEmpty() -> Toast.makeText(context, "Name cannot be empty", LENGTH_SHORT).show()
-            /*repository.getItemCount(name) > 0 -> {
-                styledText = TextStyle.bold(name, "$name already exists in this list!")
-                Toast.makeText(context, styledText, LENGTH_SHORT).show()
-            }*/
             else -> {
                 val result = repository.insert(item)
                 if(result > 0) {
