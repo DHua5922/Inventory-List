@@ -2,21 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "f80e62655bb6e96312fea5c16d53cdef",
+    "identityHash": "f6b9e89cfd1d88e37041729c550631a5",
     "entities": [
       {
         "tableName": "table_item",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`column_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `column_order` INTEGER NOT NULL, `column_name` TEXT NOT NULL, `column_amount` REAL NOT NULL, `column_isFull` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`column_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `column_name` TEXT NOT NULL, `column_amount` REAL NOT NULL, `column_isFull` INTEGER NOT NULL, `column_order` INTEGER NOT NULL, `column_listName` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "column_id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "order",
-            "columnName": "column_order",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -37,6 +31,18 @@
             "columnName": "column_isFull",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "order",
+            "columnName": "column_order",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "listName",
+            "columnName": "column_listName",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -51,7 +57,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"f80e62655bb6e96312fea5c16d53cdef\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"f6b9e89cfd1d88e37041729c550631a5\")"
     ]
   }
 }
