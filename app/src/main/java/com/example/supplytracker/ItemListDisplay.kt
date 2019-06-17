@@ -2,6 +2,7 @@ package com.example.supplytracker
 
 import android.app.AlertDialog
 import android.arch.lifecycle.ViewModelProviders
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -18,6 +19,10 @@ import kotlinx.android.synthetic.main.dialog_search_item_amount.view.title
 import kotlinx.android.synthetic.main.dialog_search_item_word.view.*
 import kotlinx.android.synthetic.main.list_display.*
 import java.util.Collections.swap
+import android.text.InputType
+import android.widget.EditText
+
+
 
 class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
@@ -249,21 +254,56 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
         return when (item.itemId) {
             R.id.option_save_list -> {
+                confirmDialog(item.itemId, message = "Are you sure you want to save this list?")
                 true
             }
             R.id.option_save_list_as -> {
+                confirmDialog(item.itemId, message = "Enter the name for this list to be saved as")
                 true
             }
             R.id.option_open_list -> {
+                confirmDialog(item.itemId, message = "Choose which list to view")
                 true
             }
             R.id.option_delete_this_list -> {
+                confirmDialog(item.itemId, message = "Are you sure you want to delete this list? This action cannot be undone.")
                 true
             }
             R.id.option_delete_list -> {
+                confirmDialog(item.itemId, message = "Choose which list to delete")
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun confirmDialog(itemId : Int, title : String = "", message : String) {
+        val alertDialog: AlertDialog? = this.let {
+            val builder = AlertDialog.Builder(it)
+
+            if(itemId == R.id.option_save_list_as ||
+                    itemId == R.id.option_open_list ||
+                    itemId == R.id.option_delete_list) {
+                // Set up the input
+                val input = EditText(this)
+                // Specify the type of input expected
+                input.inputType = InputType.TYPE_CLASS_TEXT
+                builder.setView(input)
+            }
+
+            builder.apply {
+                setPositiveButton(R.string.btn_dialog_ok) { dialog, id ->
+                    dialog.dismiss()
+                }
+                setNegativeButton(R.string.btn_dialog_cancel) { dialog, id ->
+                    dialog.dismiss()
+                }
+                setTitle(title)
+                setMessage(message)
+                create()
+            }
+
+            builder.show()
         }
     }
 
