@@ -1,17 +1,14 @@
 package com.example.supplytracker
 
-import android.app.AlertDialog
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
-import android.text.InputType
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.Toast.LENGTH_SHORT
-import kotlinx.android.synthetic.main.dialog_edit_field.view.*
 import kotlinx.android.synthetic.main.template_item_display.view.*
 
 class ItemAdapter(private val context : Context, private val itemViewModel: ItemViewModel) : RecyclerView.Adapter<ItemAdapter.ItemHolder>() {
@@ -62,41 +59,6 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
     }
 
     /**
-     * Gets the number of items in the list
-     *
-     * @return              number of items in the list
-     */
-    override fun getItemCount() = items.size
-
-    internal fun setItems(items: List<Item>) {
-        this.items = items as MutableList<Item>
-        notifyDataSetChanged()
-    }
-
-    internal fun addItem(item: Item) {
-        this.items.add(item)
-        notifyItemInserted(this.items.size - 1)
-    }
-
-    internal fun removeItem(position : Int) {
-        if(itemViewModel.delete(this.items[position]) > 0) {
-            this.items.removeAt(position)
-            notifyItemRemoved(position)
-        }
-    }
-
-    internal fun getItems() : List<Item> {
-        return this.items
-    }
-
-    internal fun getMaxOrder() : Int {
-        return (
-            if (itemCount == 0) 0
-            else this.items[itemCount - 1].order
-        )
-    }
-
-    /**
      * When the checkbox in the given item display is clicked, color the layout of the item display
      * as an indication if the item is full, empty, or being used. The name display is needed to
      * check if the specific item in the given database is empty or not.
@@ -109,7 +71,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         val displayLayout = itemDisplay.linearLayout
 
         // every time list is updated, check if item is still full
-        if (itemViewModel.getItem(/*"${itemDisplay.nameDisplay.text}"*/items[position].id).isFull == 1) {
+        if (itemViewModel.getItem(items[position].id).isFull == 1) {
             // item is still full so indicate it by checking box and coloring display green
             checkbox.isChecked = true
             displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
@@ -163,43 +125,13 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         nameDisplay.text = items[position].name
         // when display for item name is clicked
         nameDisplay.setOnClickListener {
-            // change display's background color to indicate it is being modified
-            nameDisplay.setBackgroundColor(ContextCompat.getColor(context, R.color.pressed_info_display))
-
-            // initialize variables for showing dialog
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_field, null)
-            val alertDialog = AlertDialog.Builder(context).setView(dialogView).show()
-            val currentName = nameDisplay.text
-
-            // if dialog is exited out, change display's background color back to default
-            alertDialog.setOnDismissListener {
-                nameDisplay.setBackgroundColor(ContextCompat.getColor(context, R.color.field))
-            }
-
-            // display dialog title
-            dialogView.title.text = context.getString(R.string.title_name_change)
-            // style and display current item name
-            dialogView.info_to_be_changed.text = TextStyle.bold("$currentName", context.getString(R.string.name_to_be_changed, currentName))
-            // describe dialog purpose
-            dialogView.description.text = context.getString(R.string.name_change_description)
-
-            // when ok button in dialog is clicked
-            dialogView.btn_dialog_ok.setOnClickListener {
-                items[position].name = "${dialogView.field_new_info.text}"
-                // try to update item with new name and exit dialog
-                if(itemViewModel.update(items[position])) {
-                    // update list with new name
-                    //items[position].name = newName
-                    setItems(this.items)
-                    // exit dialog
-                    alertDialog.dismiss()
-                }
-            }
-
-            // when cancel button in dialog is clicked, exit out of dialog
-            dialogView.btn_dialog_cancel.setOnClickListener {
-                alertDialog.dismiss()
-            }
+            Dialog.showNameEditDialog(
+                context,
+                R.layout.dialog_edit_field, itemViewModel,
+                this,
+                nameDisplay,
+                position
+            )
         }
     }
 
@@ -215,7 +147,6 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      */
     private fun onBindAmount(itemDisplay : ItemHolder, position : Int) {
         val amountDisplay = itemDisplay.amountDisplay
-        val name = itemDisplay.nameDisplay.text
         val displayLayout = itemDisplay.linearLayout
 
         // display item amount
@@ -232,57 +163,14 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
 
         // when display for item amount is clicked
         amountDisplay.setOnClickListener {
-            // change display's background color to indicate it is being modified
-            amountDisplay.setBackgroundColor(ContextCompat.getColor(context, R.color.pressed_info_display))
-
-            // initialize variables for showing dialog
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_field, null)
-            val alertDialog = AlertDialog.Builder(context).setView(dialogView).show()
-            val currentAmount = amountDisplay.text
-
-            // if dialog is exited out, change display's background color back to default
-            alertDialog.setOnDismissListener {
-                amountDisplay.setBackgroundColor(ContextCompat.getColor(context, R.color.field))
-            }
-
-            // display dialog title
-            dialogView.title.text = context.getString(R.string.title_amount_change)
-            // style and display current item amount
-            dialogView.info_to_be_changed.text = TextStyle.bold("$currentAmount", context.getString(R.string.amount_to_be_changed, name, currentAmount))
-            // describe dialog purpose
-            dialogView.description.text = TextStyle.bold("$name", context.getString(R.string.amount_change_description, name))
-            // notify user that field is for entering decimal numbers
-            dialogView.field_new_info.hint = context.getString(R.string.hint_dialog_new_amount)
-            // set decimal as input type for editable amount
-            dialogView.field_new_info.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-
-            // when ok button in dialog is clicked
-            dialogView.btn_dialog_ok.setOnClickListener {
-                // try to update item with new amount and exit dialog
-                items[position].amount = "${dialogView.field_new_info.text}".toDouble()
-                if(itemViewModel.update(items[position])) {
-                    setItems(this.items)
-                    // exit dialog
-                    alertDialog.dismiss()
-
-                    // when item is being updated with new amount, check if item is empty or not
-                    if(items[position].amount <= 0) {
-                        // notify user that item is empty
-                        val styledText = TextStyle.bold("$name", "Now, $name is empty")
-                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
-                        // item is empty so layout is colored red
-                        displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
-                    } else {
-                        // item is not empty so layout is colored white
-                        displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
-                    }
-                }
-            }
-
-            // when cancel button in dialog is clicked, exit out of dialog
-            dialogView.btn_dialog_cancel.setOnClickListener {
-                alertDialog.dismiss()
-            }
+            Dialog.showAmountEditDialog(
+                context,
+                R.layout.dialog_edit_field,
+                itemViewModel,
+                this,
+                itemDisplay,
+                position
+            )
         }
     }
 
@@ -297,7 +185,48 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         // when delete button of item display is clicked
         itemDisplay.deleteBtn.setOnClickListener{
             // delete item and update list
-            removeItem(itemDisplay.adapterPosition)
+            Dialog.showConfirmationDialog(
+                context,
+                itemId = itemDisplay.deleteBtn.id,
+                message = "Are you sure you want to delete ${itemDisplay.nameDisplay.text}",
+                listManager = this,
+                itemDisplay = itemDisplay
+            )
         }
+    }
+
+    /**
+     * Gets the number of items in the list
+     *
+     * @return              number of items in the list
+     */
+    override fun getItemCount() = items.size
+
+    internal fun setItems(items: List<Item>) {
+        this.items = items as MutableList<Item>
+        notifyDataSetChanged()
+    }
+
+    internal fun addItem(item: Item) {
+        this.items.add(item)
+        notifyItemInserted(this.items.size - 1)
+    }
+
+    internal fun removeItem(position : Int) {
+        if(itemViewModel.delete(this.items[position]) > 0) {
+            this.items.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
+
+    internal fun getItems() : List<Item> {
+        return this.items
+    }
+
+    internal fun getMaxOrder() : Int {
+        return (
+                if (itemCount == 0) 0
+                else this.items[itemCount - 1].order
+                )
     }
 }
