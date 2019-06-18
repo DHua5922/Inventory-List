@@ -20,9 +20,6 @@ interface ItemDao {
     @Update
     fun update(items: List<Item>?) : Int
 
-    @Query("UPDATE table_item SET column_name = :newName WHERE column_name = :oldName")
-    fun updateName(oldName : String?, newName : String?) : Int
-
     // operations for sorting items by name
     @Query("SELECT * FROM table_item ORDER BY column_name ASC")
     fun sortNameAToZ() : List<Item>
