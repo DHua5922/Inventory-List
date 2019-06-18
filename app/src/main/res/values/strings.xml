@@ -65,7 +65,8 @@
     <string name="search_amount_description">Enter the amount and choose the type of comparison below to search for all the items with that amount</string>
     <string name="search_keyword_description">Enter the keyword below to search for all the items with that keyword</string>
 
-    <string name="hint_dialog_keyword">Enter keyword</string>
+    <string name="hint_search_name">Enter item name</string>
+    <string name="hint_search_keyword">Enter keyword</string>
     <string-array name="array_comparisons">
         <item>Equal to</item>
         <item>Does not equal to</item>
@@ -80,5 +81,4 @@
     <string name="open_list">Open List</string>
     <string name="delete_this_list">Delete This List</string>
     <string name="delete_list">Delete List</string>
-
 </resources>
