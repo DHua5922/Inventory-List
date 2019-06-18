@@ -1,8 +1,6 @@
 package com.example.supplytracker
 
-import android.app.AlertDialog
 import android.arch.lifecycle.ViewModelProviders
-import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -10,19 +8,8 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.widget.*
 import android.view.*
-import kotlinx.android.synthetic.main.dialog_search_item_amount.*
-import kotlinx.android.synthetic.main.dialog_search_item_amount.view.*
-import kotlinx.android.synthetic.main.dialog_search_item_amount.view.btn_dialog_cancel
-import kotlinx.android.synthetic.main.dialog_search_item_amount.view.btn_dialog_ok
-import kotlinx.android.synthetic.main.dialog_search_item_amount.view.description
-import kotlinx.android.synthetic.main.dialog_search_item_amount.view.title
-import kotlinx.android.synthetic.main.dialog_search_item_word.view.*
 import kotlinx.android.synthetic.main.list_display.*
 import java.util.Collections.swap
-import android.text.InputType
-import android.widget.EditText
-
-
 
 class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
@@ -164,68 +151,74 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
      */
     override fun onMenuItemClick(method: MenuItem): Boolean {
         // if one of method for removing items is clicked
-        if(method.itemId == R.id.option_remove_all ||
-                method.itemId == R.id.option_remove_empty ||
-                method.itemId == R.id.option_remove_leftover ||
-                method.itemId == R.id.option_remove_checked) {
-            itemViewModel.delete(method)
-            listManager.setItems(itemViewModel.getAllItems())
+        if(method.itemId == R.id.option_remove_all) {
+            Dialog.showConfirmationDialog(this,
+                message = "Are you sure you want to delete all the items in this list?",
+                itemId = method.itemId,
+                itemViewModel = itemViewModel,
+                listManager = listManager,
+                method = method)
+        }
+        else if(method.itemId == R.id.option_remove_empty) {
+            Dialog.showConfirmationDialog(this,
+                message = "Are you sure you want to delete all the empty items in this list?",
+                itemId = method.itemId,
+                itemViewModel = itemViewModel,
+                listManager = listManager,
+                method = method)
+        }
+        else if(method.itemId == R.id.option_remove_leftover) {
+            Dialog.showConfirmationDialog(this,
+                message = "Are you sure you want to delete all the leftover items in this list?",
+                itemId = method.itemId,
+                itemViewModel = itemViewModel,
+                listManager = listManager,
+                method = method)
+        }
+        else if(method.itemId == R.id.option_remove_checked) {
+            Dialog.showConfirmationDialog(this,
+                message = "Are you sure you want to delete all the items that are full in this list?",
+                itemId = method.itemId,
+                itemViewModel = itemViewModel,
+                listManager = listManager,
+                method = method)
         }
         // if searching items by name or keyword
-        else if(method.itemId == R.id.option_search_name ||
-                    method.itemId == R.id.option_search_keyword) {
-            openDialog(method)
+        else if(method.itemId == R.id.option_search_name) {
+            Dialog.showSearchWordDialog(
+                this,
+                method,
+                R.layout.dialog_search_item_word,
+                itemViewModel,
+                listManager,
+                R.string.title_search_name,
+                R.string.search_name_description,
+                R.string.hint_search_name
+            )
+        }
+        else if (method.itemId == R.id.option_search_keyword) {
+            Dialog.showSearchWordDialog(
+                this,
+                method,
+                R.layout.dialog_search_item_word,
+                itemViewModel,
+                listManager,
+                R.string.title_search_keyword,
+                R.string.search_keyword_description,
+                R.string.hint_search_keyword
+            )
         }
         // if searching items by amount
         else if(method.itemId == R.id.option_search_amount) {
-            // initialize variables for showing dialog
-            val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_search_item_amount, null)
-            val alertDialog : AlertDialog = AlertDialog.Builder(this).setView(dialogView).show()
-            val spinner = alertDialog.array_comparisons
-
-            // bind event to clicked list of comparison option
-            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-
-                }
-            }
-            // Create an ArrayAdapter using the string array and a default spinner layout
-            ArrayAdapter.createFromResource(
-                this, R.array.array_comparisons, R.layout.comparison_options
-            ).also { adapter ->
-                // Specify the layout to use when the list of choices appears
-                adapter.setDropDownViewResource(R.layout.comparison_options)
-                // Apply the adapter to the spinner
-                spinner.adapter = adapter
-            }
-
-            // when ok button in dialog is clicked
-            dialogView.btn_dialog_ok.setOnClickListener {
-                val amount = "${dialogView.field_search_amount.text}".trim()
-                if(amount.isEmpty()) {
-                    Toast.makeText(this, "Amount must only be a number", Toast.LENGTH_SHORT).show()
-                } else {
-                    // search items by amount
-                    listManager.setItems(
-                        itemViewModel.search(
-                            method,
-                            amount = amount.toDouble(),
-                            comparison = spinner.selectedItemPosition
-                        )
-                    )
-                    // exit dialog
-                    alertDialog.dismiss()
-                }
-            }
-
-            // when cancel button in dialog is clicked, exit out of dialog
-            dialogView.btn_dialog_cancel.setOnClickListener {
-                alertDialog.dismiss()
-            }
+            Dialog.showSearchAmountDialog(
+                this,
+                method,
+                listManager,
+                itemViewModel,
+                R.layout.dialog_search_item_amount,
+                R.array.array_comparisons,
+                R.layout.comparison_options
+            )
         }
         // if searching empty, leftover, full, or all items
         else if(method.itemId == R.id.option_search_empty ||
@@ -254,108 +247,39 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
         return when (item.itemId) {
             R.id.option_save_list -> {
-                confirmDialog(item.itemId, message = "Are you sure you want to save this list?")
+                Dialog.showConfirmationDialog(this, item.itemId, message = "Are you sure you want to save this list?")
                 true
             }
             R.id.option_save_list_as -> {
-                confirmDialog(item.itemId, message = "Enter the name for this list to be saved as")
+                Dialog.promptListDialog(
+                    this,
+                    item.itemId,
+                    message = "Enter the name for this list to be saved as",
+                    hint = "Enter new name for list"
+                )
                 true
             }
             R.id.option_open_list -> {
-                confirmDialog(item.itemId, message = "Choose which list to view")
+                Dialog.promptListDialog(
+                    this,
+                    item.itemId,
+                    message = "Choose which list to view"
+                )
                 true
             }
             R.id.option_delete_this_list -> {
-                confirmDialog(item.itemId, message = "Are you sure you want to delete this list? This action cannot be undone.")
+                Dialog.showConfirmationDialog(this, item.itemId, message = "Are you sure you want to delete this list? This action cannot be undone.")
                 true
             }
             R.id.option_delete_list -> {
-                confirmDialog(item.itemId, message = "Choose which list to delete")
+                Dialog.promptListDialog(
+                    this,
+                    item.itemId,
+                    message = "Choose which list to delete"
+                )
                 true
             }
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun confirmDialog(itemId : Int, title : String = "", message : String) {
-        val alertDialog: AlertDialog? = this.let {
-            val builder = AlertDialog.Builder(it)
-
-            if(itemId == R.id.option_save_list_as ||
-                    itemId == R.id.option_open_list ||
-                    itemId == R.id.option_delete_list) {
-                // Set up the input
-                val input = EditText(this)
-                // Specify the type of input expected
-                input.inputType = InputType.TYPE_CLASS_TEXT
-                builder.setView(input)
-            }
-
-            builder.apply {
-                setPositiveButton(R.string.btn_dialog_ok) { dialog, id ->
-                    dialog.dismiss()
-                }
-                setNegativeButton(R.string.btn_dialog_cancel) { dialog, id ->
-                    dialog.dismiss()
-                }
-                setTitle(title)
-                setMessage(message)
-                create()
-            }
-
-            builder.show()
-        }
-    }
-
-    /**
-     * Shows dialog for allowing items to be searched by name or keyword.
-     *
-     * @param   searchOption    chosen method (by name or keyword) for searching items
-     */
-    private fun openDialog(searchOption : MenuItem) {
-        // initialize variables for showing dialog
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_search_item_word, null)
-        lateinit var alertDialog : AlertDialog
-
-        // if searching items by name
-        if (searchOption.itemId == R.id.option_search_name) {
-            // show dialog
-            alertDialog = AlertDialog.Builder(this).setView(dialogView).show()
-            // display dialog title
-            dialogView.title.text = this.getString(R.string.title_search_name)
-            // describe dialog purpose
-            dialogView.description.text = this.getString(R.string.search_name_description)
-            // notify user that field is for searching specific item by name
-            dialogView.field_search_word.hint = this.getString(R.string.hint_item_name)
-            // if searching items by keyword
-        } else if (searchOption.itemId == R.id.option_search_keyword) {
-            // show dialog
-            alertDialog = AlertDialog.Builder(this).setView(dialogView).show()
-            // display dialog title
-            dialogView.title.text = this.getString(R.string.title_search_keyword)
-            // describe dialog purpose
-            dialogView.description.text = this.getString(R.string.search_keyword_description)
-            // notify user that field is for searching items by keyword
-            dialogView.field_search_word.hint = this.getString(R.string.hint_dialog_keyword)
-        }
-
-        // when ok button in dialog is clicked
-        dialogView.btn_dialog_ok.setOnClickListener {
-            // try to search items by name or keyword
-            try {
-                // search items
-                listManager.setItems(itemViewModel.search(searchOption, "${dialogView.field_search_word.text}"))
-                // exit dialog
-                alertDialog.dismiss()
-                // otherwise, search method is invalid
-            } catch (e : Exception) {
-                Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        // when cancel button in dialog is clicked, exit out of dialog
-        dialogView.btn_dialog_cancel.setOnClickListener {
-            alertDialog.dismiss()
         }
     }
 }
