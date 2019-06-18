@@ -2,7 +2,6 @@ package com.example.supplytracker
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
 import android.text.SpannableStringBuilder
 import android.view.MenuItem
 import android.widget.Toast
