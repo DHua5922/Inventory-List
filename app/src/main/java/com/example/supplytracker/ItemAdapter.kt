@@ -225,8 +225,8 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
 
     internal fun getMaxOrder() : Int {
         return (
-                if (itemCount == 0) 0
-                else this.items[itemCount - 1].order
-                )
+            if (itemCount == 0) 0
+            else this.items[itemCount - 1].order
+        )
     }
 }
