@@ -6,10 +6,16 @@ import android.support.v4.content.ContextCompat
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.MenuItem
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import kotlinx.android.synthetic.main.dialog_edit_field.view.*
+import kotlinx.android.synthetic.main.dialog_edit_field.view.btn_dialog_cancel
+import kotlinx.android.synthetic.main.dialog_edit_field.view.btn_dialog_ok
+import kotlinx.android.synthetic.main.dialog_edit_field.view.description
+import kotlinx.android.synthetic.main.dialog_edit_field.view.title
+import kotlinx.android.synthetic.main.dialog_search_item_amount.*
+import kotlinx.android.synthetic.main.dialog_search_item_amount.view.*
+import kotlinx.android.synthetic.main.dialog_search_item_word.view.*
 
 class Dialog {
     companion object {
@@ -199,6 +205,104 @@ class Dialog {
                     }
                 } else {
                     items[position].amount = "$currentAmount".toDouble()
+                }
+            }
+
+            // when cancel button in dialog is clicked, exit out of dialog
+            dialogView.btn_dialog_cancel.setOnClickListener {
+                alertDialog.dismiss()
+            }
+        }
+
+        fun showSearchWordDialog(context : Context,
+                             searchOption : MenuItem,
+                             layout : Int,
+                             itemViewModel: ItemViewModel,
+                             listManager : ItemAdapter,
+                             title : Int,
+                             description : Int,
+                             hint : Int) {
+            // initialize variables for showing dialog
+            val dialogView = LayoutInflater.from(context).inflate(layout, null)
+            // show dialog
+            val alertDialog : AlertDialog = AlertDialog.Builder(context).setView(dialogView).show()
+
+            // display dialog title
+            dialogView.title.text = context.getString(title)
+            // describe dialog purpose
+            dialogView.description.text = context.getString(description)
+            // notify user of what to enter in field
+            dialogView.field_search_word.hint = context.getString(hint)
+
+            // when ok button in dialog is clicked
+            dialogView.btn_dialog_ok.setOnClickListener {
+                // try to search items by name or keyword
+                try {
+                    // search items
+                    listManager.setItems(itemViewModel.search(searchOption, "${dialogView.field_search_word.text}"))
+                    // exit dialog
+                    alertDialog.dismiss()
+                    // otherwise, search method is invalid
+                } catch (e : Exception) {
+                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            // when cancel button in dialog is clicked, exit out of dialog
+            dialogView.btn_dialog_cancel.setOnClickListener {
+                alertDialog.dismiss()
+            }
+        }
+
+        fun showSearchAmountDialog(
+            context : Context,
+            method : MenuItem,
+            listManager : ItemAdapter,
+            itemViewModel: ItemViewModel,
+            layoutDialog : Int,
+            arrayComparisons : Int,
+            comparisonOptionsLayout : Int) {
+            // initialize variables for showing dialog
+            val dialogView = LayoutInflater.from(context).inflate(layoutDialog, null)
+            val alertDialog : AlertDialog = AlertDialog.Builder(context).setView(dialogView).show()
+            val spinner = alertDialog.array_comparisons
+
+            // bind event to clicked list of comparison option
+            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+
+                }
+            }
+            // Create an ArrayAdapter using the string array and a default spinner layout
+            ArrayAdapter.createFromResource(
+                context, arrayComparisons, comparisonOptionsLayout
+            ).also { adapter ->
+                // Specify the layout to use when the list of choices appears
+                adapter.setDropDownViewResource(comparisonOptionsLayout)
+                // Apply the adapter to the spinner
+                spinner.adapter = adapter
+            }
+
+            // when ok button in dialog is clicked
+            dialogView.btn_dialog_ok.setOnClickListener {
+                val amount = "${dialogView.field_search_amount.text}".trim()
+                if(amount.isEmpty()) {
+                    Toast.makeText(context, "Amount must only be a number", Toast.LENGTH_SHORT).show()
+                } else {
+                    // search items by amount
+                    listManager.setItems(
+                        itemViewModel.search(
+                            method,
+                            amount = amount.toDouble(),
+                            comparison = spinner.selectedItemPosition
+                        )
+                    )
+                    // exit dialog
+                    alertDialog.dismiss()
                 }
             }
 
