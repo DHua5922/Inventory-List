@@ -41,17 +41,6 @@ class ItemRepository(application: Application) {
         return AsyncTaskUpdateList(itemDao).execute(items).get()
     }
 
-
-    /**
-     * Updates the name of the given item from the database.
-     *
-     * @param   oldName    current item name
-     * @param   newName    new item name
-     */
-    fun updateName(oldName : String, newName : String) : Int {
-        return AsyncTaskUpdateName(itemDao).execute(oldName, newName).get()
-    }
-
     // function for sorting items by names
     /**
      * Sorts the items from the database A - Z.
@@ -359,17 +348,6 @@ class ItemRepository(application: Application) {
         private class AsyncTaskUpdateList(private var itemDao: ItemDao) : AsyncTask<List<Item>, Void, Int>() {
             override fun doInBackground(vararg items : List<Item>?): Int {
                 return itemDao.update(items[0])
-            }
-        }
-
-
-        /**
-         * Updates the name of the given item from the database in the background thread, using
-         * the given Data Access Object.
-         */
-        private class AsyncTaskUpdateName(private var itemDao: ItemDao) : AsyncTask<String, Void, Int>() {
-            override fun doInBackground(vararg name : String?): Int {
-                return itemDao.updateName(name[0], name[1])
             }
         }
 
