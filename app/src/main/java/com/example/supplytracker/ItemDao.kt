@@ -20,109 +20,112 @@ interface ItemDao {
     @Update
     fun update(items: List<Item>?) : Int
 
+    @Query("SELECT DISTINCT COUNT(column_listName) FROM table_item WHERE column_listName = :listName")
+    fun getListNameCount(listName : String?) : Int
+
     // operations for sorting items by name
-    @Query("SELECT * FROM table_item ORDER BY column_name ASC")
-    fun sortNameAToZ() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName ORDER BY column_name ASC")
+    fun sortNameAToZ(listName : String?) : List<Item>
 
-    @Query("SELECT * FROM table_item ORDER BY column_name DESC")
-    fun sortNameZToA() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName ORDER BY column_name DESC")
+    fun sortNameZToA(listName : String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount = 0.0 ORDER BY column_name ASC")
-    fun sortNameEmptyAToZ() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount = 0.0 ORDER BY column_name ASC")
+    fun sortNameEmptyAToZ(listName : String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount = 0.0 ORDER BY column_name DESC")
-    fun sortNameEmptyZToA() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount = 0.0 ORDER BY column_name DESC")
+    fun sortNameEmptyZToA(listName : String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount > 0.0 AND column_isFull = 0 ORDER BY column_name ASC")
-    fun sortNameLeftoverAToZ() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount > 0.0 AND column_isFull = 0 ORDER BY column_name ASC")
+    fun sortNameLeftoverAToZ(listName : String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount > 0.0 AND column_isFull = 0 ORDER BY column_name DESC")
-    fun sortNameLeftoverZToA() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount > 0.0 AND column_isFull = 0 ORDER BY column_name DESC")
+    fun sortNameLeftoverZToA(listName : String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_isFull = 1 ORDER BY column_name ASC")
-    fun sortNameFullAToZ() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_isFull = 1 ORDER BY column_name ASC")
+    fun sortNameFullAToZ(listName : String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_isFull = 1 ORDER BY column_name DESC")
-    fun sortNameFullZToA() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_isFull = 1 ORDER BY column_name DESC")
+    fun sortNameFullZToA(listName : String?) : List<Item>
 
     // operations for sorting items by amount
-    @Query("SELECT * FROM table_item ORDER BY column_amount ASC")
-    fun sortAmountAscending() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName ORDER BY column_amount ASC")
+    fun sortAmountAscending(listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item ORDER BY column_amount DESC")
-    fun sortAmountDescending() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName ORDER BY column_amount DESC")
+    fun sortAmountDescending(listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount <= 0.0 ORDER BY column_amount ASC")
-    fun sortAmountEmpty() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount <= 0.0 ORDER BY column_amount ASC")
+    fun sortAmountEmpty(listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount > 0.0 AND column_isFull = 0 ORDER BY column_amount ASC")
-    fun sortAmountLeftoverAscending() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount > 0.0 AND column_isFull = 0 ORDER BY column_amount ASC")
+    fun sortAmountLeftoverAscending(listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount > 0.0 AND column_isFull = 0 ORDER BY column_amount DESC")
-    fun sortAmountLeftoverDescending() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount > 0.0 AND column_isFull = 0 ORDER BY column_amount DESC")
+    fun sortAmountLeftoverDescending(listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_isFull = 1 ORDER BY column_amount ASC")
-    fun sortAmountFullAscending() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_isFull = 1 ORDER BY column_amount ASC")
+    fun sortAmountFullAscending(listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_isFull = 1 ORDER BY column_amount DESC")
-    fun sortAmountFullDescending() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_isFull = 1 ORDER BY column_amount DESC")
+    fun sortAmountFullDescending(listName: String?) : List<Item>
 
     // operations for deleting items
     @Delete
     fun delete(item : Item?) : Int
 
-    @Query("DELETE FROM table_item WHERE column_amount <= 0")
-    fun deleteEmpty() : Int
+    @Query("DELETE FROM table_item WHERE column_listName = :listName AND column_amount <= 0")
+    fun deleteEmpty(listName: String?) : Int
 
-    @Query("DELETE FROM table_item WHERE column_amount > 0.0 AND column_isFull = 0")
-    fun deleteLeftover() : Int
+    @Query("DELETE FROM table_item WHERE column_listName = :listName AND column_amount > 0.0 AND column_isFull = 0")
+    fun deleteLeftover(listName: String?) : Int
 
-    @Query("DELETE FROM table_item WHERE column_isFull = 1")
-    fun deleteFull() : Int
+    @Query("DELETE FROM table_item WHERE column_listName = :listName AND column_isFull = 1")
+    fun deleteFull(listName: String?) : Int
 
-    @Query("DELETE FROM table_item")
-    fun deleteAllItems() : Int
+    @Query("DELETE FROM table_item WHERE column_listName = :listName")
+    fun deleteAllItems(listName: String?) : Int
 
     // operations for getting items
     @Query("SELECT * FROM table_item WHERE column_id = :id")
     fun getItem(id : Long?) : Item
 
-    @Query("SELECT COUNT(column_name) FROM table_item WHERE column_name = :name")
-    fun getItemCount(name : String?) : Int
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_name = :name ORDER BY column_order ASC")
+    fun getItemByName(name: String?, listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_name = :name ORDER BY column_order ASC")
-    fun getItemByName(name: String?) : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_name LIKE '%' || :keyword || '%' ORDER BY column_order ASC")
+    fun getItemsWithKeyword(keyword: String?, listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_name LIKE '%' || :keyword || '%' ORDER BY column_order ASC")
-    fun getItemsWithKeyword(keyword: String?) : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount = :amount ORDER BY column_order ASC")
+    fun getItemsEqualTo(amount: Double?, listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount = :amount ORDER BY column_order ASC")
-    fun getItemsEqualTo(amount: Double?) : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount != :amount ORDER BY column_order ASC")
+    fun getItemsNotEqualTo(amount: Double?, listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount != :amount ORDER BY column_order ASC")
-    fun getItemsNotEqualTo(amount: Double?) : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount < :amount ORDER BY column_order ASC")
+    fun getItemsLessThan(amount: Double?, listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount < :amount ORDER BY column_order ASC")
-    fun getItemsLessThan(amount: Double?) : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount <= :amount ORDER BY column_order ASC")
+    fun getItemsLessThanOrEqualTo(amount: Double?, listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount <= :amount ORDER BY column_order ASC")
-    fun getItemsLessThanOrEqualTo(amount: Double?) : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount > :amount ORDER BY column_order ASC")
+    fun getItemsGreaterThan(amount: Double?, listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount > :amount ORDER BY column_order ASC")
-    fun getItemsGreaterThan(amount: Double?) : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount >= :amount ORDER BY column_order ASC")
+    fun getItemsGreaterThanOrEqualTo(amount: Double?, listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount >= :amount ORDER BY column_order ASC")
-    fun getItemsGreaterThanOrEqualTo(amount: Double?) : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount <= 0.0 ORDER BY column_order ASC")
+    fun getEmptyItems(listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount <= 0.0 ORDER BY column_order ASC")
-    fun getEmptyItems() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_amount > 0.0 AND column_isFull = 0 ORDER BY column_order ASC")
+    fun getLeftoverItems(listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_amount > 0.0 AND column_isFull = 0 ORDER BY column_order ASC")
-    fun getLeftoverItems() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_isFull = 1 ORDER BY column_order ASC")
+    fun getFullItems(listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item WHERE column_isFull = 1 ORDER BY column_order ASC")
-    fun getFullItems() : List<Item>
+    @Query("SELECT * FROM table_item WHERE column_listName = :listName ORDER BY column_order ASC")
+    fun getAllItems(listName: String?) : List<Item>
 
-    @Query("SELECT * FROM table_item ORDER BY column_order ASC")
-    fun getAllItems() : List<Item>
+    @Query("SELECT DISTINCT column_listName FROM table_item")
+    fun getAllSavedListNames() : List<String>
 }
