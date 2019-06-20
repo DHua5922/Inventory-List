@@ -10,9 +10,6 @@
         <item android:id="@+id/option_open_list"
               android:title="@string/open_list"
               app:showAsAction="never"/>
-        <item android:id="@+id/option_delete_this_list"
-              android:title="@string/delete_this_list"
-              app:showAsAction="never"/>
         <item android:id="@+id/option_delete_list"
               android:title="@string/delete_list"
               app:showAsAction="never"/>
