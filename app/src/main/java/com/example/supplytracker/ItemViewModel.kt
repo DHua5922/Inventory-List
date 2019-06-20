@@ -50,7 +50,7 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
             )
 
             val id = repository.insert(newItem)
-            item.id = id
+            newItem.id = id
             repository.update(newItem)
         }
     }
