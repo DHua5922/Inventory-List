@@ -121,7 +121,7 @@ abstract class ItemDatabase : RoomDatabase() {
             private val itemDao = database?.itemDao()
 
             override fun doInBackground(vararg p0: Unit?): Unit? {
-                itemDao?.getAllItems()
+                itemDao?.getAllItems("Unsaved")
                 return null
             }
         }
