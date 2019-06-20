@@ -126,6 +126,6 @@ interface ItemDao {
     @Query("SELECT * FROM table_item WHERE column_listName = :listName ORDER BY column_order ASC")
     fun getAllItems(listName: String?) : List<Item>
 
-    @Query("SELECT DISTINCT column_listName FROM table_item")
+    @Query("SELECT DISTINCT column_listName FROM table_item WHERE column_listName != 'Unsaved'")
     fun getAllSavedListNames() : List<String>
 }
