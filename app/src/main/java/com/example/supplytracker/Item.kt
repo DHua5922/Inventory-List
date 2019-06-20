@@ -17,5 +17,5 @@ data class Item(
     @ColumnInfo(name = "column_amount") var amount: Double,
     @ColumnInfo(name = "column_isFull") var isFull: Int = 0,
     @ColumnInfo(name = "column_order") var order: Int,
-    @ColumnInfo(name = "column_listName") var listName: String = "Unsaved"
+    @ColumnInfo(name = "column_listName") var listName: String
 )
