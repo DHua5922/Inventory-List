@@ -74,7 +74,7 @@ interface ItemDao {
     @Delete
     fun delete(item : Item?) : Int
 
-    @Query("DELETE FROM table_item WHERE column_listName = :listName AND column_amount <= 0")
+    @Query("DELETE FROM table_item WHERE column_listName = :listName AND column_amount <= 0.0")
     fun deleteEmpty(listName: String?) : Int
 
     @Query("DELETE FROM table_item WHERE column_listName = :listName AND column_amount > 0.0 AND column_isFull = 0")
