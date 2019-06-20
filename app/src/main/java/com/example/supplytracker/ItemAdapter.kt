@@ -64,7 +64,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      * check if the specific item in the given database is empty or not.
      *
      * @param   itemDisplay     item display
-     * @param   database        database
+     * @param   position        index of item display in list
      */
     private fun onBindCheckbox(itemDisplay : ItemHolder, position : Int) {
         val checkbox = itemDisplay.checkBox
@@ -118,7 +118,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      * of the current item name. The item in the given database is updated with the new name.
      *
      * @param   nameDisplay     display of item name
-     * @param   database        database
+     * @param   position        index of name display in list
      */
     private fun onBindName(nameDisplay : TextView, position : Int) {
         // display item name
@@ -126,11 +126,12 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         // when display for item name is clicked
         nameDisplay.setOnClickListener {
             Dialog.showNameEditDialog(
-                context,
-                R.layout.dialog_edit_field, itemViewModel,
-                this,
-                nameDisplay,
-                position
+                context = context,
+                layout = R.layout.dialog_edit_field,
+                itemViewModel = itemViewModel,
+                listManager = this,
+                nameDisplay = nameDisplay,
+                position = position
             )
         }
     }
@@ -143,7 +144,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      * full, or being used.
      *
      * @param   itemDisplay     item display
-     * @param   database        database
+     * @param   position        index of item display in list
      */
     private fun onBindAmount(itemDisplay : ItemHolder, position : Int) {
         val amountDisplay = itemDisplay.amountDisplay
@@ -164,12 +165,12 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         // when display for item amount is clicked
         amountDisplay.setOnClickListener {
             Dialog.showAmountEditDialog(
-                context,
-                R.layout.dialog_edit_field,
-                itemViewModel,
-                this,
-                itemDisplay,
-                position
+                context = context,
+                layout = R.layout.dialog_edit_field,
+                itemViewModel = itemViewModel,
+                listManager = this,
+                itemDisplay = itemDisplay,
+                position = position
             )
         }
     }
@@ -179,14 +180,13 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      * The specific item will be deleted from the database.
      *
      * @param   itemDisplay     item display
-     * @param   database        database
      */
     private fun onBindDeleteBtn(itemDisplay : ItemHolder) {
         // when delete button of item display is clicked
         itemDisplay.deleteBtn.setOnClickListener{
             // delete item and update list
             Dialog.showConfirmationDialog(
-                context,
+                context = context,
                 itemId = itemDisplay.deleteBtn.id,
                 message = "Are you sure you want to delete ${itemDisplay.nameDisplay.text}",
                 listManager = this,
