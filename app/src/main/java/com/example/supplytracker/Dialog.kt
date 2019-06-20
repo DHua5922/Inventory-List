@@ -21,10 +21,6 @@ import kotlinx.android.synthetic.main.dialog_search_item_word.view.*
 import android.widget.ArrayAdapter
 import android.widget.AdapterView
 
-
-
-
-
 class Dialog {
     companion object {
         fun showConfirmationDialog(context : Context,
@@ -42,14 +38,6 @@ class Dialog {
                 builder.apply {
                     setPositiveButton(R.string.btn_dialog_ok) { dialog, id ->
                         when(itemId) {
-                            R.id.option_save_list -> {
-                                val list = listManager.getItems()
-                                for(item in list) {
-                                    if(item.listName == "Unsaved")
-                                        item.listName = listName
-                                }
-                                itemViewModel!!.update(list)
-                            }
                             R.id.btn_delete -> {
                                 listManager.removeItem(itemDisplay!!.adapterPosition)
                             }
@@ -80,37 +68,22 @@ class Dialog {
                                 listManager: ItemAdapter) {
             val alertDialog: AlertDialog? = this.let {
                 val builder = AlertDialog.Builder(context)
-                lateinit var input : View
                 var selectedPosition = -1
-                lateinit var arrayAdapter: ArrayAdapter<String>
-
-                when (itemId) {
-                    R.id.option_save_list_as -> {
-                        // Set up the input
-                        input = EditText(context)
-                        // Specify the type of input expected
-                        input.inputType = InputType.TYPE_CLASS_TEXT
-                        input.hint = hint
-                        builder.setView(input)
+                val input = AutoCompleteTextView(context)
+                input.inputType = InputType.TYPE_CLASS_TEXT
+                input.hint = hint
+                val arrayAdapter = ArrayAdapter(
+                    context,
+                    R.layout.comparison_options,
+                    itemViewModel.getAllSavedListNames()
+                )
+                input.setAdapter(arrayAdapter)
+                input.setOnClickListener { input.showDropDown() }
+                input.onItemClickListener =
+                    AdapterView.OnItemClickListener { adapterView, view, position, l ->
+                        selectedPosition = position
                     }
-                    else -> {
-                        input = AutoCompleteTextView(context)
-                        input.inputType = InputType.TYPE_CLASS_TEXT
-                        input.hint = hint
-                        arrayAdapter = ArrayAdapter(
-                            context,
-                            R.layout.comparison_options,
-                            itemViewModel!!.getAllSavedListNames()
-                        )
-                        input.setAdapter(arrayAdapter)
-                        input.setOnClickListener { input.showDropDown() }
-                        input.onItemClickListener =
-                            AdapterView.OnItemClickListener { adapterView, view, position, l ->
-                                selectedPosition = position
-                            }
-                        builder.setView(input)
-                    }
-                }
+                builder.setView(input)
 
                 builder.apply {
                     setPositiveButton(R.string.btn_dialog_ok) { dialog, id ->
@@ -126,6 +99,9 @@ class Dialog {
                                     }
                                     else -> {
                                         itemViewModel.add(listManager.getItems(), name)
+                                        itemViewModel.delete("Unsaved")
+                                        ItemListDisplay.listName = name
+                                        listManager.setItems(itemViewModel.getAllItems(name))
                                         styledText = TextStyle.bold(name, "This list has been saved as $name")
                                         Toast.makeText(context, styledText, LENGTH_SHORT).show()
                                     }
@@ -134,12 +110,13 @@ class Dialog {
                             else -> {
                                 if(selectedPosition > -1) {
                                     val listName = arrayAdapter.getItem(selectedPosition)
-                                    ItemListDisplay.listName = listName
-                                    if(itemId == R.id.option_open_list)
+                                    if(itemId == R.id.option_open_list) {
+                                        ItemListDisplay.listName = listName
                                         listManager.setItems(itemViewModel.getAllItems(listName))
-                                    else {
+                                    } else {
                                         itemViewModel.delete(listName)
-                                        listManager.setItems(itemViewModel.getAllItems(listName))
+                                        if(listName == ItemListDisplay.listName)
+                                            listManager.setItems(itemViewModel.getAllItems(listName))
                                         val styledText = TextStyle.bold(listName, "$listName has been deleted")
                                         Toast.makeText(context, styledText, LENGTH_SHORT).show()
                                     }
