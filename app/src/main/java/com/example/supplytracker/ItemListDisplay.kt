@@ -96,7 +96,8 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                     val item = Item(
                         order = listManager.getMaxOrder() + 1,
                         name = "${editableName.text}",
-                        amount = "${editableAmount.text}".trim().toDouble()
+                        amount = "${editableAmount.text}".trim().toDouble(),
+                        listName = listName
                     )
 
                     val result = itemViewModel.add(item)
@@ -260,17 +261,6 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
 
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
         return when (item.itemId) {
-            R.id.option_save_list -> {
-                Dialog.showConfirmationDialog(
-                    context = this,
-                    itemId = item.itemId,
-                    listName = listName,
-                    message = "Are you sure you want to save this list?",
-                    itemViewModel = itemViewModel,
-                    listManager = listManager
-                )
-                true
-            }
             R.id.option_save_list_as -> {
                 Dialog.promptListDialog(
                     context = this,
