@@ -15,7 +15,10 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
 
     private lateinit var itemViewModel : ItemViewModel
     private lateinit var listManager : ItemAdapter
-    private var listName : String = "Unsaved"
+
+    companion object {
+        var listName: String = "Unsaved"
+    }
 
     override fun onCreate(savedState : Bundle?) {
         super.onCreate(savedState)
@@ -23,7 +26,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
 
         itemViewModel = ViewModelProviders.of(this).get(ItemViewModel(application)::class.java)
         listManager = ItemAdapter(this, itemViewModel)
-        listManager.setItems(itemViewModel.getAllItems())
+        listManager.setItems(itemViewModel.getAllItems(listName))
         list_display.adapter = listManager
         list_display.layoutManager = LinearLayoutManager(this)
 
@@ -152,7 +155,9 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
     override fun onMenuItemClick(method: MenuItem): Boolean {
         // if one of method for removing items is clicked
         if(method.itemId == R.id.option_remove_all) {
-            Dialog.showConfirmationDialog(this,
+            Dialog.showConfirmationDialog(
+                context = this,
+                listName = listName,
                 message = "Are you sure you want to delete all the items in this list?",
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
@@ -160,7 +165,9 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 method = method)
         }
         else if(method.itemId == R.id.option_remove_empty) {
-            Dialog.showConfirmationDialog(this,
+            Dialog.showConfirmationDialog(
+                context = this,
+                listName = listName,
                 message = "Are you sure you want to delete all the empty items in this list?",
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
@@ -168,7 +175,9 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 method = method)
         }
         else if(method.itemId == R.id.option_remove_leftover) {
-            Dialog.showConfirmationDialog(this,
+            Dialog.showConfirmationDialog(
+                context = this,
+                listName = listName,
                 message = "Are you sure you want to delete all the leftover items in this list?",
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
@@ -176,7 +185,9 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 method = method)
         }
         else if(method.itemId == R.id.option_remove_checked) {
-            Dialog.showConfirmationDialog(this,
+            Dialog.showConfirmationDialog(
+                context = this,
+                listName = listName,
                 message = "Are you sure you want to delete all the items that are full in this list?",
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
@@ -186,38 +197,41 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
         // if searching items by name or keyword
         else if(method.itemId == R.id.option_search_name) {
             Dialog.showSearchWordDialog(
-                this,
-                method,
-                R.layout.dialog_search_item_word,
-                itemViewModel,
-                listManager,
-                R.string.title_search_name,
-                R.string.search_name_description,
-                R.string.hint_search_name
+                context = this,
+                listName = listName,
+                searchOption = method,
+                layout = R.layout.dialog_search_item_word,
+                itemViewModel = itemViewModel,
+                listManager = listManager,
+                title = R.string.title_search_name,
+                description = R.string.search_name_description,
+                hint = R.string.hint_search_name
             )
         }
         else if (method.itemId == R.id.option_search_keyword) {
             Dialog.showSearchWordDialog(
-                this,
-                method,
-                R.layout.dialog_search_item_word,
-                itemViewModel,
-                listManager,
-                R.string.title_search_keyword,
-                R.string.search_keyword_description,
-                R.string.hint_search_keyword
+                context = this,
+                listName = listName,
+                searchOption = method,
+                layout = R.layout.dialog_search_item_word,
+                itemViewModel = itemViewModel,
+                listManager = listManager,
+                title = R.string.title_search_keyword,
+                description = R.string.search_keyword_description,
+                hint = R.string.hint_search_keyword
             )
         }
         // if searching items by amount
         else if(method.itemId == R.id.option_search_amount) {
             Dialog.showSearchAmountDialog(
-                this,
-                method,
-                listManager,
-                itemViewModel,
-                R.layout.dialog_search_item_amount,
-                R.array.array_comparisons,
-                R.layout.comparison_options
+                context = this,
+                method = method,
+                listName = listName,
+                listManager = listManager,
+                itemViewModel = itemViewModel,
+                layoutDialog = R.layout.dialog_search_item_amount,
+                arrayComparisons = R.array.array_comparisons,
+                comparisonOptionsLayout = R.layout.comparison_options
             )
         }
         // if searching empty, leftover, full, or all items
@@ -225,14 +239,14 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                     method.itemId == R.id.option_search_leftover ||
                     method.itemId == R.id.option_search_full ||
                     method.itemId == R.id.option_search_all) {
-            listManager.setItems(itemViewModel.search(method))
+            listManager.setItems(itemViewModel.search(method, listName))
         }
 
         // otherwise, a sorting method is clicked
         else {
             //itemViewModel.sort(method).observe(this,
                 //Observer {item -> listManager.setItems(item!!)})
-            listManager.setItems(itemViewModel.sort(method))
+            listManager.setItems(itemViewModel.sort(method, listName))
         }
 
         list_display.adapter = listManager
@@ -247,35 +261,46 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
         return when (item.itemId) {
             R.id.option_save_list -> {
-                Dialog.showConfirmationDialog(this, item.itemId, message = "Are you sure you want to save this list?")
+                Dialog.showConfirmationDialog(
+                    context = this,
+                    itemId = item.itemId,
+                    listName = listName,
+                    message = "Are you sure you want to save this list?",
+                    itemViewModel = itemViewModel,
+                    listManager = listManager
+                )
                 true
             }
             R.id.option_save_list_as -> {
                 Dialog.promptListDialog(
-                    this,
-                    item.itemId,
+                    context = this,
+                    itemId = item.itemId,
                     message = "Enter the name for this list to be saved as",
-                    hint = "Enter new name for list"
+                    hint = "Enter new name for list",
+                    itemViewModel = itemViewModel,
+                    listManager = listManager
                 )
                 true
             }
             R.id.option_open_list -> {
                 Dialog.promptListDialog(
-                    this,
-                    item.itemId,
-                    message = "Choose which list to view"
+                    context = this,
+                    itemId = item.itemId,
+                    message = "Choose which list to view",
+                    hint = "Enter name of list to open",
+                    itemViewModel = itemViewModel,
+                    listManager = listManager
                 )
-                true
-            }
-            R.id.option_delete_this_list -> {
-                Dialog.showConfirmationDialog(this, item.itemId, message = "Are you sure you want to delete this list? This action cannot be undone.")
                 true
             }
             R.id.option_delete_list -> {
                 Dialog.promptListDialog(
-                    this,
-                    item.itemId,
-                    message = "Choose which list to delete"
+                    context = this,
+                    itemId = item.itemId,
+                    message = "Choose which list to delete",
+                    hint = "Enter name of list to delete",
+                    itemViewModel = itemViewModel,
+                    listManager = listManager
                 )
                 true
             }
