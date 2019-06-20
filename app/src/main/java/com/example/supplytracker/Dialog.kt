@@ -4,10 +4,12 @@ import android.app.AlertDialog
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.text.InputType
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import android.widget.Toast.LENGTH_SHORT
 import kotlinx.android.synthetic.main.dialog_edit_field.view.*
 import kotlinx.android.synthetic.main.dialog_edit_field.view.btn_dialog_cancel
 import kotlinx.android.synthetic.main.dialog_edit_field.view.btn_dialog_ok
@@ -16,17 +18,24 @@ import kotlinx.android.synthetic.main.dialog_edit_field.view.title
 import kotlinx.android.synthetic.main.dialog_search_item_amount.*
 import kotlinx.android.synthetic.main.dialog_search_item_amount.view.*
 import kotlinx.android.synthetic.main.dialog_search_item_word.view.*
+import android.widget.ArrayAdapter
+import android.widget.AdapterView
+
+
+
+
 
 class Dialog {
     companion object {
         fun showConfirmationDialog(context : Context,
-                            itemId : Int = -1,
-                            title : String = "",
-                            message : String = "",
-                            itemViewModel: ItemViewModel ?= null,
-                            listManager: ItemAdapter ?= null,
-                            method: MenuItem ?= null,
-                            itemDisplay : ItemAdapter.ItemHolder ?= null) {
+                                        itemId : Int = -1,
+                                        listName : String = "Unsaved",
+                                        title : String = "",
+                                        message : String,
+                                        itemViewModel: ItemViewModel ?= null,
+                                        listManager: ItemAdapter,
+                                        method: MenuItem ?= null,
+                                        itemDisplay : ItemAdapter.ItemHolder ?= null) {
             val alertDialog: AlertDialog? = this.let {
                 val builder = AlertDialog.Builder(context)
 
@@ -34,17 +43,19 @@ class Dialog {
                     setPositiveButton(R.string.btn_dialog_ok) { dialog, id ->
                         when(itemId) {
                             R.id.option_save_list -> {
-
-                            }
-                            R.id.option_delete_this_list -> {
-
+                                val list = listManager.getItems()
+                                for(item in list) {
+                                    if(item.listName == "Unsaved")
+                                        item.listName = listName
+                                }
+                                itemViewModel!!.update(list)
                             }
                             R.id.btn_delete -> {
-                                listManager!!.removeItem(itemDisplay!!.adapterPosition)
+                                listManager.removeItem(itemDisplay!!.adapterPosition)
                             }
                             else -> {
-                                itemViewModel!!.delete(method!!)
-                                listManager!!.setItems(itemViewModel.getAllItems())
+                                itemViewModel!!.delete(method!!, listName)
+                                listManager.setItems(itemViewModel.getAllItems(listName))
                             }
                         }
                         dialog.dismiss()
@@ -64,29 +75,77 @@ class Dialog {
                                 itemId : Int,
                                 title : String = "",
                                 message : String,
-                                hint : String = "") {
+                                hint : String,
+                                itemViewModel: ItemViewModel,
+                                listManager: ItemAdapter) {
             val alertDialog: AlertDialog? = this.let {
                 val builder = AlertDialog.Builder(context)
+                lateinit var input : View
+                var selectedPosition = -1
+                lateinit var arrayAdapter: ArrayAdapter<String>
 
                 when (itemId) {
                     R.id.option_save_list_as -> {
                         // Set up the input
-                        val input = EditText(context)
+                        input = EditText(context)
                         // Specify the type of input expected
                         input.inputType = InputType.TYPE_CLASS_TEXT
                         input.hint = hint
                         builder.setView(input)
                     }
-                    R.id.option_delete_list -> {
-
-                    }
-                    R.id.option_open_list -> {
-
+                    else -> {
+                        input = AutoCompleteTextView(context)
+                        input.inputType = InputType.TYPE_CLASS_TEXT
+                        input.hint = hint
+                        arrayAdapter = ArrayAdapter(
+                            context,
+                            R.layout.comparison_options,
+                            itemViewModel!!.getAllSavedListNames()
+                        )
+                        input.setAdapter(arrayAdapter)
+                        input.setOnClickListener { input.showDropDown() }
+                        input.onItemClickListener =
+                            AdapterView.OnItemClickListener { adapterView, view, position, l ->
+                                selectedPosition = position
+                            }
+                        builder.setView(input)
                     }
                 }
 
                 builder.apply {
                     setPositiveButton(R.string.btn_dialog_ok) { dialog, id ->
+                        when (itemId) {
+                            R.id.option_save_list_as -> {
+                                val name = "${(input as EditText).text}".trim()
+                                lateinit var styledText : SpannableStringBuilder
+                                when {
+                                    name.isEmpty() -> Toast.makeText(context, "Name cannot be empty", LENGTH_SHORT).show()
+                                    itemViewModel.getListNameCount(name) > 0 -> {
+                                        styledText = TextStyle.bold(name, "$name already exists")
+                                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                                    }
+                                    else -> {
+                                        itemViewModel.add(listManager.getItems(), name)
+                                        styledText = TextStyle.bold(name, "This list has been saved as $name")
+                                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                            else -> {
+                                if(selectedPosition > -1) {
+                                    val listName = arrayAdapter.getItem(selectedPosition)
+                                    ItemListDisplay.listName = listName
+                                    if(itemId == R.id.option_open_list)
+                                        listManager.setItems(itemViewModel.getAllItems(listName))
+                                    else {
+                                        itemViewModel.delete(listName)
+                                        listManager.setItems(itemViewModel.getAllItems(listName))
+                                        val styledText = TextStyle.bold(listName, "$listName has been deleted")
+                                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }
                         dialog.dismiss()
                     }
                     setNegativeButton(R.string.btn_dialog_cancel) { dialog, id ->
@@ -102,11 +161,11 @@ class Dialog {
         }
 
         fun showNameEditDialog(context : Context,
-                               layout : Int,
-                               itemViewModel : ItemViewModel,
-                               listManager : ItemAdapter,
-                               nameDisplay : TextView,
-                               position : Int) {
+                                   layout : Int,
+                                   itemViewModel : ItemViewModel,
+                                   listManager : ItemAdapter,
+                                   nameDisplay : TextView,
+                                   position : Int) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
             val alertDialog = AlertDialog.Builder(context).setView(dialogView).show()
@@ -129,19 +188,23 @@ class Dialog {
 
             // when ok button in dialog is clicked
             dialogView.btn_dialog_ok.setOnClickListener {
-                val items = listManager.getItems()
-                items[position].name = "${dialogView.field_new_info.text}"
-                // try to update item with new name and exit dialog
-                if(itemViewModel.update(items[position])) {
-                    // update list with new name
-                    listManager.setItems(items)
-                    // exit dialog
-                    alertDialog.dismiss()
+                val name = "${dialogView.field_new_info.text}".trim()
+                if(name.isNotEmpty()) {
+                    val items = listManager.getItems()
+                    // try to update item with new name and exit dialog
+                    items[position].name = name
+                    if (itemViewModel.update(items[position])) {
+                        // update list with new name
+                        listManager.setItems(items)
+                        // exit dialog
+                        alertDialog.dismiss()
+                    } else {
+                        items[position].name = "$currentName"
+                    }
                 } else {
-                    items[position].name = "$currentName"
+                    Toast.makeText(context, "Name cannot be empty", LENGTH_SHORT).show()
                 }
             }
-
 
             // when cancel button in dialog is clicked, exit out of dialog
             dialogView.btn_dialog_cancel.setOnClickListener {
@@ -150,11 +213,11 @@ class Dialog {
         }
 
         fun showAmountEditDialog(context : Context,
-                                 layout : Int,
-                                 itemViewModel : ItemViewModel,
-                                 listManager : ItemAdapter,
-                                 itemDisplay : ItemAdapter.ItemHolder,
-                                 position : Int) {
+                                     layout : Int,
+                                     itemViewModel : ItemViewModel,
+                                     listManager : ItemAdapter,
+                                     itemDisplay : ItemAdapter.ItemHolder,
+                                     position : Int) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
             val alertDialog = AlertDialog.Builder(context).setView(dialogView).show()
@@ -185,26 +248,30 @@ class Dialog {
             dialogView.btn_dialog_ok.setOnClickListener {
                 val items = listManager.getItems()
                 // try to update item with new amount and exit dialog
-                items[position].amount = "${dialogView.field_new_info.text}".toDouble()
-                if(itemViewModel.update(items[position])) {
-                    listManager.setItems(items)
-                    // exit dialog
-                    alertDialog.dismiss()
+                try {
+                    items[position].amount = "${dialogView.field_new_info.text}".toDouble()
+                    if (itemViewModel.update(items[position])) {
+                        listManager.setItems(items)
+                        // exit dialog
+                        alertDialog.dismiss()
 
-                    // when item is being updated with new amount, check if item is empty or not
-                    val displayLayout = itemDisplay.linearLayout
-                    if(items[position].amount <= 0) {
-                        // notify user that item is empty
-                        val styledText = TextStyle.bold("$name", "Now, $name is empty")
-                        Toast.makeText(context, styledText, Toast.LENGTH_SHORT).show()
-                        // item is empty so layout is colored red
-                        displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
+                        // when item is being updated with new amount, check if item is empty or not
+                        val displayLayout = itemDisplay.linearLayout
+                        if (items[position].amount <= 0) {
+                            // notify user that item is empty
+                            val styledText = TextStyle.bold("$name", "Now, $name is empty")
+                            Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                            // item is empty so layout is colored red
+                            displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
+                        } else {
+                            // item is not empty so layout is colored white
+                            displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                        }
                     } else {
-                        // item is not empty so layout is colored white
-                        displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                        items[position].amount = "$currentAmount".toDouble()
                     }
-                } else {
-                    items[position].amount = "$currentAmount".toDouble()
+                } catch(e : NumberFormatException) {
+                    Toast.makeText(context, "Amount must only be a number", LENGTH_SHORT).show()
                 }
             }
 
@@ -215,13 +282,14 @@ class Dialog {
         }
 
         fun showSearchWordDialog(context : Context,
-                             searchOption : MenuItem,
-                             layout : Int,
-                             itemViewModel: ItemViewModel,
-                             listManager : ItemAdapter,
-                             title : Int,
-                             description : Int,
-                             hint : Int) {
+                                     listName: String,
+                                     searchOption : MenuItem,
+                                     layout : Int,
+                                     itemViewModel: ItemViewModel,
+                                     listManager : ItemAdapter,
+                                     title : Int,
+                                     description : Int,
+                                     hint : Int) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
             // show dialog
@@ -239,12 +307,18 @@ class Dialog {
                 // try to search items by name or keyword
                 try {
                     // search items
-                    listManager.setItems(itemViewModel.search(searchOption, "${dialogView.field_search_word.text}"))
+                    listManager.setItems(
+                        itemViewModel.search(
+                            searchMethod = searchOption,
+                            listName = listName,
+                            word = "${dialogView.field_search_word.text}"
+                        )
+                    )
                     // exit dialog
                     alertDialog.dismiss()
                     // otherwise, search method is invalid
                 } catch (e : Exception) {
-                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, e.message, LENGTH_SHORT).show()
                 }
             }
 
@@ -254,14 +328,14 @@ class Dialog {
             }
         }
 
-        fun showSearchAmountDialog(
-            context : Context,
-            method : MenuItem,
-            listManager : ItemAdapter,
-            itemViewModel: ItemViewModel,
-            layoutDialog : Int,
-            arrayComparisons : Int,
-            comparisonOptionsLayout : Int) {
+        fun showSearchAmountDialog(context : Context,
+                                        method : MenuItem,
+                                        listName: String,
+                                        listManager : ItemAdapter,
+                                        itemViewModel: ItemViewModel,
+                                        layoutDialog : Int,
+                                        arrayComparisons : Int,
+                                        comparisonOptionsLayout : Int) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layoutDialog, null)
             val alertDialog : AlertDialog = AlertDialog.Builder(context).setView(dialogView).show()
@@ -291,12 +365,13 @@ class Dialog {
             dialogView.btn_dialog_ok.setOnClickListener {
                 val amount = "${dialogView.field_search_amount.text}".trim()
                 if(amount.isEmpty()) {
-                    Toast.makeText(context, "Amount must only be a number", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Amount must only be a number", LENGTH_SHORT).show()
                 } else {
                     // search items by amount
                     listManager.setItems(
                         itemViewModel.search(
                             method,
+                            listName = listName,
                             amount = amount.toDouble(),
                             comparison = spinner.selectedItemPosition
                         )
