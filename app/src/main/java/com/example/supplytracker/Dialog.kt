@@ -1,8 +1,10 @@
 package com.example.supplytracker
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.text.InputType
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
@@ -24,14 +26,14 @@ import android.widget.AdapterView
 class Dialog {
     companion object {
         fun showConfirmationDialog(context : Context,
-                                        itemId : Int = -1,
-                                        listName : String = "Unsaved",
-                                        title : String = "",
-                                        message : String,
-                                        itemViewModel: ItemViewModel ?= null,
-                                        listManager: ItemAdapter,
-                                        method: MenuItem ?= null,
-                                        itemDisplay : ItemAdapter.ItemHolder ?= null) {
+                                   itemId : Int = -1,
+                                   listName : String = "Unsaved",
+                                   title : String = "",
+                                   message : String,
+                                   itemViewModel: ItemViewModel ?= null,
+                                   listManager: ItemAdapter,
+                                   method: MenuItem ?= null,
+                                   itemDisplay : ItemAdapter.ItemHolder ?= null) {
             val alertDialog: AlertDialog? = this.let {
                 val builder = AlertDialog.Builder(context)
 
@@ -60,12 +62,13 @@ class Dialog {
         }
 
         fun promptListDialog(context : Context,
-                                itemId : Int,
-                                title : String = "",
-                                message : String,
-                                hint : String,
-                                itemViewModel: ItemViewModel,
-                                listManager: ItemAdapter) {
+                             itemId : Int,
+                             title : String = "",
+                             message : String,
+                             hint : String,
+                             itemViewModel: ItemViewModel,
+                             listManager: ItemAdapter,
+                             activity: Activity ?= null) {
             val alertDialog: AlertDialog? = this.let {
                 val builder = AlertDialog.Builder(context)
                 var selectedPosition = -1
@@ -101,6 +104,7 @@ class Dialog {
                                         itemViewModel.add(listManager.getItems(), name)
                                         itemViewModel.delete("Unsaved")
                                         ItemListDisplay.listName = name
+                                        (activity as ItemListDisplay).supportActionBar!!.title = name
                                         listManager.setItems(itemViewModel.getAllItems(name))
                                         styledText = TextStyle.bold(name, "This list has been saved as $name")
                                         Toast.makeText(context, styledText, LENGTH_SHORT).show()
@@ -112,6 +116,7 @@ class Dialog {
                                     val listName = arrayAdapter.getItem(selectedPosition)
                                     if(itemId == R.id.option_open_list) {
                                         ItemListDisplay.listName = listName
+                                        (activity as ItemListDisplay).supportActionBar!!.title = listName
                                         listManager.setItems(itemViewModel.getAllItems(listName))
                                     } else {
                                         itemViewModel.delete(listName)
@@ -138,11 +143,11 @@ class Dialog {
         }
 
         fun showNameEditDialog(context : Context,
-                                   layout : Int,
-                                   itemViewModel : ItemViewModel,
-                                   listManager : ItemAdapter,
-                                   nameDisplay : TextView,
-                                   position : Int) {
+                               layout : Int,
+                               itemViewModel : ItemViewModel,
+                               listManager : ItemAdapter,
+                               nameDisplay : TextView,
+                               position : Int) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
             val alertDialog = AlertDialog.Builder(context).setView(dialogView).show()
@@ -190,11 +195,11 @@ class Dialog {
         }
 
         fun showAmountEditDialog(context : Context,
-                                     layout : Int,
-                                     itemViewModel : ItemViewModel,
-                                     listManager : ItemAdapter,
-                                     itemDisplay : ItemAdapter.ItemHolder,
-                                     position : Int) {
+                                 layout : Int,
+                                 itemViewModel : ItemViewModel,
+                                 listManager : ItemAdapter,
+                                 itemDisplay : ItemAdapter.ItemHolder,
+                                 position : Int) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
             val alertDialog = AlertDialog.Builder(context).setView(dialogView).show()
@@ -259,14 +264,14 @@ class Dialog {
         }
 
         fun showSearchWordDialog(context : Context,
-                                     listName: String,
-                                     searchOption : MenuItem,
-                                     layout : Int,
-                                     itemViewModel: ItemViewModel,
-                                     listManager : ItemAdapter,
-                                     title : Int,
-                                     description : Int,
-                                     hint : Int) {
+                                 listName: String,
+                                 searchOption : MenuItem,
+                                 layout : Int,
+                                 itemViewModel: ItemViewModel,
+                                 listManager : ItemAdapter,
+                                 title : Int,
+                                 description : Int,
+                                 hint : Int) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
             // show dialog
@@ -306,13 +311,13 @@ class Dialog {
         }
 
         fun showSearchAmountDialog(context : Context,
-                                        method : MenuItem,
-                                        listName: String,
-                                        listManager : ItemAdapter,
-                                        itemViewModel: ItemViewModel,
-                                        layoutDialog : Int,
-                                        arrayComparisons : Int,
-                                        comparisonOptionsLayout : Int) {
+                                   method : MenuItem,
+                                   listName: String,
+                                   listManager : ItemAdapter,
+                                   itemViewModel: ItemViewModel,
+                                   layoutDialog : Int,
+                                   arrayComparisons : Int,
+                                   comparisonOptionsLayout : Int) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layoutDialog, null)
             val alertDialog : AlertDialog = AlertDialog.Builder(context).setView(dialogView).show()
