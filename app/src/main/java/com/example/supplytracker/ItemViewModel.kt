@@ -40,12 +40,12 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
     }
 
     fun add(items : List<Item>, listName : String) {
-        for(item in items) {
+        for((i, item) in items.withIndex()) {
             val newItem = Item(
                 name = item.name,
                 amount = item.amount,
                 isFull = item.isFull,
-                order = item.order,
+                order = i,
                 listName = listName
             )
 
@@ -181,9 +181,9 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
                 result = repository.deleteFull(listName)
                 message = "Removed all full (checked) items"
             } else -> {
-                Toast.makeText(app, message, LENGTH_SHORT).show()
-                throw Exception(message)
-            }
+            Toast.makeText(app, message, LENGTH_SHORT).show()
+            throw Exception(message)
+        }
         }
 
         Toast.makeText(app, message, LENGTH_SHORT).show()
