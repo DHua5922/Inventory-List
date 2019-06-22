@@ -52,10 +52,10 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      * @param   position    position
      */
     override fun onBindViewHolder(holder: ItemHolder, position: Int) {
-        onBindName(holder.nameDisplay, position)
-        onBindAmount(holder, position)
+        onBindName(holder)
+        onBindAmount(holder)
         onBindDeleteBtn(holder)
-        onBindCheckbox(holder, position)
+        onBindCheckbox(holder)
     }
 
     /**
@@ -66,9 +66,10 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      * @param   itemDisplay     item display
      * @param   position        index of item display in list
      */
-    private fun onBindCheckbox(itemDisplay : ItemHolder, position : Int) {
+    private fun onBindCheckbox(itemDisplay : ItemHolder) {
         val checkbox = itemDisplay.checkBox
         val displayLayout = itemDisplay.linearLayout
+        val position = itemDisplay.adapterPosition
 
         // every time list is updated, check if item is still full
         if (itemViewModel.getItem(items[position].id).isFull == 1) {
@@ -120,8 +121,10 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      * @param   nameDisplay     display of item name
      * @param   position        index of name display in list
      */
-    private fun onBindName(nameDisplay : TextView, position : Int) {
+    private fun onBindName(itemDisplay : ItemHolder) {
         // display item name
+        val position = itemDisplay.adapterPosition
+        val nameDisplay = itemDisplay.nameDisplay
         nameDisplay.text = items[position].name
         // when display for item name is clicked
         nameDisplay.setOnClickListener {
@@ -146,9 +149,10 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      * @param   itemDisplay     item display
      * @param   position        index of item display in list
      */
-    private fun onBindAmount(itemDisplay : ItemHolder, position : Int) {
+    private fun onBindAmount(itemDisplay : ItemHolder) {
         val amountDisplay = itemDisplay.amountDisplay
         val displayLayout = itemDisplay.linearLayout
+        val position = itemDisplay.adapterPosition
 
         // display item amount
         amountDisplay.text = "${items[position].amount}"
