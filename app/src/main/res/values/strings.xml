@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Supply List</string>
+    <string name="app_name">Inventory Tracker</string>
     <string name="description_splash_screen">Splash Screen Image</string>
 
     <string name="hint_item_name">Item Name</string>
