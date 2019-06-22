@@ -6,15 +6,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background_page"
-        android:padding="@dimen/item_padding"
         tools:context=".ItemListDisplay">
+
+    <include
+        android:id="@+id/toolbar" layout="@layout/toolbar"
+        app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/layout_add_item" app:layout_constraintTop_toTopOf="parent"/>
 
     <LinearLayout
             android:id="@+id/layout_add_item"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/layout_list_buttons" app:layout_constraintTop_toTopOf="parent"
-            android:orientation="horizontal">
+            app:layout_constraintBottom_toTopOf="@+id/layout_list_buttons" app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            android:layout_marginTop="@dimen/gap_list_display" android:orientation="horizontal"
+            android:layout_marginRight="@dimen/gap_list_display" android:layout_marginEnd="@dimen/gap_list_display"
+            android:layout_marginLeft="@dimen/gap_list_display" android:layout_marginStart="@dimen/gap_list_display">
 
         <EditText
                 android:id="@+id/editableName"
@@ -53,7 +59,9 @@
             app:layout_constraintBottom_toTopOf="@+id/list_display"
             app:layout_constraintTop_toBottomOf="@+id/layout_add_item"
             android:layout_marginTop="@dimen/gap_list_display"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginRight="@dimen/gap_list_display" android:layout_marginEnd="@dimen/gap_list_display"
+            android:layout_marginLeft="@dimen/gap_list_display" android:layout_marginStart="@dimen/gap_list_display">
 
         <Button
                 android:id="@+id/btn_sort_names"
@@ -98,6 +106,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_list_buttons"
-            tools:listitem="@layout/template_item_display"/>
+            tools:listitem="@layout/template_item_display"
+            android:layout_marginRight="@dimen/gap_list_display" android:layout_marginEnd="@dimen/gap_list_display"
+            android:layout_marginLeft="@dimen/gap_list_display" android:layout_marginStart="@dimen/gap_list_display"/>
 
 </android.support.constraint.ConstraintLayout>
