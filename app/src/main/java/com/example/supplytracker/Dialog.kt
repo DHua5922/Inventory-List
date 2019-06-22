@@ -177,7 +177,7 @@ class Dialog {
                     items[position].name = name
                     if (itemViewModel.update(items[position])) {
                         // update list with new name
-                        listManager.setItems(items)
+                        listManager.notifyItemChanged(position)
                         // exit dialog
                         alertDialog.dismiss()
                     } else {
@@ -233,7 +233,7 @@ class Dialog {
                 try {
                     items[position].amount = "${dialogView.field_new_info.text}".toDouble()
                     if (itemViewModel.update(items[position])) {
-                        listManager.setItems(items)
+                        listManager.notifyItemChanged(position)
                         // exit dialog
                         alertDialog.dismiss()
 
