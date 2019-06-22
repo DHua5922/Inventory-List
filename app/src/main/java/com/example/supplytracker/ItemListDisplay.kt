@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.widget.*
 import android.view.*
@@ -24,8 +25,18 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
         super.onCreate(savedState)
         setContentView(R.layout.list_display)
 
+
+
         itemViewModel = ViewModelProviders.of(this).get(ItemViewModel(application)::class.java)
         listManager = ItemAdapter(this, itemViewModel)
+
+        val list = itemViewModel.getAllSavedListNames()
+        if(list.isNotEmpty())
+            listName = list[0]
+
+        setSupportActionBar(toolbar as Toolbar?)
+        supportActionBar!!.title = listName
+
         listManager.setItems(itemViewModel.getAllItems(listName))
         list_display.adapter = listManager
         list_display.layoutManager = LinearLayoutManager(this)
@@ -237,16 +248,16 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
         }
         // if searching empty, leftover, full, or all items
         else if(method.itemId == R.id.option_search_empty ||
-                    method.itemId == R.id.option_search_leftover ||
-                    method.itemId == R.id.option_search_full ||
-                    method.itemId == R.id.option_search_all) {
+            method.itemId == R.id.option_search_leftover ||
+            method.itemId == R.id.option_search_full ||
+            method.itemId == R.id.option_search_all) {
             listManager.setItems(itemViewModel.search(method, listName))
         }
 
         // otherwise, a sorting method is clicked
         else {
             //itemViewModel.sort(method).observe(this,
-                //Observer {item -> listManager.setItems(item!!)})
+            //Observer {item -> listManager.setItems(item!!)})
             listManager.setItems(itemViewModel.sort(method, listName))
         }
 
@@ -268,7 +279,8 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                     message = "Enter the name for this list to be saved as",
                     hint = "Enter new name for list",
                     itemViewModel = itemViewModel,
-                    listManager = listManager
+                    listManager = listManager,
+                    activity = this
                 )
                 true
             }
@@ -279,7 +291,8 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                     message = "Choose which list to view",
                     hint = "Enter name of list to open",
                     itemViewModel = itemViewModel,
-                    listManager = listManager
+                    listManager = listManager,
+                    activity = this
                 )
                 true
             }
