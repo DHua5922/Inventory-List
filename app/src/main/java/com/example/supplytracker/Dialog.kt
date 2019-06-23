@@ -187,12 +187,12 @@ class Dialog {
             dialogView.btn_dialog_ok.setOnClickListener {
                 val name = "${dialogView.field_new_info.text}".trim()
                 if(name.isNotEmpty()) {
-                    val items = listManager.getItems()
+                    val position = itemDisplay.adapterPosition
+                    val item = listManager.getItemAt(position)
                     // try to update item with new name and exit dialog
                     lateinit var styledText : SpannableStringBuilder
-                    val position = itemDisplay.adapterPosition
-                    items[position].name = name
-                    if (itemViewModel.update(items[position])) {
+                    item.name = name
+                    if (itemViewModel.update(item)) {
                         // update list with new name
                         listManager.notifyItemChanged(position)
                         styledText = TextStyle.bold(arrayOf("$currentName", name), "Name for $currentName is now $name")
@@ -200,7 +200,7 @@ class Dialog {
                         // exit dialog
                         alertDialog.dismiss()
                     } else {
-                        items[position].name = "$currentName"
+                        item.name = "$currentName"
                         styledText = TextStyle.bold("$currentName", "Could not update name for $currentName")
                         Toast.makeText(context, styledText, LENGTH_SHORT).show()
                     }
@@ -249,14 +249,14 @@ class Dialog {
 
             // when ok button in dialog is clicked
             dialogView.btn_dialog_ok.setOnClickListener {
-                val items = listManager.getItems()
                 // try to update item with new amount and exit dialog
                 try {
                     lateinit var styledText : SpannableStringBuilder
                     val newAmount = "${dialogView.field_new_info.text}".toDouble()
                     val position = itemDisplay.adapterPosition
-                    items[position].amount = newAmount
-                    if (itemViewModel.update(items[position])) {
+                    val item = listManager.getItemAt(position)
+                    item.amount = newAmount
+                    if (itemViewModel.update(item)) {
                         listManager.notifyItemChanged(position)
                         // exit dialog
                         alertDialog.dismiss()
@@ -266,7 +266,7 @@ class Dialog {
 
                         // when item is being updated with new amount, check if item is empty or not
                         val displayLayout = itemDisplay.linearLayout
-                        if (items[position].amount <= 0) {
+                        if (item.amount <= 0) {
                             // item is empty so layout is colored red
                             displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
                         } else {
@@ -274,7 +274,7 @@ class Dialog {
                             displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
                         }
                     } else {
-                        items[position].amount = "$currentAmount".toDouble()
+                        item.amount = "$currentAmount".toDouble()
                         styledText = TextStyle.bold("$name", "Could not update amount for $name")
                         Toast.makeText(context, styledText, LENGTH_SHORT).show()
                     }
