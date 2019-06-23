@@ -92,7 +92,7 @@ class Dialog {
                     setPositiveButton(R.string.btn_dialog_ok) { dialog, id ->
                         when (itemId) {
                             R.id.option_save_list_as -> {
-                                val name = "${(input as EditText).text}".trim()
+                                val name = "${input.text}".trim()
                                 lateinit var styledText : SpannableStringBuilder
                                 when {
                                     name.isEmpty() -> Toast.makeText(context, "Name cannot be empty", LENGTH_SHORT).show()
@@ -113,16 +113,29 @@ class Dialog {
                             }
                             else -> {
                                 if(selectedPosition > -1) {
-                                    val listName = arrayAdapter.getItem(selectedPosition)
-                                    if(itemId == R.id.option_open_list) {
+                                    input.setText(arrayAdapter.getItem(selectedPosition))
+                                }
+                                val listName = "${input.text}".trim()
+                                val list = itemViewModel.getAllItems(listName)
+                                lateinit var styledText : SpannableStringBuilder
+                                if(itemId == R.id.option_open_list) {
+                                    if(list.isNotEmpty()) {
                                         ItemListDisplay.listName = listName
                                         (activity as ItemListDisplay).supportActionBar!!.title = listName
-                                        listManager.setItems(itemViewModel.getAllItems(listName))
+                                        listManager.setItems(itemViewModel.getAllItems("${input.text}"))
                                     } else {
+                                        styledText = TextStyle.bold(listName, "$listName does not exist")
+                                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                                    }
+                                } else {
+                                    if(list.isNotEmpty()) {
                                         itemViewModel.delete(listName)
-                                        if(listName == ItemListDisplay.listName)
+                                        if (listName == ItemListDisplay.listName)
                                             listManager.setItems(itemViewModel.getAllItems(listName))
-                                        val styledText = TextStyle.bold(listName, "$listName has been deleted")
+                                        styledText = TextStyle.bold(listName, "$listName has been deleted")
+                                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                                    } else {
+                                        styledText = TextStyle.bold(listName, "$listName does not exist")
                                         Toast.makeText(context, styledText, LENGTH_SHORT).show()
                                     }
                                 }
