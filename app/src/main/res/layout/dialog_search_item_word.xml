@@ -19,7 +19,7 @@
             android:layout_below="@+id/title"
             android:layout_marginTop="@dimen/dialog_gap_description"/>
 
-    <EditText
+    <AutoCompleteTextView
             android:id="@+id/field_search_word"
             android:hint="@string/hint_dialog_new_text" android:imeOptions="flagNoExtractUi"
             android:textSize="@dimen/text" android:background="@color/field"
