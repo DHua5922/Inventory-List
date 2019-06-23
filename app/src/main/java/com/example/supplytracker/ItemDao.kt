@@ -128,4 +128,7 @@ interface ItemDao {
 
     @Query("SELECT DISTINCT column_listName FROM table_item WHERE column_listName != 'Unsaved'")
     fun getAllSavedListNames() : List<String>
+
+    @Query("SELECT DISTINCT column_name FROM table_item WHERE column_listName = :listName")
+    fun getAllItemNames(listName : String?) : List<String>
 }
