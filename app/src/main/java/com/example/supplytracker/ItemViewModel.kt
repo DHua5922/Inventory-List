@@ -277,4 +277,8 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
     fun getAllSavedListNames() : List<String> {
         return repository.getAllSavedListNames()
     }
+
+    fun getAllItemNames(listName : String) : List<String> {
+        return repository.getAllItemNames(listName)
+    }
 }
