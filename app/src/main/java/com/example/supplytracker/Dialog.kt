@@ -4,12 +4,9 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.text.InputType
 import android.text.SpannableStringBuilder
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.*
 import android.widget.Toast.LENGTH_SHORT
 import kotlinx.android.synthetic.main.dialog_edit_field.view.*
@@ -81,7 +78,12 @@ class Dialog {
                     itemViewModel.getAllSavedListNames()
                 )
                 input.setAdapter(arrayAdapter)
-                input.setOnClickListener { input.showDropDown() }
+                input.setOnClickListener {
+                    input.showDropDown()
+                    if(itemId == R.id.option_open_list || itemId == R.id.option_delete_list) {
+                        Utility.hideKeyboard(context, input)
+                    }
+                }
                 input.onItemClickListener =
                     AdapterView.OnItemClickListener { adapterView, view, position, l ->
                         selectedPosition = position
@@ -207,6 +209,7 @@ class Dialog {
             }
         }
 
+
         fun showAmountEditDialog(context : Context,
                                  layout : Int,
                                  itemViewModel : ItemViewModel,
@@ -290,23 +293,50 @@ class Dialog {
             // show dialog
             val alertDialog : AlertDialog = AlertDialog.Builder(context).setView(dialogView).show()
 
+            alertDialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+
+            val searchField = dialogView.field_search_word
+            lateinit var arrayAdapter: ArrayAdapter<String>
+            var selectedPosition = -1
+            if(searchOption.itemId == R.id.option_search_name) {
+                arrayAdapter = ArrayAdapter(
+                    context,
+                    R.layout.comparison_options,
+                    itemViewModel.getAllItemNames(ItemListDisplay.listName)
+                )
+
+                searchField.setAdapter(arrayAdapter)
+                searchField.setOnClickListener {
+                    searchField.showDropDown()
+                    Utility.hideKeyboard(context, searchField)
+                }
+                searchField.onItemClickListener =
+                    AdapterView.OnItemClickListener { adapterView, view, position, l ->
+                        selectedPosition = position
+                    }
+            }
+
             // display dialog title
             dialogView.title.text = context.getString(title)
             // describe dialog purpose
             dialogView.description.text = context.getString(description)
             // notify user of what to enter in field
-            dialogView.field_search_word.hint = context.getString(hint)
+            searchField.hint = context.getString(hint)
 
             // when ok button in dialog is clicked
             dialogView.btn_dialog_ok.setOnClickListener {
                 // try to search items by name or keyword
                 try {
+                    if(selectedPosition > -1) {
+                        searchField.setText(arrayAdapter.getItem(selectedPosition))
+                    }
+
                     // search items
                     listManager.setItems(
                         itemViewModel.search(
                             searchMethod = searchOption,
                             listName = listName,
-                            word = "${dialogView.field_search_word.text}"
+                            word = "${searchField.text}".trim()
                         )
                     )
                     // exit dialog
