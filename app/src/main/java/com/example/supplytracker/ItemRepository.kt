@@ -612,7 +612,7 @@ class ItemRepository(application: Application) {
          */
         private class AsyncTaskGetItemsEqualTo(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
-                return itemDao.getItemsEqualTo(searchParams[0]?.amount, searchParams[1]?.listName)
+                return itemDao.getItemsEqualTo(searchParams[0]?.amount, searchParams[0]?.listName)
             }
         }
 
@@ -622,7 +622,7 @@ class ItemRepository(application: Application) {
          */
         private class AsyncTaskGetItemsNotEqualTo(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
-                return itemDao.getItemsNotEqualTo(searchParams[0]?.amount, searchParams[1]?.listName)
+                return itemDao.getItemsNotEqualTo(searchParams[0]?.amount, searchParams[0]?.listName)
             }
         }
 
@@ -632,7 +632,7 @@ class ItemRepository(application: Application) {
          */
         private class AsyncTaskGetItemsLessThan(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
-                return itemDao.getItemsLessThan(searchParams[0]?.amount, searchParams[1]?.listName)
+                return itemDao.getItemsLessThan(searchParams[0]?.amount, searchParams[0]?.listName)
             }
         }
 
@@ -642,7 +642,7 @@ class ItemRepository(application: Application) {
          */
         private class AsyncTaskGetItemsLessThanOrEqualTo(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
-                return itemDao.getItemsLessThanOrEqualTo(searchParams[0]?.amount, searchParams[1]?.listName)
+                return itemDao.getItemsLessThanOrEqualTo(searchParams[0]?.amount, searchParams[0]?.listName)
             }
         }
 
@@ -652,7 +652,7 @@ class ItemRepository(application: Application) {
          */
         private class AsyncTaskGetItemsGreaterThan(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
-                return itemDao.getItemsGreaterThan(searchParams[0]?.amount, searchParams[1]?.listName)
+                return itemDao.getItemsGreaterThan(searchParams[0]?.amount, searchParams[0]?.listName)
             }
         }
 
@@ -662,7 +662,7 @@ class ItemRepository(application: Application) {
          */
         private class AsyncTaskGetItemsGreaterThanOrEqualTo(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
-                return itemDao.getItemsGreaterThanOrEqualTo(searchParams[0]?.amount, searchParams[1]?.listName)
+                return itemDao.getItemsGreaterThanOrEqualTo(searchParams[0]?.amount, searchParams[0]?.listName)
             }
         }
 
