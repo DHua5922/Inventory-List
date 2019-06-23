@@ -231,4 +231,8 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
             else this.items[itemCount - 1].order
         )
     }
+
+    internal fun getItemAt(position: Int) : Item {
+        return this.items[position]
+    }
 }
