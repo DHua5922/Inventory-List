@@ -189,14 +189,19 @@ class Dialog {
                 if(name.isNotEmpty()) {
                     val items = listManager.getItems()
                     // try to update item with new name and exit dialog
+                    lateinit var styledText : SpannableStringBuilder
                     items[position].name = name
                     if (itemViewModel.update(items[position])) {
                         // update list with new name
                         listManager.notifyItemChanged(position)
+                        styledText = TextStyle.bold(arrayOf("$currentName", name), "Name for $currentName is now $name")
+                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
                         // exit dialog
                         alertDialog.dismiss()
                     } else {
                         items[position].name = "$currentName"
+                        styledText = TextStyle.bold("$currentName", "Could not update name for $currentName")
+                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
                     }
                 } else {
                     Toast.makeText(context, "Name cannot be empty", LENGTH_SHORT).show()
@@ -247,18 +252,20 @@ class Dialog {
                 val items = listManager.getItems()
                 // try to update item with new amount and exit dialog
                 try {
-                    items[position].amount = "${dialogView.field_new_info.text}".toDouble()
+                    lateinit var styledText : SpannableStringBuilder
+                    val newAmount = "${dialogView.field_new_info.text}".toDouble()
+                    items[position].amount = newAmount
                     if (itemViewModel.update(items[position])) {
                         listManager.notifyItemChanged(position)
                         // exit dialog
                         alertDialog.dismiss()
 
+                        styledText = TextStyle.bold(arrayOf("$name", "$currentAmount", "$newAmount"), "Amount for $name has been changed from $currentAmount to $newAmount")
+                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
+
                         // when item is being updated with new amount, check if item is empty or not
                         val displayLayout = itemDisplay.linearLayout
                         if (items[position].amount <= 0) {
-                            // notify user that item is empty
-                            val styledText = TextStyle.bold("$name", "Now, $name is empty")
-                            Toast.makeText(context, styledText, LENGTH_SHORT).show()
                             // item is empty so layout is colored red
                             displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
                         } else {
@@ -267,6 +274,8 @@ class Dialog {
                         }
                     } else {
                         items[position].amount = "$currentAmount".toDouble()
+                        styledText = TextStyle.bold("$name", "Could not update amount for $name")
+                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
                     }
                 } catch(e : NumberFormatException) {
                     Toast.makeText(context, "Amount must only be a number", LENGTH_SHORT).show()
