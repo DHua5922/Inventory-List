@@ -161,11 +161,11 @@ class Dialog {
                                layout : Int,
                                itemViewModel : ItemViewModel,
                                listManager : ItemAdapter,
-                               nameDisplay : TextView,
-                               position : Int) {
+                               itemDisplay : ItemAdapter.ItemHolder) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
             val alertDialog = AlertDialog.Builder(context).setView(dialogView).show()
+            val nameDisplay = itemDisplay.nameDisplay
             val currentName = nameDisplay.text
 
             // change display's background color to indicate it is being modified
@@ -190,6 +190,7 @@ class Dialog {
                     val items = listManager.getItems()
                     // try to update item with new name and exit dialog
                     lateinit var styledText : SpannableStringBuilder
+                    val position = itemDisplay.adapterPosition
                     items[position].name = name
                     if (itemViewModel.update(items[position])) {
                         // update list with new name
@@ -219,8 +220,7 @@ class Dialog {
                                  layout : Int,
                                  itemViewModel : ItemViewModel,
                                  listManager : ItemAdapter,
-                                 itemDisplay : ItemAdapter.ItemHolder,
-                                 position : Int) {
+                                 itemDisplay : ItemAdapter.ItemHolder) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
             val alertDialog = AlertDialog.Builder(context).setView(dialogView).show()
@@ -254,6 +254,7 @@ class Dialog {
                 try {
                     lateinit var styledText : SpannableStringBuilder
                     val newAmount = "${dialogView.field_new_info.text}".toDouble()
+                    val position = itemDisplay.adapterPosition
                     items[position].amount = newAmount
                     if (itemViewModel.update(items[position])) {
                         listManager.notifyItemChanged(position)
