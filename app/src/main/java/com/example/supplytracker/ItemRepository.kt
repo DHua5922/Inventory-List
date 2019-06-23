@@ -107,7 +107,7 @@ class ItemRepository(application: Application) {
      * Sorts the items from the database by lowest to highest amount.
      */
     fun sortAmountAscending(listName: String) : List<Item> {
-       return AsyncTaskSortAmountAscending(itemDao).execute(listName).get()
+        return AsyncTaskSortAmountAscending(itemDao).execute(listName).get()
     }
 
     /**
@@ -323,6 +323,10 @@ class ItemRepository(application: Application) {
      */
     fun getAllSavedListNames() : List<String> {
         return AsyncTaskGetAllSavedListNames(itemDao).execute().get()
+    }
+
+    fun getAllItemNames(listName : String?) : List<String> {
+        return AsyncTaskGetAllItemNames(itemDao).execute(listName).get()
     }
 
     /**
@@ -709,6 +713,16 @@ class ItemRepository(application: Application) {
         private class AsyncTaskGetAllSavedListNames(private var itemDao: ItemDao) : AsyncTask<Void, Void, List<String>>() {
             override fun doInBackground(vararg params : Void?): List<String> {
                 return itemDao.getAllSavedListNames()
+            }
+        }
+
+        /**
+         * Gets all the names of the items in the given list from the database in the background thread,
+         * using the given Data Access Object.
+         */
+        private class AsyncTaskGetAllItemNames(private var itemDao: ItemDao) : AsyncTask<String, Void, List<String>>() {
+            override fun doInBackground(vararg listName : String?): List<String> {
+                return itemDao.getAllItemNames(listName[0])
             }
         }
     }
