@@ -72,7 +72,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         val position = itemDisplay.adapterPosition
 
         // every time list is updated, check if item is still full
-        if (itemViewModel.getItem(items[position].id).isFull == 1) {
+        if (items[position].isFull == 1) {
             // item is still full so indicate it by checking box and coloring display green
             checkbox.isChecked = true
             displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
@@ -133,8 +133,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
                 layout = R.layout.dialog_edit_field,
                 itemViewModel = itemViewModel,
                 listManager = this,
-                nameDisplay = nameDisplay,
-                position = position
+                itemDisplay = itemDisplay
             )
         }
     }
@@ -173,8 +172,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
                 layout = R.layout.dialog_edit_field,
                 itemViewModel = itemViewModel,
                 listManager = this,
-                itemDisplay = itemDisplay,
-                position = position
+                itemDisplay = itemDisplay
             )
         }
     }
