@@ -24,7 +24,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
     override fun onCreate(savedState : Bundle?) {
         super.onCreate(savedState)
         setContentView(R.layout.list_display)
-        
+
         itemViewModel = ViewModelProviders.of(this).get(ItemViewModel(application)::class.java)
         listManager = ItemAdapter(this, itemViewModel)
 
@@ -104,7 +104,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 try {
                     val item = Item(
                         order = listManager.getMaxOrder() + 1,
-                        name = "${editableName.text}",
+                        name = "${editableName.text}".trim(),
                         amount = "${editableAmount.text}".trim().toDouble(),
                         listName = listName
                     )
@@ -118,7 +118,8 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                         listManager.addItem(item)
                     }
                 } catch(e : NumberFormatException) {
-                    Toast.makeText(this, "Amount must only be a number", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "Amount must only be a number", Toast.LENGTH_SHORT).show()
+                    Utility.printStyledMessage(this, "Amount must only be a number")
                 }
             }
             // button for removing items
