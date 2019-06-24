@@ -24,15 +24,13 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
     override fun onCreate(savedState : Bundle?) {
         super.onCreate(savedState)
         setContentView(R.layout.list_display)
-
-
-
+        
         itemViewModel = ViewModelProviders.of(this).get(ItemViewModel(application)::class.java)
         listManager = ItemAdapter(this, itemViewModel)
 
-        val list = itemViewModel.getAllSavedListNames()
-        if(list.isNotEmpty())
-            listName = list[0]
+        val listNames = itemViewModel.getAllSavedListNames()
+        if(listNames.isNotEmpty())
+            listName = listNames[0]
 
         setSupportActionBar(toolbar as Toolbar?)
         supportActionBar!!.title = listName
