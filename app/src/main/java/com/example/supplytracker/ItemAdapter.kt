@@ -3,12 +3,10 @@ package com.example.supplytracker
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
-import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import android.widget.Toast.LENGTH_SHORT
 import kotlinx.android.synthetic.main.template_item_display.view.*
 
 class ItemAdapter(private val context : Context, private val itemViewModel: ItemViewModel) : RecyclerView.Adapter<ItemAdapter.ItemHolder>() {
@@ -84,31 +82,29 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         // when checkbox is clicked
         checkbox.setOnClickListener {
             val itemName = "${itemDisplay.nameDisplay.text}".trim()
-            lateinit var styledText : SpannableStringBuilder
             when {
                 // if item is full, layout of item display is colored green
                 checkbox.isChecked -> {
                     items[position].isFull = 1
                     checkbox.isChecked = true
                     displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
-                    styledText = TextStyle.bold(itemName, "Now, $itemName is full")
+                    Utility.printStyledMessage(context, "Now, $itemName is full", arrayOf(itemName))
                 }
                 // if item is empty, layout of item display is colored red
                 items[position].amount <= 0.0 -> {
                     items[position].isFull = 0
                     checkbox.isChecked = false
                     displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
-                    styledText = TextStyle.bold(itemName, "Now, $itemName is empty")
+                    Utility.printStyledMessage(context, "Now, $itemName is empty", arrayOf(itemName))
                 }
                 // otherwise, item has leftover amount so layout of item display is colored white
                 else -> {
                     items[position].isFull = 0
                     checkbox.isChecked = false
                     displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
-                    styledText = TextStyle.bold(itemName, "Now, $itemName is not full")
+                    Utility.printStyledMessage(context, "Now, $itemName is not full", arrayOf(itemName))
                 }
             }
-            Toast.makeText(context, styledText, LENGTH_SHORT).show()
             itemViewModel.update(items[position])
         }
     }
@@ -185,12 +181,14 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      */
     private fun onBindDeleteBtn(itemDisplay : ItemHolder) {
         // when delete button of item display is clicked
-        itemDisplay.deleteBtn.setOnClickListener{
+        val deleteBtn = itemDisplay.deleteBtn
+        deleteBtn.setOnClickListener{
             // delete item and update list
+            deleteBtn.setBackgroundColor(ContextCompat.getColor(context, R.color.black))
             Dialog.showConfirmationDialog(
                 context = context,
-                itemId = itemDisplay.deleteBtn.id,
-                message = "Are you sure you want to delete ${itemDisplay.nameDisplay.text}",
+                itemId = deleteBtn.id,
+                message = "Are you sure you want to delete ${itemDisplay.nameDisplay.text}?",
                 listManager = this,
                 itemDisplay = itemDisplay
             )
