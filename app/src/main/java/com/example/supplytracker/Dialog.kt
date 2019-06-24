@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.support.v4.content.ContextCompat
 import android.text.InputType
-import android.text.SpannableStringBuilder
 import android.view.*
 import android.widget.*
 import android.widget.Toast.LENGTH_SHORT
@@ -27,34 +26,38 @@ class Dialog {
                                    listName : String = "Unsaved",
                                    title : String = "",
                                    message : String,
-                                   itemViewModel: ItemViewModel ?= null,
                                    listManager: ItemAdapter,
+                                   itemViewModel: ItemViewModel ?= null,
                                    method: MenuItem ?= null,
                                    itemDisplay : ItemAdapter.ItemHolder ?= null) {
             val alertDialog: AlertDialog? = this.let {
                 val builder = AlertDialog.Builder(context)
-
                 builder.apply {
-                    setPositiveButton(R.string.btn_dialog_ok) { dialog, id ->
-                        when(itemId) {
-                            R.id.btn_delete -> {
-                                listManager.removeItem(itemDisplay!!.adapterPosition)
-                            }
-                            else -> {
-                                itemViewModel!!.delete(method!!, listName)
-                                listManager.setItems(itemViewModel.getAllItems(listName))
-                            }
-                        }
-                        dialog.dismiss()
-                    }
-                    setNegativeButton(R.string.btn_dialog_cancel) { dialog, id ->
-                        dialog.dismiss()
-                    }
+                    setPositiveButton(R.string.btn_dialog_ok) { dialog, id -> }
+                    setNegativeButton(R.string.btn_dialog_cancel) { dialog, id -> }
                     setTitle(title)
                     setMessage(message)
                     create()
                 }
                 builder.show()
+            }
+
+            alertDialog!!.setOnDismissListener {
+                if(itemId == R.id.btn_delete)
+                    itemDisplay!!.deleteBtn.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
+            }
+
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                when(itemId) {
+                    R.id.btn_delete -> {
+                        listManager.removeItem(itemDisplay!!.adapterPosition)
+                    }
+                    else -> {
+                        itemViewModel!!.delete(method!!, listName)
+                        listManager.setItems(itemViewModel.getAllItems(listName))
+                    }
+                }
+                alertDialog.dismiss()
             }
         }
 
@@ -66,94 +69,72 @@ class Dialog {
                              itemViewModel: ItemViewModel,
                              listManager: ItemAdapter,
                              activity: Activity ?= null) {
+            val input = Utility.buildAutoCompleteTextView(
+                context,
+                InputType.TYPE_CLASS_TEXT,
+                hint,
+                R.layout.comparison_options,
+                itemViewModel.getAllSavedListNames(),
+                itemId
+            )
+
             val alertDialog: AlertDialog? = this.let {
                 val builder = AlertDialog.Builder(context)
-                var selectedPosition = -1
-                val input = AutoCompleteTextView(context)
-                input.inputType = InputType.TYPE_CLASS_TEXT
-                input.hint = hint
-                val arrayAdapter = ArrayAdapter(
-                    context,
-                    R.layout.comparison_options,
-                    itemViewModel.getAllSavedListNames()
-                )
-                input.setAdapter(arrayAdapter)
-                input.setOnClickListener {
-                    input.showDropDown()
-                    if(itemId == R.id.option_open_list || itemId == R.id.option_delete_list) {
-                        Utility.hideKeyboard(context, input)
-                    }
-                }
-                input.onItemClickListener =
-                    AdapterView.OnItemClickListener { adapterView, view, position, l ->
-                        selectedPosition = position
-                    }
-                builder.setView(input)
-
                 builder.apply {
-                    setPositiveButton(R.string.btn_dialog_ok) { dialog, id ->
-                        when (itemId) {
-                            R.id.option_save_list_as -> {
-                                val name = "${input.text}".trim()
-                                lateinit var styledText : SpannableStringBuilder
-                                when {
-                                    name.isEmpty() -> Toast.makeText(context, "Name cannot be empty", LENGTH_SHORT).show()
-                                    itemViewModel.getListNameCount(name) > 0 -> {
-                                        styledText = TextStyle.bold(name, "$name already exists")
-                                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
-                                    }
-                                    else -> {
-                                        itemViewModel.add(listManager.getItems(), name)
-                                        itemViewModel.delete("Unsaved")
-                                        ItemListDisplay.listName = name
-                                        (activity as ItemListDisplay).supportActionBar!!.title = name
-                                        listManager.setItems(itemViewModel.getAllItems(name))
-                                        styledText = TextStyle.bold(name, "This list has been saved as $name")
-                                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                            else -> {
-                                if(selectedPosition > -1) {
-                                    input.setText(arrayAdapter.getItem(selectedPosition))
-                                }
-                                val listName = "${input.text}".trim()
-                                val list = itemViewModel.getAllItems(listName)
-                                lateinit var styledText : SpannableStringBuilder
-                                if(itemId == R.id.option_open_list) {
-                                    if(list.isNotEmpty()) {
-                                        ItemListDisplay.listName = listName
-                                        (activity as ItemListDisplay).supportActionBar!!.title = listName
-                                        listManager.setItems(itemViewModel.getAllItems("${input.text}"))
-                                    } else {
-                                        styledText = TextStyle.bold(listName, "$listName does not exist")
-                                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
-                                    }
-                                } else {
-                                    if(list.isNotEmpty()) {
-                                        itemViewModel.delete(listName)
-                                        if (listName == ItemListDisplay.listName)
-                                            listManager.setItems(itemViewModel.getAllItems(listName))
-                                        styledText = TextStyle.bold(listName, "$listName has been deleted")
-                                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
-                                    } else {
-                                        styledText = TextStyle.bold(listName, "$listName does not exist")
-                                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                        }
-                        dialog.dismiss()
-                    }
-                    setNegativeButton(R.string.btn_dialog_cancel) { dialog, id ->
-                        dialog.dismiss()
-                    }
+                    setView(input)
+                    setPositiveButton(R.string.btn_dialog_ok) { dialog, id -> }
+                    setNegativeButton(R.string.btn_dialog_cancel) { dialog, id -> }
                     setTitle(title)
                     setMessage(message)
                     create()
                 }
-
                 builder.show()
+            }
+
+            alertDialog!!.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener{
+                val listName = "${input.text}".trim()
+                when (itemId) {
+                    R.id.option_save_list_as -> {
+                        when {
+                            listName.isEmpty() -> Utility.printStyledMessage(context, "Name cannot be empty")
+                            itemViewModel.getListNameCount(listName) > 0 -> {
+                                Utility.printStyledMessage(context, "$listName already exists", arrayOf(listName))
+                            }
+                            else -> {
+                                itemViewModel.add(listManager.getItems(), listName)
+                                itemViewModel.delete("Unsaved")
+                                ItemListDisplay.listName = listName
+                                (activity as ItemListDisplay).supportActionBar!!.title = listName
+                                listManager.setItems(itemViewModel.getAllItems(listName))
+                                Utility.printStyledMessage(context, "This list has been saved as $listName", arrayOf(listName))
+                                alertDialog.dismiss()
+                            }
+                        }
+                    }
+                    else -> {
+                        val list = itemViewModel.getAllItems(listName)
+                        if(itemId == R.id.option_open_list) {
+                            if(list.isNotEmpty()) {
+                                ItemListDisplay.listName = listName
+                                (activity as ItemListDisplay).supportActionBar!!.title = listName
+                                listManager.setItems(list)
+                                alertDialog.dismiss()
+                            } else {
+                                Utility.printStyledMessage(context, "List does not exist")
+                            }
+                        } else {
+                            if(list.isNotEmpty()) {
+                                itemViewModel.delete(listName)
+                                if (listName == ItemListDisplay.listName)
+                                    listManager.setItems(itemViewModel.getAllItems(listName))
+                                Utility.printStyledMessage(context, "$listName has been deleted", arrayOf(listName))
+                                alertDialog.dismiss()
+                            } else {
+                                Utility.printStyledMessage(context, "List does not exist")
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -179,7 +160,7 @@ class Dialog {
             // display dialog title
             dialogView.title.text = context.getString(R.string.title_name_change)
             // style and display current item name
-            dialogView.info_to_be_changed.text = TextStyle.bold("$currentName", context.getString(R.string.name_to_be_changed, currentName))
+            dialogView.info_to_be_changed.text = Utility.bold(arrayOf("$currentName"), context.getString(R.string.name_to_be_changed, currentName))
             // describe dialog purpose
             dialogView.description.text = context.getString(R.string.name_change_description)
 
@@ -187,25 +168,22 @@ class Dialog {
             dialogView.btn_dialog_ok.setOnClickListener {
                 val name = "${dialogView.field_new_info.text}".trim()
                 if(name.isNotEmpty()) {
+                    // try to update item with new name and exit dialog
                     val position = itemDisplay.adapterPosition
                     val item = listManager.getItemAt(position)
-                    // try to update item with new name and exit dialog
-                    lateinit var styledText : SpannableStringBuilder
                     item.name = name
                     if (itemViewModel.update(item)) {
                         // update list with new name
                         listManager.notifyItemChanged(position)
-                        styledText = TextStyle.bold(arrayOf("$currentName", name), "Name for $currentName is now $name")
-                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                        Utility.printStyledMessage(context, "Name for $currentName is now $name", arrayOf("$currentName", name))
                         // exit dialog
                         alertDialog.dismiss()
                     } else {
                         item.name = "$currentName"
-                        styledText = TextStyle.bold("$currentName", "Could not update name for $currentName")
-                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                        Utility.printStyledMessage(context, "Could not update name for $currentName", arrayOf("$currentName"))
                     }
                 } else {
-                    Toast.makeText(context, "Name cannot be empty", LENGTH_SHORT).show()
+                    Utility.printStyledMessage(context, "Name cannot be empty")
                 }
             }
 
@@ -239,9 +217,9 @@ class Dialog {
             // display dialog title
             dialogView.title.text = context.getString(R.string.title_amount_change)
             // style and display current item amount
-            dialogView.info_to_be_changed.text = TextStyle.bold("$currentAmount", context.getString(R.string.amount_to_be_changed, name, currentAmount))
+            dialogView.info_to_be_changed.text = Utility.bold(arrayOf("$currentAmount"), context.getString(R.string.amount_to_be_changed, name, currentAmount))
             // describe dialog purpose
-            dialogView.description.text = TextStyle.bold("$name", context.getString(R.string.amount_change_description, name))
+            dialogView.description.text = Utility.bold(arrayOf("$name"), context.getString(R.string.amount_change_description, name))
             // notify user that field is for entering decimal numbers
             dialogView.field_new_info.hint = context.getString(R.string.hint_dialog_new_amount)
             // set decimal as input type for editable amount
@@ -251,18 +229,15 @@ class Dialog {
             dialogView.btn_dialog_ok.setOnClickListener {
                 // try to update item with new amount and exit dialog
                 try {
-                    lateinit var styledText : SpannableStringBuilder
                     val newAmount = "${dialogView.field_new_info.text}".toDouble()
                     val position = itemDisplay.adapterPosition
                     val item = listManager.getItemAt(position)
                     item.amount = newAmount
                     if (itemViewModel.update(item)) {
                         listManager.notifyItemChanged(position)
+                        Utility.printStyledMessage(context, "Amount for $name has been changed from $currentAmount to $newAmount", arrayOf("$name", "$currentAmount", "$newAmount"))
                         // exit dialog
                         alertDialog.dismiss()
-
-                        styledText = TextStyle.bold(arrayOf("$name", "$currentAmount", "$newAmount"), "Amount for $name has been changed from $currentAmount to $newAmount")
-                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
 
                         // when item is being updated with new amount, check if item is empty or not
                         val displayLayout = itemDisplay.linearLayout
@@ -275,8 +250,7 @@ class Dialog {
                         }
                     } else {
                         item.amount = "$currentAmount".toDouble()
-                        styledText = TextStyle.bold("$name", "Could not update amount for $name")
-                        Toast.makeText(context, styledText, LENGTH_SHORT).show()
+                        Utility.printStyledMessage(context, "Could not update amount for $name", arrayOf("$name"))
                     }
                 } catch(e : NumberFormatException) {
                     Toast.makeText(context, "Amount must only be a number", LENGTH_SHORT).show()
@@ -307,7 +281,7 @@ class Dialog {
 
             val searchField = dialogView.field_search_word
             lateinit var arrayAdapter: ArrayAdapter<String>
-            var selectedPosition = -1
+            //var selectedPosition = -1
             if(searchOption.itemId == R.id.option_search_name) {
                 arrayAdapter = ArrayAdapter(
                     context,
@@ -320,10 +294,6 @@ class Dialog {
                     searchField.showDropDown()
                     Utility.hideKeyboard(context, searchField)
                 }
-                searchField.onItemClickListener =
-                    AdapterView.OnItemClickListener { adapterView, view, position, l ->
-                        selectedPosition = position
-                    }
             }
 
             // display dialog title
@@ -337,23 +307,24 @@ class Dialog {
             dialogView.btn_dialog_ok.setOnClickListener {
                 // try to search items by name or keyword
                 try {
-                    if(selectedPosition > -1) {
-                        searchField.setText(arrayAdapter.getItem(selectedPosition))
-                    }
-
-                    // search items
-                    listManager.setItems(
-                        itemViewModel.search(
-                            searchMethod = searchOption,
-                            listName = listName,
-                            word = "${searchField.text}".trim()
+                    val word = "${searchField.text}".trim()
+                    if(word.isNotEmpty()) {
+                        // search items
+                        listManager.setItems(
+                            itemViewModel.search(
+                                searchMethod = searchOption,
+                                listName = listName,
+                                word = word
+                            )
                         )
-                    )
-                    // exit dialog
-                    alertDialog.dismiss()
-                    // otherwise, search method is invalid
+                        // exit dialog
+                        alertDialog.dismiss()
+                    } else {
+                        Utility.printStyledMessage(context, "Field cannot be empty")
+                    }
+                // otherwise, search method is invalid
                 } catch (e : Exception) {
-                    Toast.makeText(context, e.message, LENGTH_SHORT).show()
+                    Utility.printStyledMessage(context, e.message!!)
                 }
             }
 
@@ -400,7 +371,7 @@ class Dialog {
             dialogView.btn_dialog_ok.setOnClickListener {
                 val amount = "${dialogView.field_search_amount.text}".trim()
                 if(amount.isEmpty()) {
-                    Toast.makeText(context, "Amount must only be a number", LENGTH_SHORT).show()
+                    Utility.printStyledMessage(context, "Amount must only be a number")
                 } else {
                     // search items by amount
                     listManager.setItems(
