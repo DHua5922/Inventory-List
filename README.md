@@ -1,5 +1,5 @@
 # Inventory List
-Android application that keeps track of items and their amount left
+Android application that keeps track of user's inventory
 
 ## Development Tools
 * **Programming Language:** Kotlin
