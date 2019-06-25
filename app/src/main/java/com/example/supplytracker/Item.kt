@@ -6,9 +6,10 @@ import android.arch.persistence.room.PrimaryKey
 
 /**
  * This class represents a table of items in the SQLite database.
- * Each item has a name, amount, and an
- * indication of whether the item is full or not. Each item
- * property represents a column in the database.
+ * Each item has a name, amount, an indication of whether the item
+ * is full or not, order number in the list, and the list that
+ * this item belongs to. Each item property represents a column in
+ * the database.
  */
 @Entity(tableName = "table_item")
 data class Item(
