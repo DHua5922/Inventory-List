@@ -80,4 +80,5 @@
     <string name="save_list_as">Save List As</string>
     <string name="open_list">Open List</string>
     <string name="delete_list">Delete List</string>
+    <string name="delete_list_all">Delete All Lists</string>
 </resources>
