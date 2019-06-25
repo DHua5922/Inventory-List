@@ -11,6 +11,7 @@ import android.arch.persistence.room.Update
  */
 @Dao
 interface ItemDao {
+    // provided queries: insert and update
     @Insert
     fun insert(item: Item?) : Long
 
@@ -19,9 +20,6 @@ interface ItemDao {
 
     @Update
     fun update(items: List<Item>?) : Int
-
-    @Query("SELECT DISTINCT COUNT(column_listName) FROM table_item WHERE column_listName = :listName")
-    fun getListNameCount(listName : String?) : Int
 
     // operations for sorting items by name
     @Query("SELECT * FROM table_item WHERE column_listName = :listName ORDER BY column_name ASC")
@@ -86,7 +84,7 @@ interface ItemDao {
     @Query("DELETE FROM table_item WHERE column_listName = :listName")
     fun deleteAllItems(listName: String?) : Int
 
-    // operations for getting items
+    // operations for retrieving
     @Query("SELECT * FROM table_item WHERE column_id = :id")
     fun getItem(id : Long?) : Item
 
@@ -131,4 +129,7 @@ interface ItemDao {
 
     @Query("SELECT DISTINCT column_name FROM table_item WHERE column_listName = :listName")
     fun getAllItemNames(listName : String?) : List<String>
+
+    @Query("SELECT DISTINCT COUNT(column_listName) FROM table_item WHERE column_listName = :listName")
+    fun getListNameCount(listName : String?) : Int
 }
