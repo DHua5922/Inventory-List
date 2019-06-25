@@ -180,6 +180,10 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
 
         // remove items based on chosen method
         when (removalMethod.itemId) {
+            R.id.option_delete_list_all -> {
+                result = repository.deleteAllLists()
+                Utility.printStyledMessage(app, "Removed all lists")
+            }
             R.id.option_remove_all -> {
                 result = delete(listName)
                 Utility.printStyledMessage(app, "Removed all items")
