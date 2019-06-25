@@ -6,9 +6,6 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 import android.os.AsyncTask
-import android.arch.persistence.room.migration.Migration
-import android.content.ContentValues
-import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 
 /**
  * This class represents a Room database that is a database
@@ -20,9 +17,10 @@ import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
  *
  * Any changes to the database schema requires incrementing
  * the version number and migrating the old database to the
- * latest version.
+ * latest version. The new version can be tested with the
+ * MigrationTest class in androidTest folder.
  */
-@Database(entities = [Item::class], version = 3, exportSchema = true)
+@Database(entities = [Item::class], version = 1, exportSchema = true)
 abstract class ItemDatabase : RoomDatabase() {
 
     abstract fun itemDao() : ItemDao
@@ -36,6 +34,7 @@ abstract class ItemDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE : ItemDatabase? = null
 
+        /*
         val MIGRATION_1_2: Migration = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 // Create the new table
@@ -79,7 +78,7 @@ abstract class ItemDatabase : RoomDatabase() {
                     database.update("table_item", CONFLICT_REPLACE, cv, "column_id = $id", null)
                 }
             }
-        }
+        }*/
 
         /**
          * Gets a database instance. Room's database builder creates
@@ -96,7 +95,9 @@ abstract class ItemDatabase : RoomDatabase() {
                         context,
                         ItemDatabase::class.java,
                         "item_database.db"
-                    ).addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    ).fallbackToDestructiveMigration()
+                        .addCallback(roomCallback)
+                        //.addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                         .build()
                 }
             }
@@ -108,6 +109,11 @@ abstract class ItemDatabase : RoomDatabase() {
          * these items can be seen later in the list display before those items are edited.
          */
         private val roomCallback = object : RoomDatabase.Callback() {
+            /**
+             * Fills the given database instance with items.
+             *
+             * @param   db  given database
+             */
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 AsyncTaskPopulateDatabase(INSTANCE).execute()
@@ -120,6 +126,10 @@ abstract class ItemDatabase : RoomDatabase() {
         private class AsyncTaskPopulateDatabase(database: ItemDatabase?) : AsyncTask<Unit, Unit, Unit>() {
             private val itemDao = database?.itemDao()
 
+            /**
+             * Loads all the items from the first list if the first list exists;
+             * otherwise, loads unsaved items.
+             */
             override fun doInBackground(vararg p0: Unit?): Unit? {
                 val savedListNames = itemDao?.getAllSavedListNames()!!
                 if(savedListNames.isNotEmpty()) {
