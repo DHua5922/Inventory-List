@@ -10,5 +10,8 @@
         <item android:id="@+id/option_delete_list"
               android:title="@string/delete_list"
               app:showAsAction="never"/>
+        <item android:id="@+id/option_delete_list_all"
+              android:title="@string/delete_list_all"
+              app:showAsAction="never"/>
     </group>
 </menu>
