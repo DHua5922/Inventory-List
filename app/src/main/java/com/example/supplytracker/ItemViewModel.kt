@@ -14,6 +14,12 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
     private val app: Application = application
     private val repository: ItemRepository = ItemRepository(app)
 
+    /**
+     * Adds the given item to the current list.
+     *
+     * @param   item      given item
+     * @return            rowId of inserted item
+     */
     fun add(item : Item) : Long {
         val name = item.name
 
@@ -32,6 +38,12 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
         return -1
     }
 
+    /**
+     * Adds the given items to the given list.
+     *
+     * @param   items       given list of items
+     * @param   listName    given list
+     */
     fun add(items : List<Item>, listName : String) {
         for((i, item) in items.withIndex()) {
             val newItem = Item(
@@ -47,26 +59,39 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Updates the given item in the database.
+     *
+     * @param   item    given item to update
+     * @return          true if update was successful, or false
+     */
     fun update(item : Item) : Boolean {
         return repository.update(item) > 0
     }
 
+    /**
+     * Updates the given items in the database.
+     *
+     * @param   items   given list of items to update
+     * @return          true if update was successful, or false
+     */
     fun update(items : List<Item>) : Boolean {
         return repository.update(items) > 0
     }
 
     /**
-     * Sorts all or certain items by their names or amount based on chosen sort method.
+     * Sorts all or certain items in the given list by their names or amount based on chosen sort method.
      * Throws an exception if the chosen method for sorting is invalid.
      *
      * @param       sortMethod  chosen sort method
+     * @param       listName    given list
      * @exception   Exception   if sort method is invalid
-     * @return                  items sorted based on chosen sort method
+     * @return                  list of items sorted based on chosen sort method
      */
     fun sort(sortMethod : MenuItem, listName: String) : List<Item> {
         lateinit var itemList : List<Item>
 
-        // different methods to sort items
+        // sort items based on chosen method
         when (sortMethod.itemId) {
             // sort by names
             R.id.option_sort_names_atoz -> {
@@ -142,17 +167,18 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Deletes all or certain items based on the chosen removal method.
+     * Deletes all or certain items from the given list based on the chosen removal method.
      * Throws an exception if the chosen method for removing is invalid.
      *
      * @param       removalMethod   chosen removal method
+     * @param       listName        given list
      * @exception   Exception       if remove method is invalid
-     * @return                      integer > 0 if removal method is successful, or 0
+     * @return                      number of rows deleted
      */
     fun delete(removalMethod : MenuItem, listName : String) : Int {
         val result: Int
 
-        // different methods to remove items
+        // remove items based on chosen method
         when (removalMethod.itemId) {
             R.id.option_remove_all -> {
                 result = delete(listName)
@@ -180,6 +206,12 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
         return result
     }
 
+    /**
+     * Deletes the given item from the database.
+     *
+     * @param   item    given item
+     * @return          number of rows deleted
+     */
     fun delete(item : Item) : Int {
         val name = item.name
         val result = repository.delete(item)
@@ -193,15 +225,22 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
         return result
     }
 
+    /**
+     * Deletes the given list from the database.
+     *
+     * @param   listName    given list
+     * @return              number of rows deleted
+     */
     fun delete(listName : String) : Int {
         return repository.deleteAllItems(listName)
     }
 
     /**
-     * Searches all or certain items based on the chosen search method.
+     * Searches all or certain items in the given list based on the chosen search method.
      * Throws an exception if the chosen method for searching is invalid.
      *
      * @param       searchMethod    chosen search method
+     * @param       listName        given list
      * @param       word            name or keyword to search item for
      * @param       amount          exact amount to search items for
      * @param       comparison      comparison for searching items with more than exact amount
@@ -211,7 +250,7 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
     fun search(searchMethod : MenuItem, listName: String, word : String = "", amount : Double = -1.0, comparison : Int = -1) : List<Item> {
         lateinit var itemList : List<Item>
 
-        // different methods to search items
+        // search items based on chosen method
         when (searchMethod.itemId) {
             R.id.option_search_name -> {
                 itemList = repository.getItemByName(word, listName)
@@ -251,22 +290,41 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
         return itemList
     }
 
+    /**
+     * Gets the total number of the given list.
+     *
+     * @param   listName    given list
+     * @return              total number of the given list in the database
+     */
     fun getListNameCount(listName: String) : Int {
         return repository.getListNameCount(listName)
     }
 
-    fun getItem(id : Long) : Item {
-        return repository.getItem(id)
-    }
-
+    /**
+     * Gets all the items from the given list.
+     *
+     * @param   listName    given list
+     * @return              list of items from given list
+     */
     fun getAllItems(listName: String): List<Item> {
         return repository.getAllItems(listName)
     }
 
+    /**
+     * Gets all the different names of the saved lists.
+     *
+     * @return              list of different names of saved lists
+     */
     fun getAllSavedListNames() : List<String> {
         return repository.getAllSavedListNames()
     }
 
+    /**
+     * Gets all the different names of the items from the given list.
+     *
+     * @param   listName    given list
+     * @return              list of different item names from given list
+     */
     fun getAllItemNames(listName : String) : List<String> {
         return repository.getAllItemNames(listName)
     }
