@@ -9,12 +9,15 @@ import android.view.ViewGroup
 import android.widget.*
 import kotlinx.android.synthetic.main.template_item_display.view.*
 
+/**
+ * This class is a list adapter for managing the item displays and this list of items.
+ */
 class ItemAdapter(private val context : Context, private val itemViewModel: ItemViewModel) : RecyclerView.Adapter<ItemAdapter.ItemHolder>() {
-    private var items = mutableListOf<Item>()
+    private var itemList = mutableListOf<Item>()
 
     /**
      * This class provides a reference to the views for each item display,
-     * using the given layout that has views for displaying item information.
+     * using the given layout.
      */
     inner class ItemHolder(itemLayout: View) : RecyclerView.ViewHolder(itemLayout) {
         // layout for displaying item information
@@ -47,7 +50,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      * Binds events to the views in the given view holder.
      *
      * @param   holder      view holder
-     * @param   position    position
+     * @param   position    position in this adapter
      */
     override fun onBindViewHolder(holder: ItemHolder, position: Int) {
         onBindName(holder)
@@ -57,12 +60,10 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
     }
 
     /**
-     * When the checkbox in the given item display is clicked, color the layout of the item display
-     * as an indication if the item is full, empty, or being used. The name display is needed to
-     * check if the specific item in the given database is empty or not.
+     * When the checkbox in the given item display was clicked, color the layout of the item display
+     * as an indication if the item is full, empty, or leftover.
      *
-     * @param   itemDisplay     item display
-     * @param   position        index of item display in list
+     * @param   itemDisplay     given item display
      */
     private fun onBindCheckbox(itemDisplay : ItemHolder) {
         val checkbox = itemDisplay.checkBox
@@ -70,7 +71,7 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         val position = itemDisplay.adapterPosition
 
         // every time list is updated, check if item is still full
-        if (items[position].isFull == 1) {
+        if (itemList[position].isFull == 1) {
             // item is still full so indicate it by checking box and coloring display green
             checkbox.isChecked = true
             displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
@@ -85,45 +86,48 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
             when {
                 // if item is full, layout of item display is colored green
                 checkbox.isChecked -> {
-                    items[position].isFull = 1
+                    itemList[position].isFull = 1
                     checkbox.isChecked = true
                     displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isFull))
                     Utility.printStyledMessage(context, "Now, $itemName is full", arrayOf(itemName))
                 }
                 // if item is empty, layout of item display is colored red
-                items[position].amount <= 0.0 -> {
-                    items[position].isFull = 0
+                itemList[position].amount <= 0.0 -> {
+                    itemList[position].isFull = 0
                     checkbox.isChecked = false
                     displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
                     Utility.printStyledMessage(context, "Now, $itemName is empty", arrayOf(itemName))
                 }
                 // otherwise, item has leftover amount so layout of item display is colored white
                 else -> {
-                    items[position].isFull = 0
+                    itemList[position].isFull = 0
                     checkbox.isChecked = false
                     displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
                     Utility.printStyledMessage(context, "Now, $itemName is not full", arrayOf(itemName))
                 }
             }
-            itemViewModel.update(items[position])
+            itemViewModel.update(itemList[position])
         }
     }
 
     /**
-     * When the given name display is clicked, change the display's background color to indicate that
-     * the display is being modified and show a dialog for entering a new name for the given display
-     * of the current item name. The item in the given database is updated with the new name.
+     * When the name display in the given item display was clicked, change the display's background color
+     * to indicate that the name display is being modified. A dialog will be shown for entering a new name
+     * for the item. The item in the database will be updated with the new name.
      *
-     * @param   nameDisplay     display of item name
-     * @param   position        index of name display in list
+     * @param   itemDisplay     item display
      */
     private fun onBindName(itemDisplay : ItemHolder) {
-        // display item name
+        // item display position in the adapter
         val position = itemDisplay.adapterPosition
+        // name display
         val nameDisplay = itemDisplay.nameDisplay
-        nameDisplay.text = items[position].name
-        // when display for item name is clicked
+
+        // display item name
+        nameDisplay.text = itemList[position].name
+        // when display for item name was clicked
         nameDisplay.setOnClickListener {
+            // show dialog for editing item name
             Dialog.showNameEditDialog(
                 context = context,
                 layout = R.layout.dialog_edit_field,
@@ -135,14 +139,12 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
     }
 
     /**
-     * When the amount display in the given item display is clicked, change the amount display's background color to
-     * indicate that the display is being modified and show a dialog for entering a new amount for that amount display.
-     * The name display is needed to find the specific item in the given database. That item in the database is updated
-     * with the new amount. Based on the item's new amount, color the layout as an indication if the item is empty,
-     * full, or being used.
+     * When the amount display in the given item display was clicked, change the amount display's background color to
+     * indicate that the display is being modified. A dialog will be shown for entering a new amount for the item.
+     * That item in the database will be updated with the new amount. Based on the item's new amount, color the layout
+     * as an indication if the item is empty, full, or a leftover.
      *
      * @param   itemDisplay     item display
-     * @param   position        index of item display in list
      */
     private fun onBindAmount(itemDisplay : ItemHolder) {
         val amountDisplay = itemDisplay.amountDisplay
@@ -150,19 +152,20 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
         val position = itemDisplay.adapterPosition
 
         // display item amount
-        amountDisplay.text = "${items[position].amount}"
+        amountDisplay.text = "${itemList[position].amount}"
 
-        // when item is being displayed for first time, check if item is empty or not
-        if(items[position].amount <= 0) {
-            // item is empty so layout is colored red
+        // when item is being displayed, check if item is empty or not
+        if(itemList[position].amount <= 0) {
+            // item is empty so layout background is red
             displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.isEmpty))
         } else {
-            // item is not empty so layout is colored white
+            // item is not empty so layout background is white
             displayLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
         }
 
-        // when display for item amount is clicked
+        // when display for item amount was clicked
         amountDisplay.setOnClickListener {
+            // show dialog for editing item amount
             Dialog.showAmountEditDialog(
                 context = context,
                 layout = R.layout.dialog_edit_field,
@@ -174,17 +177,19 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
     }
 
     /**
-     * When the delete button on the given item display is clicked, delete that item display.
-     * The specific item will be deleted from the database.
+     * When the delete button on the given item display was clicked, show a dialog for
+     * confirmation to delete item. The item will be deleted from the database.
      *
      * @param   itemDisplay     item display
      */
     private fun onBindDeleteBtn(itemDisplay : ItemHolder) {
-        // when delete button of item display is clicked
+        // delete button
         val deleteBtn = itemDisplay.deleteBtn
+        // when delete button was clicked
         deleteBtn.setOnClickListener{
-            // delete item and update list
+            // color delete button black to show which item is being deleted
             deleteBtn.setBackgroundColor(ContextCompat.getColor(context, R.color.black))
+            // show confirmation dialog for deleting item
             Dialog.showConfirmationDialog(
                 context = context,
                 itemId = deleteBtn.id,
@@ -196,41 +201,73 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
     }
 
     /**
-     * Gets the number of items in the list
+     * Gets the number of items in this list.
      *
-     * @return              number of items in the list
+     * @return              number of items in this list
      */
-    override fun getItemCount() = items.size
+    override fun getItemCount() = this.itemList.size
 
+    /**
+     * Sets the given list of items for this adapter.
+     *
+     * @param   items       given list of items
+     */
     internal fun setItems(items: List<Item>) {
-        this.items = items as MutableList<Item>
+        this.itemList = items as MutableList<Item>
         notifyDataSetChanged()
     }
 
+    /**
+     * Adds the given item to this adapter.
+     *
+     * @param   item        given item
+     */
     internal fun addItem(item: Item) {
-        this.items.add(item)
-        notifyItemInserted(this.items.size - 1)
+        this.itemList.add(item)
+        notifyItemInserted(this.itemList.size - 1)
     }
 
+    /**
+     * Removes the item at the given position from this adapter.
+     *
+     * @param   position    given position
+     */
     internal fun removeItem(position : Int) {
-        if(itemViewModel.delete(this.items[position]) > 0) {
-            this.items.removeAt(position)
+        // item has been deleted from the database
+        if(itemViewModel.delete(this.itemList[position]) > 0) {
+            // remove item from this adapter
+            this.itemList.removeAt(position)
             notifyItemRemoved(position)
         }
     }
 
+    /**
+     * Gets the list of items in this adapter.
+     *
+     * @return              list of items in this adapter
+     */
     internal fun getItems() : List<Item> {
-        return this.items
+        return this.itemList
     }
 
+    /**
+     * Gets the maximum order in this adapter.
+     *
+     * @return              maximum order in this adapter
+     */
     internal fun getMaxOrder() : Int {
         return (
             if (itemCount == 0) 0
-            else this.items[itemCount - 1].order
+            else this.itemList[itemCount - 1].order
         )
     }
 
+    /**
+     * Gets the item at the given position in this adapter.
+     *
+     * @return              item at the given position in this adapter
+     */
     internal fun getItemAt(position: Int) : Item {
-        return this.items[position]
+        return this.itemList[position]
     }
 }
