@@ -358,6 +358,18 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 )
                 true
             }
+            // show confirmation dialog for deleting all lists
+            R.id.option_delete_list_all -> {
+                Dialog.showConfirmationDialog(
+                    context = this,
+                    itemId = item.itemId,
+                    message = "Are you want to delete all the lists?",
+                    itemViewModel = itemViewModel,
+                    listManager = listManager,
+                    method = item
+                )
+                true
+            }
             // false
             else -> super.onOptionsItemSelected(item)
         }
