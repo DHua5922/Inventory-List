@@ -84,10 +84,6 @@ interface ItemDao {
     @Query("DELETE FROM table_item WHERE column_listName = :listName")
     fun deleteAllItems(listName: String?) : Int
 
-    // operations for retrieving
-    @Query("SELECT * FROM table_item WHERE column_id = :id")
-    fun getItem(id : Long?) : Item
-
     @Query("SELECT * FROM table_item WHERE column_listName = :listName AND column_name = :name ORDER BY column_order ASC")
     fun getItemByName(name: String?, listName: String?) : List<Item>
 
