@@ -1,4 +1,4 @@
-# Supply-List
+# Inventory List
 Android application that keeps track of items and their amount left
 
 ## Development Tools
