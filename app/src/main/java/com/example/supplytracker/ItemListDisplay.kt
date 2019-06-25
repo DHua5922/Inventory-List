@@ -12,6 +12,9 @@ import android.view.*
 import kotlinx.android.synthetic.main.list_display.*
 import java.util.Collections.swap
 
+/**
+ * This class handles the display of items in the list
+ */
 class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
     private lateinit var itemViewModel : ItemViewModel
@@ -21,6 +24,11 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
         var listName: String = "Unsaved"
     }
 
+    /**
+     * Shows a page that displays a list of items.
+     *
+     * @param   savedState  saved data
+     */
     override fun onCreate(savedState : Bundle?) {
         super.onCreate(savedState)
         setContentView(R.layout.list_display)
@@ -28,25 +36,38 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
         itemViewModel = ViewModelProviders.of(this).get(ItemViewModel(application)::class.java)
         listManager = ItemAdapter(this, itemViewModel)
 
+        // show items in first list if it exists
         val listNames = itemViewModel.getAllSavedListNames()
         if(listNames.isNotEmpty())
             listName = listNames[0]
 
+        // set action bar title as name of current list
         setSupportActionBar(toolbar as Toolbar?)
         supportActionBar!!.title = listName
 
+        // display items
         listManager.setItems(itemViewModel.getAllItems(listName))
         list_display.adapter = listManager
         list_display.layoutManager = LinearLayoutManager(this)
 
+        // drag and drop animation
         val simpleItemTouchCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
+            /**
+             * Update position of items as item display is being dragged to a new position.
+             *
+             * @param   recyclerView    list display
+             * @param   dragged         item display being dragged
+             * @param   target          item display after drag and drop
+             */
             override fun onMove(recyclerView : RecyclerView, dragged : RecyclerView.ViewHolder, target : RecyclerView.ViewHolder): Boolean {
                 val fromPosition : Int = dragged.adapterPosition
                 val toPosition : Int = target.adapterPosition
                 val list = listManager.getItems()
 
+                // drag down
                 if (fromPosition < toPosition) {
                     for (i in fromPosition until toPosition) {
+                        // swap item order
                         swap(list, i, i + 1)
 
                         val order1 = list[i].order
@@ -54,8 +75,11 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                         list[i].order = order2
                         list[i + 1].order = order1
                     }
-                } else {
+                }
+                // drag up
+                else {
                     for (i in fromPosition downTo toPosition + 1) {
+                        // swap item order
                         swap(list, i, i - 1)
 
                         val order1 = list[i].order
@@ -64,11 +88,17 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                         list[i - 1].order = order1
                     }
                 }
-
+                // notify adapter that item was dragged to new position
                 listManager.notifyItemMoved(fromPosition, toPosition)
                 return true
             }
 
+            /**
+             * After item was dragged to a new position, update items with new position in the database.
+             *
+             * @param   recyclerView    list display
+             * @param   viewHolder      item display
+             */
             override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
                 super.clearView(recyclerView, viewHolder)
                 itemViewModel.update(listManager.getItems())
@@ -80,7 +110,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
         }
         ItemTouchHelper(simpleItemTouchCallback).attachToRecyclerView(list_display)
 
-        // button displays options when clicked
+        // buttons that display popup of specific actions when clicked
         btn_add.setOnClickListener(this)
         btn_clear.setOnClickListener(this)
         btn_sort_names.setOnClickListener(this)
@@ -93,11 +123,11 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
      * The given button is identified by its id that was set in the layout
      * design for this activity.
      *
-     * @param   view    given view that was clicked
+     * @param   button    given view that was clicked
      */
-    override fun onClick(view : View) {
+    override fun onClick(button : View) {
         // identify button that was clicked and perform respective action
-        when (view.id) {
+        when (button.id) {
             // button for adding item
             R.id.btn_add -> {
                 // when button is clicked, try to add item to list
@@ -109,12 +139,17 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                         listName = listName
                     )
 
+                    // try to add item
                     val result = itemViewModel.add(item)
                     if(result > -1) {
+                        // successful item insertion
+                        // clear edit fields
                         editableName.text.clear()
                         editableAmount.text.clear()
+                        // update inserted item with new rowId
                         item.id = result
                         itemViewModel.update(item)
+                        // add item to list in adapter
                         listManager.addItem(item)
                     }
                 } catch(e : NumberFormatException) {
@@ -124,19 +159,19 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             }
             // button for removing items
             R.id.btn_clear -> {
-                showMenu(view, R.menu.options_sort_remove)
+                showMenu(button, R.menu.options_sort_remove)
             }
             // button for sorting items by names
             R.id.btn_sort_names -> {
-                showMenu(view, R.menu.options_sort_names)
+                showMenu(button, R.menu.options_sort_names)
             }
             // button for sorting items by amount
             R.id.btn_sort_amount -> {
-                showMenu(view, R.menu.options_sort_amount)
+                showMenu(button, R.menu.options_sort_amount)
             }
             // button for searching items
             R.id.btn_search -> {
-                showMenu(view, R.menu.options_search_items)
+                showMenu(button, R.menu.options_search_items)
             }
         }
     }
@@ -158,13 +193,13 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
     }
 
     /**
-     * Identifies and implements the more specific method to manage this list.
+     * Identifies and shows the appropriate dialog or implements the specific method to manage this list.
      *
      * @param   method  more specific list management method that was chosen
      * @return          true if specific list management method was implemented, or false
      */
     override fun onMenuItemClick(method: MenuItem): Boolean {
-        // if one of method for removing items is clicked
+        // show confirmation dialog for removing all items
         if(method.itemId == R.id.option_remove_all) {
             Dialog.showConfirmationDialog(
                 context = this,
@@ -175,6 +210,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 listManager = listManager,
                 method = method)
         }
+        // show confirmation dialog for removing all empty items
         else if(method.itemId == R.id.option_remove_empty) {
             Dialog.showConfirmationDialog(
                 context = this,
@@ -185,6 +221,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 listManager = listManager,
                 method = method)
         }
+        // show confirmation dialog for removing all leftover items
         else if(method.itemId == R.id.option_remove_leftover) {
             Dialog.showConfirmationDialog(
                 context = this,
@@ -195,6 +232,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 listManager = listManager,
                 method = method)
         }
+        // show confirmation dialog for removing all full items
         else if(method.itemId == R.id.option_remove_checked) {
             Dialog.showConfirmationDialog(
                 context = this,
@@ -205,7 +243,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 listManager = listManager,
                 method = method)
         }
-        // if searching items by name or keyword
+        // show custom dialog for searching items by name
         else if(method.itemId == R.id.option_search_name) {
             Dialog.showSearchWordDialog(
                 context = this,
@@ -219,6 +257,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 hint = R.string.hint_search_name
             )
         }
+        // show custom dialog for searching items by keyword
         else if (method.itemId == R.id.option_search_keyword) {
             Dialog.showSearchWordDialog(
                 context = this,
@@ -232,7 +271,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 hint = R.string.hint_search_keyword
             )
         }
-        // if searching items by amount
+        // show custom dialog for searching items by amount
         else if(method.itemId == R.id.option_search_amount) {
             Dialog.showSearchAmountDialog(
                 context = this,
@@ -242,10 +281,10 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 itemViewModel = itemViewModel,
                 layoutDialog = R.layout.dialog_search_item_amount,
                 arrayComparisons = R.array.array_comparisons,
-                comparisonOptionsLayout = R.layout.comparison_options
+                dropdownItemLayout = R.layout.dropdown_item_layout
             )
         }
-        // if searching empty, leftover, full, or all items
+        // update list display if searching empty, leftover, full, or all items
         else if(method.itemId == R.id.option_search_empty ||
             method.itemId == R.id.option_search_leftover ||
             method.itemId == R.id.option_search_full ||
@@ -253,10 +292,8 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             listManager.setItems(itemViewModel.search(method, listName))
         }
 
-        // otherwise, a sorting method is clicked
+        // otherwise, update list display with sorted items
         else {
-            //itemViewModel.sort(method).observe(this,
-            //Observer {item -> listManager.setItems(item!!)})
             listManager.setItems(itemViewModel.sort(method, listName))
         }
 
@@ -264,15 +301,28 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
         return true
     }
 
+    /**
+     * Creates the given dropdown menu in the action bar.
+     *
+     * @param   menu    given menu layout
+     * @return          true
+     */
     override fun onCreateOptionsMenu(menu : Menu) : Boolean {
         menuInflater.inflate(R.menu.options_list, menu)
         return true
     }
 
+    /**
+     * Shows appropriate dialog that prompts user to save, open, or delete list.
+     *
+     * @param   item    clicked dropdown operation
+     * @return          true if chosen operation has been implemented, or false
+     */
     override fun onOptionsItemSelected(item : MenuItem) : Boolean {
         return when (item.itemId) {
+            // show dialog that prompts user to save list
             R.id.option_save_list_as -> {
-                Dialog.promptListDialog(
+                Dialog.showListPromptDialog(
                     context = this,
                     itemId = item.itemId,
                     message = "Enter the name for this list to be saved as",
@@ -283,8 +333,9 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 )
                 true
             }
+            // show dialog that prompts user to open list
             R.id.option_open_list -> {
-                Dialog.promptListDialog(
+                Dialog.showListPromptDialog(
                     context = this,
                     itemId = item.itemId,
                     message = "Choose which list to view",
@@ -295,8 +346,9 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 )
                 true
             }
+            // show dialog that prompts user to delete list
             R.id.option_delete_list -> {
-                Dialog.promptListDialog(
+                Dialog.showListPromptDialog(
                     context = this,
                     itemId = item.itemId,
                     message = "Choose which list to delete",
@@ -306,6 +358,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 )
                 true
             }
+            // false
             else -> super.onOptionsItemSelected(item)
         }
     }
