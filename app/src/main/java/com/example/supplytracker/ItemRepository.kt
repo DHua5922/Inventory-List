@@ -18,85 +18,108 @@ class ItemRepository(application: Application) {
      * Adds the given item to the database.
      *
      * @param   item    item
+     * @return          rowId of inserted item
      */
     fun insert(item : Item) : Long {
         return AsyncTaskInsertItem(itemDao).execute(item).get()
     }
 
     /**
-     * Updates the given item from the database.
+     * Updates the given item in the database.
      *
      * @param   item    item
+     * @return          number of rows updated
      */
     fun update(item : Item) : Int {
         return AsyncTaskUpdateItem(itemDao).execute(item).get()
     }
 
-    fun getListNameCount(listName : String) : Int {
-        return AsyncTaskGetListNameCount(itemDao).execute(listName).get()
-    }
-
     /**
-     * Updates the given list of items from the database.
+     * Updates the given list of items in the database.
      *
-     * @param   item    item
+     * @param   itemList    item
+     * @return              number of rows updated
      */
-    fun update(items : List<Item>) : Int {
-        return AsyncTaskUpdateList(itemDao).execute(items).get()
+    fun update(itemList : List<Item>) : Int {
+        return AsyncTaskUpdateList(itemDao).execute(itemList).get()
     }
 
     // function for sorting items by names
     /**
-     * Sorts the items from the database A - Z.
+     * Sorts the items in the given list A - Z.
+     *
+     * @param   listName    given list
+     * @return              list of items sorted A - Z
      */
     fun sortNameAToZ(listName: String) : List<Item> {
         return AsyncTaskSortNameAToZ(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database Z - A.
+     * Sorts the items in the given list Z - A.
+     *
+     * @param   listName    given list
+     * @return              list of items sorted Z - A
      */
     fun sortNameZToA(listName: String) : List<Item> {
         return AsyncTaskSortNameZToA(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database A - Z with amount = 0.0.
+     * Sorts the empty items in the given list A - Z.
+     *
+     * @param   listName    given list
+     * @return              list of empty items sorted A - Z
      */
     fun sortNameEmptyAToZ(listName: String) : List<Item> {
         return AsyncTaskSortNameEmptyAToZ(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database Z - A with amount = 0.0.
+     * Sorts the empty items in the given list Z - A.
+     *
+     * @param   listName    given list
+     * @return              list of empty items sorted Z - A
      */
     fun sortNameEmptyZToA(listName: String) : List<Item> {
         return AsyncTaskSortNameEmptyZToA(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database A - Z that are not checked and with amount > 0.0.
+     * Sorts the leftover items in the given list A - Z.
+     *
+     * @param   listName    given list
+     * @return              list of leftover items sorted A - Z
      */
     fun sortNameLeftoverAToZ(listName: String) : List<Item> {
         return AsyncTaskSortNameLeftOverAToZ(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database Z - A that are not checked and with amount > 0.0.
+     * Sorts the leftover items in the given list Z - A.
+     *
+     * @param   listName    given list
+     * @return              list of empty items sorted Z - A
      */
     fun sortNameLeftoverZToA(listName: String) : List<Item> {
         return AsyncTaskSortNameLeftoverZToA(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database A - Z that are checked.
+     * Sorts the checked items in the given list A - Z.
+     *
+     * @param   listName    given list
+     * @return              list of checked items sorted A - Z
      */
     fun sortNameFullAToZ(listName: String) : List<Item> {
         return AsyncTaskSortNameFullAToZ(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database Z - A that are checked.
+     * Sorts the checked items in the given list Z - A.
+     *
+     * @param   listName    given list
+     * @return              list of checked items sorted Z - A
      */
     fun sortNameFullZToA(listName: String) : List<Item> {
         return AsyncTaskSortNameFullZToA(itemDao).execute(listName).get()
@@ -104,54 +127,70 @@ class ItemRepository(application: Application) {
 
     // function for sorting items by amount
     /**
-     * Sorts the items from the database by lowest to highest amount.
+     * Sorts the items in the given list by increasing amount.
+     *
+     * @param   listName    given list
+     * @return              list of items sorted by increasing amount
      */
     fun sortAmountAscending(listName: String) : List<Item> {
         return AsyncTaskSortAmountAscending(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database by highest to lowest amount.
+     * Sorts the items in the given list by decreasing amount.
+     *
+     * @param   listName    given list
+     * @return              list of items sorted by decreasing amount
      */
     fun sortAmountDescending(listName: String) : List<Item> {
         return AsyncTaskSortAmountDescending(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database with amount = 0.0 by lowest to highest amount.
+     * Sorts the empty items in the given list by increasing amount.
      *
-     * The order will not matter, since all the empty items have 0.0 as the
-     * amount value to be considered empty.
+     * @param   listName    given list
+     * @return              list of empty items sorted by increasing amount
      */
     fun sortAmountEmpty(listName: String) : List<Item> {
         return AsyncTaskSortAmountEmpty(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database that are not checked and with amount > 0.0 by
-     * lowest to highest amount.
+     * Sorts the leftover items in the given list by increasing amount.
+     *
+     * @param   listName    given list
+     * @return              list of leftover items sorted by increasing amount
      */
     fun sortAmountLeftoverAscending(listName: String) : List<Item> {
         return AsyncTaskSortAmountLeftoverAscending(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database that are not checked and with amount > 0.0 by
-     * highest to lowest amount.
+     * Sorts the leftover items in the given list by decreasing amount.
+     *
+     * @param   listName    given list
+     * @return              list of leftover items sorted by decreasing amount
      */
     fun sortAmountLeftoverDescending(listName: String) : List<Item> {
         return AsyncTaskSortAmountLeftoverDescending(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database that are checked by lowest to highest amount.
+     * Sorts the checked items in the given list by increasing amount.
+     *
+     * @param   listName    given list
+     * @return              list of checked items sorted by increasing amount
      */
     fun sortAmountFullAscending(listName: String) : List<Item> {
         return AsyncTaskSortAmountFullAscending(itemDao).execute(listName).get()
     }
 
     /**
-     * Sorts the items from the database that are checked by highest to lowest amount.
+     * Sorts the checked items in the given list by decreasing amount.
+     *
+     * @param   listName    given list
+     * @return              list of checked items sorted by decreasing amount
      */
     fun sortAmountFullDescending(listName: String) : List<Item> {
         return AsyncTaskSortAmountFullDescending(itemDao).execute(listName).get()
@@ -161,156 +200,186 @@ class ItemRepository(application: Application) {
     /**
      * Deletes the given item from the database.
      *
-     * @param   item    item
+     * @param   item    given item
+     * @return          number of rows deleted
      */
     fun delete(item : Item) : Int {
         return AsyncTaskDeleteItem(itemDao).execute(item).get()
     }
 
     /**
-     * Deletes all the items from the database with amount = 0.0.
+     * Deletes all the empty items in the given list from the database.
+     *
+     * @param   listName    given list
+     * @return              number of rows deleted
      */
     fun deleteEmpty(listName: String) : Int {
         return AsyncTaskDeleteEmpty(itemDao).execute(listName).get()
     }
 
     /**
-     * Deletes all the items from the database that are not checked and with amount > 0.0.
+     * Deletes all the leftover items in the given list from the database.
+     *
+     * @param   listName    given list
+     * @return              number of rows deleted
      */
     fun deleteLeftover(listName: String) : Int {
         return AsyncTaskDeleteLeftover(itemDao).execute(listName).get()
     }
 
     /**
-     * Deletes all the items from the database that are checked.
+     * Deletes all the checked items in the given list from the database.
+     *
+     * @param   listName    given list
+     * @return              number of rows deleted
      */
     fun deleteFull(listName: String) : Int {
         return AsyncTaskDeleteFull(itemDao).execute(listName).get()
     }
 
     /**
-     * Deletes all the items from the database.
+     * Deletes all the items in the given list from the database.
+     *
+     * @param   listName    given list
+     * @return              number of rows deleted
      */
     fun deleteAllItems(listName: String) : Int {
         return AsyncTaskDeleteAllItems(itemDao).execute(listName).get()
     }
 
-    // function for getting items
-    fun getItem(id: Long?) : Item {
-        return AsyncTaskGetItem(itemDao).execute(id).get()
+    /**
+     * Deletes all the items in the database.
+     *
+     * @return              number of rows deleted
+     */
+    fun deleteAllLists() : Int {
+        return AsyncTaskDeleteAllLists(itemDao).execute().get()
     }
 
+    // function for getting items
     /**
-     * Gets the item from the database that has the given name.
+     * Gets all the items in the given list from the database with the given name.
      *
-     * @param   name        name
-     * @return              item with the given name
+     * @param   name        given name
+     * @param   listName    given list
+     * @return              item in the given list with the given name
      */
     fun getItemByName(name: String?, listName: String) : List<Item> {
         return AsyncTaskGetItemByName(itemDao).execute(name, listName).get()
     }
 
     /**
-     * Gets all the items from the database that have the given keyword.
+     * Gets all the items in the given list from the database with the given keyword.
      *
-     * @param   keyword     keyword
-     * @return              all the items with the given keyword
+     * @param   keyword     given keyword
+     * @param   listName    given list
+     * @return              all the items in the given list with the given keyword
      */
     fun getItemsWithKeyword(keyword: String?, listName: String) : List<Item> {
         return AsyncTaskGetItemsWithKeyword(itemDao).execute(keyword, listName).get()
     }
 
     /**
-     * Gets all the items from the database that have the given amount.
+     * Gets all the items in the given list from the database with amount equal to the given amount.
      *
-     * @param   amount      amount
-     * @return              all the items with the given amount
+     * @param   amount      given amount
+     * @param   listName    given list
+     * @return              all the items in the given list with the given amount
      */
     fun getItemsEqualTo(amount: Double?, listName: String) : List<Item> {
         return AsyncTaskGetItemsEqualTo(itemDao).execute(SearchParams(amount, listName)).get()
     }
 
     /**
-     * Gets all the items from the database that do not have the given amount.
+     * Gets all the items in the given list from the database that do not have the given amount.
      *
-     * @param   amount      amount
-     * @return              all the items that do not have the given amount
+     * @param   amount      given amount
+     * @param   listName    given list
+     * @return              all the items in the given list that do not have the given amount
      */
     fun getItemsNotEqualTo(amount: Double?, listName: String) : List<Item> {
         return AsyncTaskGetItemsNotEqualTo(itemDao).execute(SearchParams(amount, listName)).get()
     }
 
     /**
-     * Gets all the items from the database with amount < the given amount.
+     * Gets all the items in the given list from the database with amount < the given amount.
      *
      * @param   amount      amount
-     * @return              all the items with amount < given amount
+     * @param   listName    given list
+     * @return              all the items in the given list with amount < given amount
      */
     fun getItemsLessThan(amount: Double?, listName: String) : List<Item> {
         return AsyncTaskGetItemsLessThan(itemDao).execute(SearchParams(amount, listName)).get()
     }
 
     /**
-     * Gets all the items from the database with amount <= the given amount.
+     * Gets all the items in the given list from the database with amount <= the given amount.
      *
      * @param   amount      amount
-     * @return              all the items with amount <= given amount
+     * @param   listName    given list
+     * @return              all the items in the given list with amount <= given amount
      */
     fun getItemsLessThanOrEqualTo(amount: Double?, listName: String) : List<Item> {
         return AsyncTaskGetItemsLessThanOrEqualTo(itemDao).execute(SearchParams(amount, listName)).get()
     }
 
     /**
-     * Gets all the items from the database with amount > the given amount.
+     * Gets all the items in the given list from the database with amount > the given amount.
      *
      * @param   amount      amount
-     * @return              all the items with amount > given amount
+     * @param   listName    given list
+     * @return              all the items in the given list with amount > given amount
      */
     fun getItemsGreaterThan(amount: Double?, listName: String) : List<Item> {
         return AsyncTaskGetItemsGreaterThan(itemDao).execute(SearchParams(amount, listName)).get()
     }
 
     /**
-     * Gets all the items from the database with amount >= the given amount.
+     * Gets all the items in the given list from the database with amount >= the given amount.
      *
      * @param   amount      amount
-     * @return              all the items with amount >= given amount
+     * @param   listName    given list
+     * @return              all the items in the given list with amount >= given amount
      */
     fun getItemsGreaterThanOrEqualTo(amount: Double?, listName: String) : List<Item> {
         return AsyncTaskGetItemsGreaterThanOrEqualTo(itemDao).execute(SearchParams(amount, listName)).get()
     }
 
     /**
-     * Gets all the items from the database with amount = 0.0.
+     * Gets all the empty items in the given list from the database.
      *
-     * @return              all the items with amount = 0.0
+     * @param   listName    given list
+     * @return              all the empty items in the given list
      */
     fun getEmptyItems(listName: String) : List<Item> {
         return AsyncTaskGetEmptyItems(itemDao).execute(listName).get()
     }
 
     /**
-     * Gets all the items from the database that are not checked and with amount > 0.0.
+     * Gets all the leftover items in the given list from the database.
      *
-     * @return              all the items that are not checked and with amount > 0.0
+     * @param   listName    given list
+     * @return              all the leftover items in the given list
      */
     fun getLeftoverItems(listName: String) : List<Item> {
         return AsyncTaskGetLeftoverItems(itemDao).execute(listName).get()
     }
 
     /**
-     * Gets all the items from the database that are checked.
+     * Gets all the checked items in the given list from the database.
      *
-     * @return              all the items that are checked
+     * @param   listName    given list
+     * @return              all the checked items in the given list
      */
     fun getFullItems(listName: String) : List<Item> {
         return AsyncTaskGetFullItems(itemDao).execute(listName).get()
     }
 
     /**
-     * Gets all the items from the database.
+     * Gets all the items in the given list from the database.
      *
-     * @return              all the items
+     * @param   listName    given list
+     * @return              all the items in the given list
      */
     fun getAllItems(listName: String) : List<Item>  {
         return AsyncTaskGetAllItems(itemDao).execute(listName).get()
@@ -319,14 +388,30 @@ class ItemRepository(application: Application) {
     /**
      * Gets all the names of the saved lists from the database.
      *
-     * @return              all the names of the saved lists from the database
+     * @return              all the names of the saved lists
      */
     fun getAllSavedListNames() : List<String> {
         return AsyncTaskGetAllSavedListNames(itemDao).execute().get()
     }
 
+    /**
+     * Gets all the item names in the given list from the database.
+     *
+     * @param   listName    given list
+     * @return              all the item names in the given list
+     */
     fun getAllItemNames(listName : String?) : List<String> {
         return AsyncTaskGetAllItemNames(itemDao).execute(listName).get()
+    }
+
+    /**
+     * Gets the total number of the given list from the database.
+     *
+     * @param   listName    given list
+     * @return              total number of the given list
+     */
+    fun getListNameCount(listName : String) : Int {
+        return AsyncTaskGetListNameCount(itemDao).execute(listName).get()
     }
 
     /**
@@ -335,13 +420,17 @@ class ItemRepository(application: Application) {
      */
     companion object {
 
+        /**
+         * This class groups item amount and list name into a single parameter type
+         * for AsyncTask's doInBackground().
+         */
         private class SearchParams internal constructor(
             internal var amount: Double?,
             internal var listName: String
         )
 
         /**
-         * Adds an item to the database in the background thread, using
+         * Adds a new item to the database in the background thread, using
          * the given Data Access Object.
          */
         private class AsyncTaskInsertItem(private var itemDao: ItemDao) : AsyncTask<Item, Void, Long>() {
@@ -351,7 +440,7 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Updates an item from the database in the background thread, using
+         * Updates the item from the database in the background thread, using
          * the given Data Access Object.
          */
         private class AsyncTaskUpdateItem(private var itemDao: ItemDao) : AsyncTask<Item, Void, Int>() {
@@ -361,7 +450,7 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Updates an item from the database in the background thread, using
+         * Updates the list of items from the database in the background thread, using
          * the given Data Access Object.
          */
         private class AsyncTaskUpdateList(private var itemDao: ItemDao) : AsyncTask<List<Item>, Void, Int>() {
@@ -370,15 +459,9 @@ class ItemRepository(application: Application) {
             }
         }
 
-        private class AsyncTaskGetListNameCount(private var itemDao: ItemDao) : AsyncTask<String, Void, Int>() {
-            override fun doInBackground(vararg listName : String?): Int {
-                return itemDao.getListNameCount(listName[0])
-            }
-        }
-
-        // async tasks for sorting names
+        // async tasks for sorting items by names
         /**
-         * Sorts the items from the database A - Z in the background thread, using
+         * Sorts the items in the given list from the database A - Z in the background thread, using
          * the given Data Access Object.
          */
         private class AsyncTaskSortNameAToZ(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
@@ -388,7 +471,7 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database Z - A in the background thread, using
+         * Sorts the items in the given list from the database Z - A in the background thread, using
          * the given Data Access Object.
          */
         private class AsyncTaskSortNameZToA(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
@@ -398,7 +481,7 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database A - Z with amount = 0.0 in the
+         * Sorts the empty items in the given list from the database A - Z in the
          * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortNameEmptyAToZ(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
@@ -408,7 +491,7 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database Z - A with amount = 0.0 in the
+         * Sorts the empty items in the given list from the database Z - A in the
          * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortNameEmptyZToA(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
@@ -418,8 +501,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database A - Z that are not checked and with amount > 0.0
-         * in the background thread, using the given Data Access Object.
+         * Sorts the leftover items in the given list from the database A - Z in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortNameLeftOverAToZ(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item> {
@@ -428,8 +511,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database Z - A that are not checked and with amount > 0.0
-         * in the background thread, using the given Data Access Object.
+         * Sorts the leftover items in the given list from the database Z - A in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortNameLeftoverZToA(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item> {
@@ -438,8 +521,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database A - Z that are checked in the background thread,
-         * using the given Data Access Object.
+         * Sorts the checked items in the given list from the database A - Z in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortNameFullAToZ(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item> {
@@ -448,8 +531,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database Z - A that are checked in the background thread,
-         * using the given Data Access Object.
+         * Sorts the checked items in the given list from the database Z - A in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortNameFullZToA(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item> {
@@ -459,8 +542,8 @@ class ItemRepository(application: Application) {
 
         // async task for sorting amount
         /**
-         * Sorts the items from the database by lowest to highest amount in the background thread,
-         * using the given Data Access Object.
+         * Sorts the items in the given list from the database by increasing amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortAmountAscending(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item> {
@@ -469,8 +552,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database by highest to lowest amount in the background thread,
-         * using the given Data Access Object.
+         * Sorts the items in the given list from the database by decreasing amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortAmountDescending(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item> {
@@ -479,8 +562,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database with amount = 0.0 by lowest to highest amount in the background thread,
-         * using the given Data Access Object.
+         * Sorts the empty items in the given list from the database by increasing amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortAmountEmpty(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item> {
@@ -489,8 +572,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database that are not checked and with amount > 0.0 by lowest to highest amount
-         * in the background thread, using the given Data Access Object.
+         * Sorts the leftover items in the given list from the database by increasing amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortAmountLeftoverAscending(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item> {
@@ -499,8 +582,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database that are not checked and with amount > 0.0 by highest to lowest amount
-         * in the background thread, using the given Data Access Object.
+         * Sorts the leftover items in the given list from the database by decreasing amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortAmountLeftoverDescending(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item> {
@@ -509,8 +592,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database that are checked by lowest to highest amount
-         * in the background thread, using the given Data Access Object.
+         * Sorts the checked items in the given list from the database by increasing amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortAmountFullAscending(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item> {
@@ -519,8 +602,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Sorts the items from the database that are checked by highest to lowest amount
-         * in the background thread, using the given Data Access Object.
+         * Sorts the checked items in the given list from the database by decreasing amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskSortAmountFullDescending(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item> {
@@ -530,8 +613,8 @@ class ItemRepository(application: Application) {
 
         // async task for deleting items
         /**
-         * Deletes the given item from the database in the background thread,
-         * using the given Data Access Object.
+         * Deletes the given item from the database in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskDeleteItem(private var itemDao: ItemDao) : AsyncTask<Item, Void, Int>() {
             override fun doInBackground(vararg item : Item?): Int {
@@ -540,8 +623,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Deletes all the items from the database with amount = 0.0 in the background thread,
-         * using the given Data Access Object.
+         * Deletes all the empty items in the given list from the database in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskDeleteEmpty(private var itemDao: ItemDao) : AsyncTask<String, Void, Int>() {
             override fun doInBackground(vararg listName : String?): Int {
@@ -550,8 +633,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Deletes all the items from the database that are not checked and with amount > 0.0
-         * in the background thread, using the given Data Access Object.
+         * Deletes all the leftover items in the given list from the database in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskDeleteLeftover(private var itemDao: ItemDao) : AsyncTask<String, Void, Int>() {
             override fun doInBackground(vararg listName : String?): Int {
@@ -560,8 +643,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Deletes all the items from the database that are checked in the background thread,
-         * using the given Data Access Object.
+         * Deletes all the checked items in the given list from the database in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskDeleteFull(private var itemDao: ItemDao) : AsyncTask<String, Void, Int>() {
             override fun doInBackground(vararg listName : String?): Int {
@@ -570,8 +653,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Deletes all the items from the database in the background thread,
-         * using the given Data Access Object.
+         * Deletes all the items in the given list from the database in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskDeleteAllItems(private var itemDao: ItemDao) : AsyncTask<String, Void, Int>() {
             override fun doInBackground(vararg listName : String?): Int {
@@ -579,16 +662,21 @@ class ItemRepository(application: Application) {
             }
         }
 
-        // async tasks for getting items
-        private class AsyncTaskGetItem(private var itemDao: ItemDao) : AsyncTask<Long, Void, Item>() {
-            override fun doInBackground(vararg id : Long?): Item {
-                return itemDao.getItem(id[0])
+        /**
+         * Deletes all the items in the database in the
+         * background thread, using the given Data Access Object.
+         *
+         * @return              number of rows deleted
+         */
+        private class AsyncTaskDeleteAllLists(private var itemDao: ItemDao) : AsyncTask<Void, Void, Int>() {
+            override fun doInBackground(vararg params : Void?): Int {
+                return itemDao.deleteAllLists()
             }
         }
 
         /**
-         * Gets the item from the database that has the given name in the background thread,
-         * using the given Data Access Object.
+         * Gets all the items in the given list from the database that has the given name in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetItemByName(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg name : String?): List<Item>? {
@@ -597,8 +685,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the items from the database that has the given keyword in the background thread,
-         * using the given Data Access Object.
+         * Gets all the items in the given list from the database that has the given keyword in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetItemsWithKeyword(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg name : String?): List<Item>? {
@@ -607,8 +695,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the items from the database that have the given amount in the background thread,
-         * using the given Data Access Object.
+         * Gets all the items in the given list from the database that have the given amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetItemsEqualTo(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
@@ -617,8 +705,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the items from the database that do not have the given amount in the background thread,
-         * using the given Data Access Object.
+         * Gets all the items in the given list from the database that do not have the given amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetItemsNotEqualTo(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
@@ -627,8 +715,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the items from the database with amount < the given amount in the background thread,
-         * using the given Data Access Object.
+         * Gets all the items in the given list from the database with amount < the given amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetItemsLessThan(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
@@ -637,8 +725,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the items from the database with amount <= the given amount in the background thread,
-         * using the given Data Access Object.
+         * Gets all the items in the given list from the database with amount <= the given amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetItemsLessThanOrEqualTo(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
@@ -647,8 +735,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the items from the database with amount > the given amount in the background thread,
-         * using the given Data Access Object.
+         * Gets all the items in the given list from the database with amount > the given amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetItemsGreaterThan(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
@@ -657,8 +745,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the items from the database with amount >= the given amount in the background thread,
-         * using the given Data Access Object.
+         * Gets all the items in the given list from the database with amount >= the given amount in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetItemsGreaterThanOrEqualTo(private var itemDao: ItemDao) : AsyncTask<SearchParams, Void, List<Item>>() {
             override fun doInBackground(vararg searchParams : SearchParams?): List<Item>? {
@@ -667,8 +755,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the items from the database with amount = 0.0 in the background thread,
-         * using the given Data Access Object.
+         * Gets all the empty items in the given list from the database in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetEmptyItems(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item>? {
@@ -677,8 +765,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the items from the database that are checked and with amount > 0.0
-         * in the background thread, using the given Data Access Object.
+         * Gets all the leftover items in the given list from the database in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetLeftoverItems(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item>? {
@@ -687,8 +775,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the items from the database that are checked in the background thread,
-         * using the given Data Access Object.
+         * Gets all the checked items in the given list from the database in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetFullItems(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item>? {
@@ -697,8 +785,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the items from the database in the background thread,
-         * using the given Data Access Object.
+         * Gets all the items in the given list from the database in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetAllItems(private var itemDao: ItemDao) : AsyncTask<String, Void, List<Item>>() {
             override fun doInBackground(vararg listName : String?): List<Item>? {
@@ -707,8 +795,8 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the names of the saved lists from the database in the background thread,
-         * using the given Data Access Object.
+         * Gets all the names of the saved lists from the database in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetAllSavedListNames(private var itemDao: ItemDao) : AsyncTask<Void, Void, List<String>>() {
             override fun doInBackground(vararg params : Void?): List<String> {
@@ -717,12 +805,22 @@ class ItemRepository(application: Application) {
         }
 
         /**
-         * Gets all the names of the items in the given list from the database in the background thread,
-         * using the given Data Access Object.
+         * Gets all the names of the items in the given list from the database in the
+         * background thread, using the given Data Access Object.
          */
         private class AsyncTaskGetAllItemNames(private var itemDao: ItemDao) : AsyncTask<String, Void, List<String>>() {
             override fun doInBackground(vararg listName : String?): List<String> {
                 return itemDao.getAllItemNames(listName[0])
+            }
+        }
+
+        /**
+         * Gets the total number of the given list from the database in the
+         * background thread, using the given Data Access Object.
+         */
+        private class AsyncTaskGetListNameCount(private var itemDao: ItemDao) : AsyncTask<String, Void, Int>() {
+            override fun doInBackground(vararg listName : String?): Int {
+                return itemDao.getListNameCount(listName[0])
             }
         }
     }
