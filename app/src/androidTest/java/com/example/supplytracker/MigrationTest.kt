@@ -25,6 +25,7 @@ class MigrationTest {
         ItemDatabase::class.java.canonicalName,
         FrameworkSQLiteOpenHelperFactory())
 
+    /*
     @Test
     fun migrate1To2() {
         // Create the database with the initial version 1 schema and
@@ -87,5 +88,5 @@ class MigrationTest {
         assertEquals(cursor.getString(cursor.getColumnIndex("column_name")), "Test Item 1")
         assertEquals(cursor.getDouble(cursor.getColumnIndex("column_amount")), 1.0)
         assertEquals(cursor.getInt(cursor.getColumnIndex("column_isFull")), 0)
-    }
+    }*/
 }
