@@ -1,17 +1,19 @@
 package com.dylanhua.inventorylist
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
-import android.support.v7.widget.helper.ItemTouchHelper
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.ItemTouchHelper
 import android.widget.*
 import android.view.*
 import com.example.supplytracker.R
+import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_item_list_display.*
 import java.util.Collections.swap
+import com.google.android.gms.ads.MobileAds;
 
 /**
  * This class handles the display of items in the list
@@ -33,6 +35,9 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
     override fun onCreate(savedState : Bundle?) {
         super.onCreate(savedState)
         setContentView(R.layout.activity_item_list_display)
+
+        MobileAds.initialize(this, "ca-app-pub-9305885979692873~3283022395")
+        adView.loadAd(AdRequest.Builder().build())
 
         itemViewModel = ViewModelProviders.of(this).get(ItemViewModel(application)::class.java)
         listManager = ItemAdapter(this, itemViewModel)
