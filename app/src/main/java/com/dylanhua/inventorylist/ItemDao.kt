@@ -1,7 +1,7 @@
 package com.dylanhua.inventorylist
 
-import android.arch.persistence.room.*
-import android.arch.persistence.room.Update
+import androidx.room.*
+import androidx.room.Update
 
 /**
  * This class represents a DAO (data access object) that validates

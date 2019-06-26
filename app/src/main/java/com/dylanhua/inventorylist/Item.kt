@@ -1,8 +1,8 @@
 package com.dylanhua.inventorylist
 
-import android.arch.persistence.room.ColumnInfo
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 /**
  * This class represents a table of items in the SQLite database.

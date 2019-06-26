@@ -1,7 +1,7 @@
 package com.dylanhua.inventorylist
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
+import androidx.lifecycle.AndroidViewModel
 import android.view.MenuItem
 import com.example.supplytracker.R
 

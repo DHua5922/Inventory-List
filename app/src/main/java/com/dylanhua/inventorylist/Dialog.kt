@@ -3,7 +3,7 @@ package com.dylanhua.inventorylist
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.text.InputType
 import android.view.*
 import android.widget.*
@@ -435,9 +435,6 @@ class Dialog {
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
             // show dialog
             val alertDialog : AlertDialog = AlertDialog.Builder(context).setView(dialogView).show()
-
-            // hide keyboard when field was clicked
-            alertDialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
             // build search field
             val searchField = dialogView.field_search_word
