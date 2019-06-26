@@ -1,12 +1,11 @@
 package com.example.supplytracker
 
+import android.support.v7.app.ActionBar
 import android.content.Context
 import android.graphics.Typeface
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
@@ -19,16 +18,15 @@ import android.widget.Toast.LENGTH_SHORT
  */
 class Utility {
     companion object {
+
         /**
-         * Hides keyboard when the given view in the given activity context is interacted.
-         * This is used when opening or deleting list and searching items by name.
+         * Sets the given title in the given action bar.
          *
-         * @param   context     given activity context
-         * @param   view        given view being interacted with
+         * @param   actionBar   given action bar
+         * @param   title       given title
          */
-        fun hideKeyboard(context : Context, view: View) {
-            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+        fun setTitle(actionBar: ActionBar?, title: String) {
+            actionBar!!.title = "Inventory: $title"
         }
 
         /**
@@ -99,9 +97,6 @@ class Utility {
             // hide keyboard if user is opening or deleting list
             input.setOnClickListener {
                 input.showDropDown()
-                if(itemId == R.id.option_open_list || itemId == R.id.option_delete_list) {
-                    hideKeyboard(context, input)
-                }
             }
             return input
         }
