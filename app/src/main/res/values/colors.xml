@@ -14,4 +14,5 @@
     <color name="isEmpty">#FFA8A8</color>
     <color name="pressed_info_display">#FFC56C</color>
     <color name="background_page">#C912E5</color>
+    <color name="background_toolbar">#4070FF</color>
 </resources>
