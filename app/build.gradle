@@ -9,7 +9,7 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.example.supplytracker"
+        applicationId "com.dylanhua.inventorylist"
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
