@@ -3,13 +3,10 @@ package com.example.supplytracker
 import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory
 import android.arch.persistence.room.testing.MigrationTestHelper
-import android.content.ContentValues
-import android.database.sqlite.SQLiteDatabase
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
-import junit.framework.Assert.assertEquals
+import com.dylanhua.inventorylist.ItemDatabase
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
