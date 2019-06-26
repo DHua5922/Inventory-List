@@ -151,7 +151,7 @@ class Dialog {
                                 itemViewModel.delete("Unsaved")
                                 // after saving items, change to saved list
                                 ItemListDisplay.listName = listName
-                                (activity as ItemListDisplay).supportActionBar!!.title = listName
+                                Utility.setTitle((activity as ItemListDisplay).supportActionBar, listName)
                                 listManager.setItems(itemViewModel.getAllItems(listName))
                                 Utility.printStyledMessage(context, "This list has been saved as $listName", arrayOf(listName))
                                 // exit dialog
@@ -167,7 +167,7 @@ class Dialog {
                             if(list.isNotEmpty()) {
                                 // display list that user wants to open
                                 ItemListDisplay.listName = listName
-                                (activity as ItemListDisplay).supportActionBar!!.title = listName
+                                Utility.setTitle((activity as ItemListDisplay).supportActionBar, listName)
                                 listManager.setItems(list)
                                 // exit dialog
                                 alertDialog.dismiss()
@@ -385,7 +385,6 @@ class Dialog {
                 searchField.setAdapter(arrayAdapter)
                 searchField.setOnClickListener {
                     searchField.showDropDown()
-                    Utility.hideKeyboard(context, searchField)
                 }
             }
 
