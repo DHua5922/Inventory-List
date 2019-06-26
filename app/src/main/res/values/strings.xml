@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Inventory Tracker</string>
+    <string name="app_name">Inventory List</string>
     <string name="description_splash_screen">Splash Screen Image</string>
 
     <string name="hint_item_name">Item Name</string>
@@ -33,7 +33,7 @@
     <string name="remove_all">Delete All</string>
     <string name="remove_empty">Delete Empty</string>
     <string name="remove_leftover">Delete Leftover</string>
-    <string name="remove_checked">Delete Checked</string>
+    <string name="remove_checked">Delete Full (Checked)</string>
 
     <string name="search_name">By Name</string>
     <string name="search_amount">By Amount</string>
@@ -76,9 +76,8 @@
         <item>Greater than or equal to</item>
     </string-array>
 
-    <string name="save_list">Save This List</string>
-    <string name="save_list_as">Save List As</string>
-    <string name="open_list">Open List</string>
-    <string name="delete_list">Delete List</string>
-    <string name="delete_list_all">Delete All Lists</string>
+    <string name="save_inventory_as">Save Inventory As</string>
+    <string name="open_inventory">Open Inventory</string>
+    <string name="delete_inventory">Delete Inventory</string>
+    <string name="delete_inventory_all">Delete All Inventories</string>
 </resources>
