@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.widget.*
 import android.view.*
-import kotlinx.android.synthetic.main.list_display.*
+import kotlinx.android.synthetic.main.activity_item_list_display.*
 import java.util.Collections.swap
 
 /**
@@ -31,7 +31,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
      */
     override fun onCreate(savedState : Bundle?) {
         super.onCreate(savedState)
-        setContentView(R.layout.list_display)
+        setContentView(R.layout.activity_item_list_display)
 
         itemViewModel = ViewModelProviders.of(this).get(ItemViewModel(application)::class.java)
         listManager = ItemAdapter(this, itemViewModel)
@@ -43,7 +43,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
 
         // set action bar title as name of current list
         setSupportActionBar(toolbar as Toolbar?)
-        supportActionBar!!.title = listName
+        Utility.setTitle(supportActionBar, listName)
 
         // display items
         listManager.setItems(itemViewModel.getAllItems(listName))
@@ -308,7 +308,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
      * @return          true
      */
     override fun onCreateOptionsMenu(menu : Menu) : Boolean {
-        menuInflater.inflate(R.menu.options_list, menu)
+        menuInflater.inflate(R.menu.options_inventories, menu)
         return true
     }
 
