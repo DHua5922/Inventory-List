@@ -2,16 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:id="@+id/group_list">
         <item android:id="@+id/option_save_list_as"
-              android:title="@string/save_list_as"
+              android:title="@string/save_inventory_as"
               app:showAsAction="never"/>
         <item android:id="@+id/option_open_list"
-              android:title="@string/open_list"
+              android:title="@string/open_inventory"
               app:showAsAction="never"/>
         <item android:id="@+id/option_delete_list"
-              android:title="@string/delete_list"
+              android:title="@string/delete_inventory"
               app:showAsAction="never"/>
         <item android:id="@+id/option_delete_list_all"
-              android:title="@string/delete_list_all"
+              android:title="@string/delete_inventory_all"
               app:showAsAction="never"/>
     </group>
 </menu>
