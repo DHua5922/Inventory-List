@@ -8,18 +8,6 @@
         android:background="@color/background_page"
         tools:context="com.dylanhua.inventorylist.ItemListDisplay">
 
-    <com.google.android.gms.ads.AdView
-            xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/adView"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:gravity="bottom"
-            android:layout_alignParentBottom="true"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
-            ads:layout_constraintStart_toStartOf="parent" ads:layout_constraintEnd_toEndOf="parent"
-            ads:layout_constraintTop_toBottomOf="parent" ads:layout_constraintBottom_toTopOf="parent"/>
-
     <include
         android:id="@+id/toolbar" layout="@layout/toolbar"
         app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +29,7 @@
                 android:layout_weight="1" android:scrollHorizontally="true"
                 android:singleLine="true" android:inputType="text"
                 android:textColor="@color/black" android:background="@color/field"
-                android:imeOptions="flagNoExtractUi"/>
+                android:imeOptions="flagNoExtractUi" tools:ignore="Autofill"/>
 
         <EditText
                 android:id="@+id/editableAmount"
@@ -53,7 +41,7 @@
                 android:layout_marginStart="@dimen/gap_btwn_widgets" android:layout_marginLeft="@dimen/gap_btwn_widgets"
                 android:layout_marginRight="@dimen/gap_btwn_widgets"
                 android:layout_marginEnd="@dimen/gap_btwn_widgets"
-                android:imeOptions="flagNoExtractUi"/>
+                android:imeOptions="flagNoExtractUi" tools:ignore="Autofill"/>
 
         <Button
                 android:id="@+id/btn_add"
@@ -81,7 +69,7 @@
                 android:text="@string/btn_sort_alphabetically" android:textSize="@dimen/text"
                 android:textColor="@color/white"
                 android:background="@drawable/button_manage" android:layout_weight="1"
-                android:padding="@dimen/btn_padding"/>
+                android:padding="@dimen/btn_padding" tools:ignore="ButtonStyle"/>
 
         <Button
                 android:id="@+id/btn_sort_amount"
@@ -91,7 +79,7 @@
                 android:background="@drawable/button_manage" android:layout_weight="1"
                 android:layout_marginStart="@dimen/gap_btwn_widgets" android:layout_marginLeft="@dimen/gap_btwn_widgets"
                 android:layout_marginRight="@dimen/gap_btwn_widgets" android:layout_marginEnd="@dimen/gap_btwn_widgets"
-                android:padding="@dimen/btn_padding"/>
+                android:padding="@dimen/btn_padding" tools:ignore="ButtonStyle"/>
 
         <Button
                 android:id="@+id/btn_clear"
@@ -99,14 +87,14 @@
                 android:text="@string/btn_clear" android:textSize="@dimen/text" android:textColor="@color/white"
                 android:background="@drawable/button_manage" android:layout_weight="1"
                 android:layout_marginRight="@dimen/gap_btwn_widgets" android:layout_marginEnd="@dimen/gap_btwn_widgets"
-                android:padding="@dimen/btn_padding"/>
+                android:padding="@dimen/btn_padding" tools:ignore="ButtonStyle"/>
 
         <Button
                 android:id="@+id/btn_search"
                 android:layout_weight="1" android:background="@drawable/button_manage"
                 android:layout_width="wrap_content" android:layout_height="match_parent"
                 android:text="@string/btn_search" android:textSize="@dimen/text"
-                android:textColor="@color/white" android:padding="@dimen/btn_padding"/>
+                android:textColor="@color/white" android:padding="@dimen/btn_padding" tools:ignore="ButtonStyle"/>
 
     </LinearLayout>
 
