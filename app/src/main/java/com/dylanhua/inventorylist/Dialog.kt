@@ -18,7 +18,10 @@ import kotlinx.android.synthetic.main.dialog_search_item_amount.view.*
 import kotlinx.android.synthetic.main.dialog_search_item_word.view.*
 import android.widget.ArrayAdapter
 import android.widget.AdapterView
-import com.example.supplytracker.R
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
+import kotlinx.android.synthetic.main.dialog_ad.view.*
+
 
 /**
  * This class holds functions for showing dialogs to confirm user action or prompt user.
@@ -29,6 +32,26 @@ import com.example.supplytracker.R
  */
 class Dialog {
     companion object {
+
+        /**
+         * Shows banner ads, using the given activity context.
+         *
+         * @param    context     given activity context
+         */
+        fun showBannerAd(context: Context) {
+            // use custom dialog layout
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_ad, null)
+            // build dialog
+            AlertDialog.Builder(context).apply {
+                setView(dialogView)
+                setTitle("Ad")
+                setPositiveButton(R.string.btn_dialog_exit_ad) { dialog, id -> }
+                // load ad
+                MobileAds.initialize(context, context.getString(R.string.app_id))
+                dialogView.adView.loadAd(AdRequest.Builder().build())
+            }.show()
+        }
+
         /**
          * Asks user for confirmation to delete items.
          *
@@ -43,34 +66,33 @@ class Dialog {
          * @param   itemDisplay     item view in list display
          */
         fun showConfirmationDialog(
-            context : Context,
-            itemId : Int = -1,
-            listName : String = "Unsaved",
-            title : String = "",
-            message : String,
-            listManager: ItemAdapter,
-            itemViewModel: ItemViewModel?= null,
-            method: MenuItem ?= null,
-            itemDisplay : ItemAdapter.ItemHolder?= null) {
+                context : Context,
+                itemId : Int = -1,
+                listName : String = "Unsaved",
+                title : String = "",
+                message : String,
+                listManager: ItemAdapter,
+                itemViewModel: ItemViewModel?= null,
+                method: MenuItem ?= null,
+                itemDisplay : ItemAdapter.ItemHolder?= null
+        ) {
             // build dialog
             val alertDialog: AlertDialog? = this.let {
-                val builder = AlertDialog.Builder(context)
-                builder.apply {
+                AlertDialog.Builder(context).apply {
                     setPositiveButton(R.string.btn_dialog_ok) { dialog, id -> }
                     setNegativeButton(R.string.btn_dialog_cancel) { dialog, id -> }
                     setTitle(title)
                     setMessage(message)
                     create()
-                }
-                builder.show()
+                }.show()
             }
 
             // if dialog was exited out, set the background for delete button back to red
             alertDialog!!.setOnDismissListener {
                 if(itemId == R.id.btn_delete)
-                    itemDisplay!!.deleteBtn.setBackgroundColor(ContextCompat.getColor(context,
-                        R.color.red
-                    ))
+                    itemDisplay!!.deleteBtn.setBackgroundColor(
+                        ContextCompat.getColor(context, R.color.red)
+                    )
             }
 
             // if ok button in dialog was clicked
@@ -104,14 +126,15 @@ class Dialog {
          * @param   activity        activity
          */
         fun showListPromptDialog(
-            context : Context,
-            itemId : Int,
-            title : String = "",
-            message : String,
-            hint : String,
-            itemViewModel: ItemViewModel,
-            listManager: ItemAdapter,
-            activity: Activity ?= null) {
+                context : Context,
+                itemId : Int,
+                title : String = "",
+                message : String,
+                hint : String,
+                itemViewModel: ItemViewModel,
+                listManager: ItemAdapter,
+                activity: Activity ?= null
+        ) {
             // build AutoCompleteTextView
             val input = Utility.buildAutoCompleteTextView(
                 context,
@@ -124,16 +147,14 @@ class Dialog {
 
             // build dialog
             val alertDialog: AlertDialog? = this.let {
-                val builder = AlertDialog.Builder(context)
-                builder.apply {
+                AlertDialog.Builder(context).apply {
                     setView(input)
                     setPositiveButton(R.string.btn_dialog_ok) { dialog, id -> }
                     setNegativeButton(R.string.btn_dialog_cancel) { dialog, id -> }
                     setTitle(title)
                     setMessage(message)
                     create()
-                }
-                builder.show()
+                }.show()
             }
 
             // if ok button in dialog was clicked
@@ -235,11 +256,11 @@ class Dialog {
          * @param   itemDisplay     item view in list display
          */
         fun showNameEditDialog(
-            context : Context,
-            layout : Int,
-            itemViewModel : ItemViewModel,
-            listManager : ItemAdapter,
-            itemDisplay : ItemAdapter.ItemHolder
+                context : Context,
+                layout : Int,
+                itemViewModel : ItemViewModel,
+                listManager : ItemAdapter,
+                itemDisplay : ItemAdapter.ItemHolder
         ) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
@@ -315,11 +336,11 @@ class Dialog {
          * @param   itemDisplay     item view in list display
          */
         fun showAmountEditDialog(
-            context : Context,
-            layout : Int,
-            itemViewModel : ItemViewModel,
-            listManager : ItemAdapter,
-            itemDisplay : ItemAdapter.ItemHolder
+                context : Context,
+                layout : Int,
+                itemViewModel : ItemViewModel,
+                listManager : ItemAdapter,
+                itemDisplay : ItemAdapter.ItemHolder
         ) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
@@ -422,15 +443,16 @@ class Dialog {
          * @param   hint            message telling user what to enter in field
          */
         fun showSearchWordDialog(
-            context : Context,
-            listName: String,
-            searchOption : MenuItem,
-            layout : Int,
-            itemViewModel: ItemViewModel,
-            listManager : ItemAdapter,
-            title : Int,
-            description : Int,
-            hint : Int) {
+                context : Context,
+                listName: String,
+                searchOption : MenuItem,
+                layout : Int,
+                itemViewModel: ItemViewModel,
+                listManager : ItemAdapter,
+                title : Int,
+                description : Int,
+                hint : Int
+        ) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layout, null)
             // show dialog
@@ -506,14 +528,15 @@ class Dialog {
          * @param   dropdownItemLayout      dropdown layout
          */
         fun showSearchAmountDialog(
-            context : Context,
-            method : MenuItem,
-            listName: String,
-            listManager : ItemAdapter,
-            itemViewModel: ItemViewModel,
-            layoutDialog : Int,
-            arrayComparisons : Int,
-            dropdownItemLayout : Int) {
+                context : Context,
+                method : MenuItem,
+                listName: String,
+                listManager : ItemAdapter,
+                itemViewModel: ItemViewModel,
+                layoutDialog : Int,
+                arrayComparisons : Int,
+                dropdownItemLayout : Int
+        ) {
             // initialize variables for showing dialog
             val dialogView = LayoutInflater.from(context).inflate(layoutDialog, null)
             val alertDialog : AlertDialog = AlertDialog.Builder(context).setView(dialogView).show()
