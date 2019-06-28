@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Inventory List</string>
     <string name="description_splash_screen">Splash Screen Image</string>
+    <string name="app_id">ca-app-pub-9305885979692873~3283022395</string>
+    <string name="ad_unit_id">ca-app-pub-9305885979692873/4536394311</string>
+    <string name="test_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 
     <string name="hint_item_name">Item Name</string>
     <string name="hint_item_amount">Amount</string>
@@ -56,6 +59,7 @@
     <string name="amount_change_description">"Current amount above for %s will be replaced by the new amount below"</string>
     <string name="btn_dialog_cancel">Cancel</string>
     <string name="btn_dialog_ok">OK</string>
+    <string name="btn_dialog_exit_ad">Exit</string>
 
     <string name="title_search_name">Searching For Item By Name</string>
     <string name="search_name_description">Enter the item\'s name below to search for that item</string>
