@@ -18,7 +18,6 @@ import android.widget.Toast.LENGTH_SHORT
  */
 class Utility {
     companion object {
-
         /**
          * Sets the given title in the given action bar.
          *
