@@ -9,11 +9,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.ItemTouchHelper
 import android.widget.*
 import android.view.*
-import com.example.supplytracker.R
-import com.google.android.gms.ads.AdRequest
 import kotlinx.android.synthetic.main.activity_item_list_display.*
 import java.util.Collections.swap
-import com.google.android.gms.ads.MobileAds;
 
 /**
  * This class handles the display of items in the list
@@ -36,8 +33,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
         super.onCreate(savedState)
         setContentView(R.layout.activity_item_list_display)
 
-        MobileAds.initialize(this, "ca-app-pub-9305885979692873~3283022395")
-        adView.loadAd(AdRequest.Builder().build())
+        Dialog.showBannerAd(this)
 
         itemViewModel = ViewModelProviders.of(this).get(ItemViewModel(application)::class.java)
         listManager = ItemAdapter(this, itemViewModel)
