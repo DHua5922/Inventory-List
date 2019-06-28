@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent" android:layout_height="wrap_content"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent" android:layout_height="wrap_content"
         android:padding="@dimen/item_padding">
 
     <TextView
@@ -45,7 +45,9 @@
                 android:layout_marginBottom="@dimen/dialog_gap_description"
                 android:layout_marginLeft="@dimen/gap_btwn_widgets"
                 android:layout_marginStart="@dimen/gap_btwn_widgets"
-                android:gravity="center" android:imeOptions="flagNoExtractUi"/>
+                android:gravity="center"
+                android:imeOptions="flagNoExtractUi"
+                tools:ignore="Autofill"/>
 
     </LinearLayout>
 
@@ -59,14 +61,16 @@
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:textSize="@dimen/text" android:text="@string/btn_dialog_cancel" android:textColor="@color/white"
                 android:background="@drawable/button_manage" android:layout_weight="1"
-                android:layout_marginRight="@dimen/gap_btwn_widgets" android:layout_marginEnd="@dimen/gap_btwn_widgets"/>
+                android:layout_marginRight="@dimen/gap_btwn_widgets" android:layout_marginEnd="@dimen/gap_btwn_widgets"
+                tools:ignore="ButtonStyle"/>
 
         <Button
                 android:id="@+id/btn_dialog_ok"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:textSize="@dimen/text" android:text="@string/btn_dialog_ok" android:textColor="@color/white"
                 android:background="@drawable/button_manage" android:layout_weight="1"
-                android:layout_marginLeft="@dimen/gap_btwn_widgets" android:layout_marginStart="@dimen/gap_btwn_widgets"/>
+                android:layout_marginLeft="@dimen/gap_btwn_widgets" android:layout_marginStart="@dimen/gap_btwn_widgets"
+                tools:ignore="ButtonStyle" android:padding="@dimen/btn_padding"/>
 
     </LinearLayout>
 
