@@ -3,7 +3,6 @@ package com.dylanhua.inventorylist
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.supplytracker.R
 
 /**
  * This class starts the application and loads the splash screen for the application.

@@ -3,7 +3,6 @@ package com.dylanhua.inventorylist
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import android.view.MenuItem
-import com.example.supplytracker.R
 
 /**
  * This class represents a ViewModel that holds app's UI
