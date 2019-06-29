@@ -212,7 +212,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             Dialog.showConfirmationDialog(
                 context = this,
                 listName = listName,
-                message = "Are you sure you want to delete all the items in this list?",
+                message = "Are you sure you want to delete all the items in this inventory?",
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
                 listManager = listManager,
@@ -224,7 +224,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             Dialog.showConfirmationDialog(
                 context = this,
                 listName = listName,
-                message = "Are you sure you want to delete all the empty items in this list?",
+                message = "Are you sure you want to delete all the empty items in this inventory?",
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
                 listManager = listManager,
@@ -236,7 +236,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             Dialog.showConfirmationDialog(
                 context = this,
                 listName = listName,
-                message = "Are you sure you want to delete all the leftover items in this list?",
+                message = "Are you sure you want to delete all the leftover items in this inventory?",
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
                 listManager = listManager,
@@ -248,7 +248,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             Dialog.showConfirmationDialog(
                 context = this,
                 listName = listName,
-                message = "Are you sure you want to delete all the items that are full in this list?",
+                message = "Are you sure you want to delete all the items that are full in this inventory?",
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
                 listManager = listManager,
@@ -342,8 +342,8 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 Dialog.showListPromptDialog(
                     context = this,
                     itemId = item.itemId,
-                    message = "Enter the name for this list to be saved as",
-                    hint = "Enter new name for list",
+                    message = "Enter the name for this inventory to be saved as",
+                    hint = "Enter new name for this inventory",
                     itemViewModel = itemViewModel,
                     listManager = listManager,
                     activity = this
@@ -355,8 +355,8 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 Dialog.showListPromptDialog(
                     context = this,
                     itemId = item.itemId,
-                    message = "Choose which list to view",
-                    hint = "Enter name of list to open",
+                    message = "Choose which inventory to see",
+                    hint = "Enter name of inventory to see",
                     itemViewModel = itemViewModel,
                     listManager = listManager,
                     activity = this
@@ -368,8 +368,8 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 Dialog.showListPromptDialog(
                     context = this,
                     itemId = item.itemId,
-                    message = "Choose which list to delete",
-                    hint = "Enter name of list to delete",
+                    message = "Choose which inventory to delete",
+                    hint = "Enter name of inventory to delete",
                     itemViewModel = itemViewModel,
                     listManager = listManager
                 )
@@ -380,7 +380,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 Dialog.showConfirmationDialog(
                     context = this,
                     itemId = item.itemId,
-                    message = "Are you want to delete all the lists?",
+                    message = "Are you want to delete all the inventories?",
                     itemViewModel = itemViewModel,
                     listManager = listManager,
                     method = item
