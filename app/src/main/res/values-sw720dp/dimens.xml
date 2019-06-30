@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="horizontal_margin">20dp</dimen>
+    <dimen name="vertical_margin">0dp</dimen>
+    <dimen name="text">38sp</dimen>
+    <dimen name="item_padding">8dp</dimen>
+    <dimen name="gap_btwn_widgets">4dp</dimen>
+    <dimen name="dialog_gap">24dp</dimen>
+    <dimen name="dialog_gap_description">12dp</dimen>
+    <dimen name="btn_padding">8dp</dimen>
+    <dimen name="gap_list_display">8dp</dimen>
+</resources>
