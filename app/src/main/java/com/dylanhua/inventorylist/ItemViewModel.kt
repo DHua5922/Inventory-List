@@ -30,14 +30,20 @@ class ItemViewModel(application : Application) : AndroidViewModel(application) {
             )
             else -> {
                 val result = repository.insert(item)
+                val amount = item.amount
                 if(result > 0) {
-                    val amount = item.amount
                     Utility.printStyledMessage(
                         context,
-                        "$name (amount: $amount) added to list",
+                        "$name (amount: $amount) added",
                         arrayOf(name, "$amount")
                     )
                     return result
+                } else {
+                    Utility.printStyledMessage(
+                        context,
+                        "$name (amount: $amount) could not be added",
+                        arrayOf(name, "$amount")
+                    )
                 }
             }
         }
