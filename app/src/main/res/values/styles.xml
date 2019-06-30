@@ -6,6 +6,33 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/text</item>
+        <item name="android:textAppearanceLargePopupMenu">@style/myPopupMenuTextAppearanceLarge</item>
+        <item name="android:textAppearanceSmallPopupMenu">@style/myPopupMenuTextAppearanceSmall</item>
+        <item name="android:actionOverflowButtonStyle">@style/AppTheme.OverFlow</item>
+    </style>
+
+    <!-- Resize toolbar title -->
+    <style name="ToolbarTitleTheme" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">@dimen/text</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <!-- Resize actionbar overflow icon -->
+    <style name="AppTheme.OverFlow" parent="@android:style/Widget.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_list_options</item>
+    </style>
+
+    <!-- Resize small text in popup menu -->
+    <style name="myPopupMenuTextAppearanceSmall" parent="@android:style/TextAppearance.DeviceDefault.Widget.PopupMenu.Small">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/text</item>
+    </style>
+
+    <!-- Resize large text in popup menu -->
+    <style name="myPopupMenuTextAppearanceLarge" parent="@android:style/TextAppearance.DeviceDefault.Widget.PopupMenu.Large">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/text</item>
     </style>
 
 </resources>
