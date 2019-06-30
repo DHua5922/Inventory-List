@@ -5,9 +5,9 @@ import android.app.AlertDialog
 import android.content.Context
 import androidx.core.content.ContextCompat
 import android.text.InputType
+import android.text.SpannableStringBuilder
 import android.view.*
 import android.widget.*
-import android.widget.Toast.LENGTH_SHORT
 import kotlinx.android.synthetic.main.dialog_edit_field.view.*
 import kotlinx.android.synthetic.main.dialog_edit_field.view.btn_dialog_cancel
 import kotlinx.android.synthetic.main.dialog_edit_field.view.btn_dialog_ok
@@ -20,7 +20,10 @@ import android.widget.ArrayAdapter
 import android.widget.AdapterView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
+import kotlinx.android.synthetic.main.dialog_ad.*
 import kotlinx.android.synthetic.main.dialog_ad.view.*
+import kotlinx.android.synthetic.main.dialog_confirmation.view.message
+import kotlinx.android.synthetic.main.dialog_list_prompt.view.*
 
 
 /**
@@ -42,14 +45,16 @@ class Dialog {
             // use custom dialog layout
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_ad, null)
             // build dialog
-            AlertDialog.Builder(context).apply {
+            val alertDialog = AlertDialog.Builder(context).apply {
                 setView(dialogView)
-                setTitle("Ad")
-                setPositiveButton(R.string.btn_dialog_exit_ad) { dialog, id -> }
                 // load ad
                 MobileAds.initialize(context, context.getString(R.string.app_id))
                 dialogView.adView.loadAd(AdRequest.Builder().build())
             }.show()
+
+            alertDialog.btn_dialog_exit_ad.setOnClickListener {
+                alertDialog.dismiss()
+            }
         }
 
         /**
@@ -58,7 +63,6 @@ class Dialog {
          * @param   context         activity context
          * @param   itemId          view id
          * @param   listName        given list
-         * @param   title           optional dialog title
          * @param   message         message to ask user
          * @param   listManager     adapter for managing list
          * @param   itemViewModel   View Model
@@ -69,23 +73,16 @@ class Dialog {
                 context : Context,
                 itemId : Int = -1,
                 listName : String = "Unsaved",
-                title : String = "",
-                message : String,
+                message : SpannableStringBuilder,
                 listManager: ItemAdapter,
                 itemViewModel: ItemViewModel?= null,
                 method: MenuItem ?= null,
                 itemDisplay : ItemAdapter.ItemHolder?= null
         ) {
-            // build dialog
-            val alertDialog: AlertDialog? = this.let {
-                AlertDialog.Builder(context).apply {
-                    setPositiveButton(R.string.btn_dialog_ok) { dialog, id -> }
-                    setNegativeButton(R.string.btn_dialog_cancel) { dialog, id -> }
-                    setTitle(title)
-                    setMessage(message)
-                    create()
-                }.show()
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_confirmation, null).apply {
+                this.message.text = message
             }
+            val alertDialog = AlertDialog.Builder(context).setView(dialogView).show()
 
             // if dialog was exited out, set the background for delete button back to red
             alertDialog!!.setOnDismissListener {
@@ -96,7 +93,7 @@ class Dialog {
             }
 
             // if ok button in dialog was clicked
-            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+            alertDialog.btn_dialog_ok.setOnClickListener {
                 when(itemId) {
                     // delete item view
                     R.id.btn_delete -> {
@@ -104,10 +101,16 @@ class Dialog {
                     }
                     // delete items based on chosen removal method
                     else -> {
-                        itemViewModel!!.delete(method!!, listName)
+                        itemViewModel!!.delete(method!!, listName, context)
                         listManager.setItems(itemViewModel.getAllItems(listName))
                     }
                 }
+                // exit dialog
+                alertDialog.dismiss()
+            }
+
+            // if cancel button in dialog was clicked
+            alertDialog.btn_dialog_cancel.setOnClickListener {
                 // exit dialog
                 alertDialog.dismiss()
             }
@@ -118,7 +121,6 @@ class Dialog {
          *
          * @param   context         activity context
          * @param   itemId          view id
-         * @param   title           optional dialog title
          * @param   message         message to prompt user
          * @param   hint            message to tell user what to enter in field
          * @param   itemViewModel   View Model
@@ -128,37 +130,33 @@ class Dialog {
         fun showListPromptDialog(
                 context : Context,
                 itemId : Int,
-                title : String = "",
                 message : String,
                 hint : String,
                 itemViewModel: ItemViewModel,
                 listManager: ItemAdapter,
                 activity: Activity ?= null
         ) {
-            // build AutoCompleteTextView
-            val input = Utility.buildAutoCompleteTextView(
-                context,
-                InputType.TYPE_CLASS_TEXT,
-                hint,
-                R.layout.dropdown_item_layout,
-                itemViewModel.getAllSavedListNames(),
-                itemId
-            )
+            lateinit var input : AutoCompleteTextView
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_list_prompt, null).apply {
+                this.message.text = message
+                input = this.input
+                Utility.buildAutoCompleteTextView(
+                    input,
+                    context,
+                    InputType.TYPE_CLASS_TEXT,
+                    hint,
+                    R.layout.dropdown_item_layout,
+                    itemViewModel.getAllSavedListNames()
+                )
+            }
+            val alertDialog = AlertDialog.Builder(context).setView(dialogView).show()
 
-            // build dialog
-            val alertDialog: AlertDialog? = this.let {
-                AlertDialog.Builder(context).apply {
-                    setView(input)
-                    setPositiveButton(R.string.btn_dialog_ok) { dialog, id -> }
-                    setNegativeButton(R.string.btn_dialog_cancel) { dialog, id -> }
-                    setTitle(title)
-                    setMessage(message)
-                    create()
-                }.show()
+            alertDialog!!.btn_dialog_cancel.setOnClickListener {
+                alertDialog.dismiss()
             }
 
             // if ok button in dialog was clicked
-            alertDialog!!.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener{
+            alertDialog.btn_dialog_ok.setOnClickListener{
                 val listName = "${input.text}".trim()
                 when (itemId) {
                     // save list
@@ -282,8 +280,8 @@ class Dialog {
             dialogView.title.text = context.getString(R.string.title_name_change)
             // style and display current item name
             dialogView.info_to_be_changed.text = Utility.bold(
-                arrayOf("$currentName"),
-                context.getString(R.string.name_to_be_changed, currentName)
+                context.getString(R.string.name_to_be_changed, currentName),
+                arrayOf("$currentName")
             )
             // describe what will happen to item name
             dialogView.description.text = context.getString(R.string.name_change_description)
@@ -301,7 +299,7 @@ class Dialog {
                         listManager.notifyItemChanged(position)
                         Utility.printStyledMessage(
                             context,
-                            "Name for $currentName is now $newName",
+                            "Name for $currentName has been changed to $newName",
                             arrayOf("$currentName", newName)
                         )
                         // exit dialog
@@ -365,13 +363,13 @@ class Dialog {
             dialogView.title.text = context.getString(R.string.title_amount_change)
             // style and display current item amount
             dialogView.info_to_be_changed.text = Utility.bold(
-                arrayOf("$currentAmount"),
-                context.getString(R.string.amount_to_be_changed, name, currentAmount)
+                context.getString(R.string.amount_to_be_changed, name, currentAmount),
+                arrayOf("$currentAmount")
             )
             // describe what will happen to item amount
             dialogView.description.text = Utility.bold(
-                arrayOf("$name"),
-                context.getString(R.string.amount_change_description, name)
+                context.getString(R.string.amount_change_description, name),
+                arrayOf("$name")
             )
             // notify user that field is for entering decimal numbers
             dialogView.field_new_info.hint = context.getString(R.string.hint_dialog_new_amount)
@@ -419,7 +417,7 @@ class Dialog {
                         )
                     }
                 } catch(e : NumberFormatException) {
-                    Toast.makeText(context, "Amount must only be a number", LENGTH_SHORT).show()
+                    Utility.printStyledMessage(context, "Amount must only be a number")
                 }
             }
 
