@@ -145,20 +145,19 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                     )
 
                     // try to add item
-                    val result = itemViewModel.add(item)
+                    val result = itemViewModel.add(item, this)
                     if(result > -1) {
                         // successful item insertion
                         // clear edit fields
                         editableName.text.clear()
                         editableAmount.text.clear()
-                        // update inserted item with new rowId
+                        // update inserted item with new id
                         item.id = result
                         itemViewModel.update(item)
                         // add item to list in adapter
                         listManager.addItem(item)
                     }
                 } catch(e : NumberFormatException) {
-                    //Toast.makeText(this, "Amount must only be a number", Toast.LENGTH_SHORT).show()
                     Utility.printStyledMessage(
                         this,
                         "Amount must only be a number"
@@ -212,7 +211,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             Dialog.showConfirmationDialog(
                 context = this,
                 listName = listName,
-                message = "Are you sure you want to delete all the items in this inventory?",
+                message = Utility.bold("Are you sure you want to delete all the items in this inventory?"),
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
                 listManager = listManager,
@@ -224,7 +223,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             Dialog.showConfirmationDialog(
                 context = this,
                 listName = listName,
-                message = "Are you sure you want to delete all the empty items in this inventory?",
+                message = Utility.bold("Are you sure you want to delete all the empty items in this inventory?"),
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
                 listManager = listManager,
@@ -236,7 +235,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             Dialog.showConfirmationDialog(
                 context = this,
                 listName = listName,
-                message = "Are you sure you want to delete all the leftover items in this inventory?",
+                message = Utility.bold("Are you sure you want to delete all the leftover items in this inventory?"),
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
                 listManager = listManager,
@@ -248,7 +247,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             Dialog.showConfirmationDialog(
                 context = this,
                 listName = listName,
-                message = "Are you sure you want to delete all the items that are full in this inventory?",
+                message = Utility.bold("Are you sure you want to delete all the items that are full in this inventory?"),
                 itemId = method.itemId,
                 itemViewModel = itemViewModel,
                 listManager = listManager,
@@ -302,16 +301,12 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
             method.itemId == R.id.option_search_full ||
             method.itemId == R.id.option_search_all
         ) {
-            listManager.setItems(itemViewModel.search(method,
-                listName
-            ))
+            listManager.setItems(itemViewModel.search(method, listName))
         }
 
         // otherwise, update list display with sorted items
         else {
-            listManager.setItems(itemViewModel.sort(method,
-                listName
-            ))
+            listManager.setItems(itemViewModel.sort(method, listName))
         }
 
         list_display.adapter = listManager
@@ -343,7 +338,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                     context = this,
                     itemId = item.itemId,
                     message = "Enter the name for this inventory to be saved as",
-                    hint = "Enter new name for this inventory",
+                    hint = "Enter new name",
                     itemViewModel = itemViewModel,
                     listManager = listManager,
                     activity = this
@@ -356,7 +351,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                     context = this,
                     itemId = item.itemId,
                     message = "Choose which inventory to see",
-                    hint = "Enter name of inventory to see",
+                    hint = "Enter name",
                     itemViewModel = itemViewModel,
                     listManager = listManager,
                     activity = this
@@ -369,7 +364,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                     context = this,
                     itemId = item.itemId,
                     message = "Choose which inventory to delete",
-                    hint = "Enter name of inventory to delete",
+                    hint = "Enter name",
                     itemViewModel = itemViewModel,
                     listManager = listManager
                 )
@@ -380,7 +375,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                 Dialog.showConfirmationDialog(
                     context = this,
                     itemId = item.itemId,
-                    message = "Are you want to delete all the inventories?",
+                    message = Utility.bold("Are you want to delete all your inventories?"),
                     itemViewModel = itemViewModel,
                     listManager = listManager,
                     method = item
