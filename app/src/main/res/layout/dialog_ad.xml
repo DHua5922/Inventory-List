@@ -23,7 +23,7 @@
             android:layout_marginTop="@dimen/dialog_gap"
             android:layout_marginBottom="@dimen/dialog_gap_description"
             ads:adSize="SMART_BANNER"
-            ads:adUnitId="@string/test_ad_unit_id"/>
+            ads:adUnitId="@string/ad_unit_id"/>
 
         <Button
                 android:id="@+id/btn_dialog_exit_ad"
