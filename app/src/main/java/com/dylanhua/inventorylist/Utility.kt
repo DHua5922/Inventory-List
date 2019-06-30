@@ -9,7 +9,7 @@ import android.text.style.StyleSpan
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
+import android.widget.Toast.LENGTH_LONG
 
 /**
  * This class holds useful functions that will be used in 1 or more classes.
@@ -37,8 +37,7 @@ class Utility {
          * @param   stringsToBold   given array of strings to bold
          */
         fun printStyledMessage(context : Context, message : String, stringsToBold : Array<String> = arrayOf("")) {
-            Toast.makeText(context,
-                bold(stringsToBold, message), LENGTH_SHORT).show()
+            Toast.makeText(context, bold(message, stringsToBold), LENGTH_LONG).show()
         }
 
         /**
@@ -49,7 +48,7 @@ class Utility {
          * @param   text            given text
          * @return                  text with given strings in bold
          */
-        fun bold(stringsToBold: Array<String>, text : String) : SpannableStringBuilder {
+        fun bold(text : String, stringsToBold: Array<String> = arrayOf("")) : SpannableStringBuilder {
             var start = 0; var end: Int
             val styledText = SpannableStringBuilder(text)
 
@@ -77,13 +76,12 @@ class Utility {
          * @return                      AutoCompleteTextView with attributes and events binded
          */
         fun buildAutoCompleteTextView(
+                input : AutoCompleteTextView,
                 context : Context,
                 inputType : Int,
                 hint : String,
                 dropdownItemLayout : Int,
-                list : List<String>,
-                itemId : Int) : AutoCompleteTextView {
-            val input = AutoCompleteTextView(context)
+                list : List<String>) {
             input.inputType = inputType
             input.hint = hint
             // set dropdown of field
@@ -98,7 +96,6 @@ class Utility {
             input.setOnClickListener {
                 input.showDropDown()
             }
-            return input
         }
     }
 }
