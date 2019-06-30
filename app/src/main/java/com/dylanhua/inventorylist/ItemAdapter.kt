@@ -208,10 +208,11 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
             // color delete button black to show which item is being deleted
             deleteBtn.setBackgroundColor(ContextCompat.getColor(context, R.color.black))
             // show confirmation dialog for deleting item
+            val name = "${itemDisplay.nameDisplay.text}"
             Dialog.showConfirmationDialog(
                 context = context,
                 itemId = deleteBtn.id,
-                message = "Are you sure you want to delete ${itemDisplay.nameDisplay.text}?",
+                message = Utility.bold("Are you sure you want to delete $name?", arrayOf(name)),
                 listManager = this,
                 itemDisplay = itemDisplay
             )
@@ -252,10 +253,15 @@ class ItemAdapter(private val context : Context, private val itemViewModel: Item
      */
     internal fun removeItem(position : Int) {
         // item has been deleted from the database
-        if(itemViewModel.delete(this.itemList[position]) > 0) {
+        val item = this.itemList[position]
+        val name = item.name
+        if(itemViewModel.delete(item) > 0) {
             // remove item from this adapter
             this.itemList.removeAt(position)
             notifyItemRemoved(position)
+            Utility.printStyledMessage(context, "$name has been deleted", arrayOf(name))
+        } else {
+            Utility.printStyledMessage(context, "$name could not be deleted", arrayOf(name))
         }
     }
 
