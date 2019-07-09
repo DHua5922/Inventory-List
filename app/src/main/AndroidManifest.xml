@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools" package="com.dylanhua.inventorylist">
+          xmlns:tools="http://schemas.android.com/tools" package="com.devdhua512.inventorylist">
 
     <supports-screens
             android:largeScreens="true"
@@ -8,21 +8,20 @@
             android:smallScreens="true"
             android:xlargeScreens="true" />
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme" tools:ignore="AllowBackup">
+            android:theme="@style/AppTheme"
+            tools:ignore="AllowBackup">
 
         <meta-data
                 android:name="com.google.android.gms.ads.APPLICATION_ID"
                 android:value="@string/app_id"/>
 
-        <activity android:name="com.dylanhua.inventorylist.MainActivity"
+        <activity android:name=".MainActivity"
                   android:configChanges="orientation"
                   android:screenOrientation="portrait">
             <intent-filter>
@@ -33,7 +32,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.dylanhua.inventorylist.ItemListDisplay"
+        <activity android:name=".ItemListDisplay"
                   android:windowSoftInputMode="adjustPan"
                   android:configChanges="orientation"
                   android:screenOrientation="portrait">
