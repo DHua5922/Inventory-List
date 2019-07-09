@@ -4,7 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent" android:layout_height="match_parent"
-        android:background="#FFFFFF" tools:context="com.dylanhua.inventorylist.MainActivity">
+        android:background="#FFFFFF" tools:context="com.devdhua512.inventorylist.MainActivity">
     <ImageView
             android:id="@+id/imageView"
             android:layout_width="0dp" android:layout_height="0dp"

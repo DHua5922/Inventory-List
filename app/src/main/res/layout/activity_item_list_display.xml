@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background_page"
-        tools:context="com.dylanhua.inventorylist.ItemListDisplay">
+        tools:context="com.devdhua512.inventorylist.ItemListDisplay">
 
     <include
         android:id="@+id/toolbar" layout="@layout/toolbar"
