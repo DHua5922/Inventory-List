@@ -1,4 +1,4 @@
-package com.dylanhua.inventorylist
+package com.devdhua512.inventorylist
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -46,10 +46,10 @@ class Dialog {
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_ad, null)
             // build dialog
             val alertDialog = AlertDialog.Builder(context).apply {
-                setView(dialogView)
                 // load ad
                 MobileAds.initialize(context, context.getString(R.string.app_id))
                 dialogView.adView.loadAd(AdRequest.Builder().build())
+                setView(dialogView)
             }.show()
 
             alertDialog.btn_dialog_exit_ad.setOnClickListener {
