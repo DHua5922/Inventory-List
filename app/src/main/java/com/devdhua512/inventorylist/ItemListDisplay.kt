@@ -1,4 +1,4 @@
-package com.dylanhua.inventorylist
+package com.devdhua512.inventorylist
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
