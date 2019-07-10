@@ -33,7 +33,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
         super.onCreate(savedState)
         setContentView(R.layout.activity_item_list_display)
 
-        Dialog.showBannerAd(this)
+        Utility.showBannerAd(this)
 
         itemViewModel = ViewModelProviders.of(this).get(ItemViewModel(application)::class.java)
         listManager = ItemAdapter(this, itemViewModel)
@@ -45,10 +45,7 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
 
         // set action bar title as name of current list
         setSupportActionBar(toolbar as Toolbar?)
-        Utility.setTitle(
-            supportActionBar,
-            listName
-        )
+        Utility.setTitle(supportActionBar, listName)
 
         // display items
         listManager.setItems(itemViewModel.getAllItems(listName))
@@ -379,6 +376,19 @@ class ItemListDisplay : AppCompatActivity(), View.OnClickListener, PopupMenu.OnM
                     itemViewModel = itemViewModel,
                     listManager = listManager,
                     method = item
+                )
+                true
+            }
+            // show dialog that prompts user to rename list
+            R.id.option_rename_list -> {
+                Dialog.showListPromptDialog(
+                    context = this,
+                    itemId = item.itemId,
+                    message = "Rename this inventory by entering a new name.",
+                    hint = "Enter new name",
+                    itemViewModel = itemViewModel,
+                    listManager = listManager,
+                    activity = this
                 )
                 true
             }
