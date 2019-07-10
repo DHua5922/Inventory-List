@@ -85,4 +85,5 @@
     <string name="open_inventory">Open Inventory</string>
     <string name="delete_inventory">Delete Inventory</string>
     <string name="delete_inventory_all">Delete All Inventories</string>
+    <string name="rename_inventory">Rename This Inventory</string>
 </resources>
