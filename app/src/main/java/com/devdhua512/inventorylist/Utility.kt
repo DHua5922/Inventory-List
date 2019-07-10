@@ -10,6 +10,9 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
+import kotlinx.android.synthetic.main.activity_item_list_display.*
 
 /**
  * This class holds useful functions that will be used in 1 or more classes.
@@ -26,6 +29,17 @@ class Utility {
          */
         fun setTitle(actionBar: ActionBar?, title: String) {
             actionBar!!.title = "Inventory: $title"
+        }
+
+        /**
+         * Shows banner ads using the given activity.
+         *
+         * @param   activity     given activity
+         */
+        fun showBannerAd(activity: ItemListDisplay) {
+            val context = activity.baseContext
+            MobileAds.initialize(context, context.getString(R.string.app_id))
+            activity.adView.loadAd(AdRequest.Builder().build())
         }
 
         /**
