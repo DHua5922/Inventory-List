@@ -18,10 +18,6 @@ import kotlinx.android.synthetic.main.dialog_search_item_amount.view.*
 import kotlinx.android.synthetic.main.dialog_search_item_word.view.*
 import android.widget.ArrayAdapter
 import android.widget.AdapterView
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
-import kotlinx.android.synthetic.main.dialog_ad.*
-import kotlinx.android.synthetic.main.dialog_ad.view.*
 import kotlinx.android.synthetic.main.dialog_confirmation.view.message
 import kotlinx.android.synthetic.main.dialog_list_prompt.view.*
 
@@ -35,27 +31,6 @@ import kotlinx.android.synthetic.main.dialog_list_prompt.view.*
  */
 class Dialog {
     companion object {
-
-        /**
-         * Shows banner ads, using the given activity context.
-         *
-         * @param    context     given activity context
-         */
-        fun showBannerAd(context: Context) {
-            // use custom dialog layout
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_ad, null)
-            // build dialog
-            val alertDialog = AlertDialog.Builder(context).apply {
-                // load ad
-                MobileAds.initialize(context, context.getString(R.string.app_id))
-                dialogView.adView.loadAd(AdRequest.Builder().build())
-                setView(dialogView)
-            }.show()
-
-            alertDialog.btn_dialog_exit_ad.setOnClickListener {
-                alertDialog.dismiss()
-            }
-        }
 
         /**
          * Asks user for confirmation to delete items.
@@ -190,6 +165,35 @@ class Dialog {
                                     "This list has been saved as $listName",
                                     arrayOf(listName)
                                 )
+                                // exit dialog
+                                alertDialog.dismiss()
+                            }
+                        }
+                    }
+                    // rename list
+                    R.id.option_rename_list -> {
+                        when {
+                            listName.isEmpty() -> Utility.printStyledMessage(
+                                context,
+                                "Name cannot be empty"
+                            )
+                            itemViewModel.getListNameCount(listName) > 0 -> Utility.printStyledMessage(
+                                context,
+                                "$listName already exists",
+                                arrayOf(listName)
+                            )
+                            else -> {
+                                // change action bar title
+                                Utility.setTitle(
+                                    (activity as ItemListDisplay).supportActionBar,
+                                    listName
+                                )
+                                // update items with new list name
+                                val list = listManager.getItems()
+                                for (item in list)
+                                    item.listName = listName
+                                // update these items in database with new list name
+                                itemViewModel.update(list)
                                 // exit dialog
                                 alertDialog.dismiss()
                             }
